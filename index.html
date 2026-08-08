@@ -145,6 +145,7 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.04); cursor: pointer;
     transition: border-color .15s ease;
   }
+  html[lang="en"] .answer-row { font-size: 16px; }
   .answer-row:hover { border-color: var(--border); }
   .answer-row.selected { border: 2px solid var(--heading); font-weight: 700; padding: 0 22px; }
   .answer-check { display: none; flex: none; width: 24px; height: 24px; }
@@ -170,6 +171,7 @@
   .primary:disabled { background: var(--border); color: var(--muted); box-shadow: none; cursor: not-allowed; }
   .secondary { background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--body); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; cursor: pointer; }
   .disclaimer { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .source-note { padding: 0 32px 24px; font-size: 10px; line-height: 1.6; color: var(--muted); text-align: center; }
 </style>
 </head>
 <body>
@@ -225,7 +227,8 @@ var LANG = {
     },
     finishLabel: 'Finish',
     startAgainLabel: 'Start again',
-    disclaimer: 'Screening, not a diagnosis'
+    disclaimer: 'Screening, not a diagnosis',
+    sourceNote: 'ASRS-v1.1 Screener © World Health Organization. Citation: Kessler RC, Adler L, Ames M, et al. Psychological Medicine. 2005;35:245–256.'
   },
 
   fa: {
@@ -275,7 +278,8 @@ var LANG = {
     },
     finishLabel: 'پایان',
     startAgainLabel: 'شروع دوباره',
-    disclaimer: 'غربالگری است، نه تشخیص'
+    disclaimer: 'غربالگری است، نه تشخیص',
+    sourceNote: 'پرسشنامه غربالگری ASRS-v1.1 © سازمان جهانی بهداشت. منبع: Kessler RC, Adler L, Ames M, et al. Psychological Medicine. 2005;35:245–256.'
   }
 };
 </script>
@@ -287,7 +291,7 @@ var state = {
   screen: 'welcome', // welcome | howto | question | results
   qIndex: 0,
   answers: [null, null, null, null, null, null],
-  showHelp: true
+  showHelp: false
 };
 var app = document.getElementById('app');
 
@@ -403,7 +407,7 @@ function sQuestion() {
 
   var ansHtml = g.answers.map(function (label, x) {
     var sel = state.answers[i] === x;
-    return '<div class="answer-row' + (sel ? ' selected' : '') + '" tabindex="0" role="radio" data-answer="' + x + '">' +
+    return '<div class="answer-row' + (sel ? ' selected' : '') + '" tabindex="0" role="radio" aria-checked="' + (sel ? 'true' : 'false') + '" data-answer="' + x + '">' +
       '<span>' + esc(label) + '</span>' +
       '<span class="answer-check">' + S.checkCircle + '</span>' +
     '</div>';
@@ -427,7 +431,7 @@ function sQuestion() {
         '<p class="question-text">' + esc(q.q) + '</p>' +
         (state.showHelp ? '<p class="help-text">' + esc(q.help) + '</p>' : '') +
       '</div>' +
-      '<div class="answers">' + ansHtml + '</div>' +
+      '<div class="answers" role="radiogroup" aria-label="' + esc(q.q) + '">' + ansHtml + '</div>' +
     '</main>' +
     '<footer><button class="primary" data-action="nextQ" id="cta"></button></footer>';
 }
@@ -451,7 +455,8 @@ function sResult() {
       '<button class="primary" data-action="finish">' + esc(g.finishLabel) + '</button>' +
       '<button class="secondary" data-action="restart">' + esc(g.startAgainLabel) + '</button>' +
       '<p class="disclaimer">' + esc(g.disclaimer) + '</p>' +
-    '</footer>';
+    '</footer>' +
+    '<p class="source-note">' + esc(g.sourceNote) + '</p>';
 }
 </script>
 
@@ -502,13 +507,13 @@ app.addEventListener('click', function (e) {
       case 'back':
         if (state.screen === 'howto') { state.screen = 'welcome'; }
         else if (state.screen === 'question') {
-          if (state.qIndex > 0) { state.qIndex--; state.showHelp = true; }
+          if (state.qIndex > 0) { state.qIndex--; state.showHelp = false; }
           else { state.screen = 'howto'; }
         }
         break;
       case 'begin':
         state.answers = [null, null, null, null, null, null];
-        state.qIndex = 0; state.showHelp = true;
+        state.qIndex = 0; state.showHelp = false;
         state.screen = 'question';
         break;
       case 'toggleHelp':
@@ -517,7 +522,7 @@ app.addEventListener('click', function (e) {
       case 'nextQ':
         if (state.answers[state.qIndex] == null) return;
         if (state.qIndex < 5) {
-          state.qIndex++; state.showHelp = true;
+          state.qIndex++; state.showHelp = false;
         } else {
           state.screen = 'results';
         }
@@ -527,7 +532,7 @@ app.addEventListener('click', function (e) {
         break;
       case 'restart':
         state.answers = [null, null, null, null, null, null];
-        state.qIndex = 0; state.showHelp = true;
+        state.qIndex = 0; state.showHelp = false;
         state.screen = 'welcome';
         break;
     }
