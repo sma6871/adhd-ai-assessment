@@ -68,11 +68,19 @@ async function extractEvidence(args, signal) {
   if (args && args.stage === 'childhood') {
     return extractChildhoodEvidence(args, signal);
   }
-  // Stage 4 (functional impairment & settings) extraction branch. The engine asks the
+   // Stage 4 (functional impairment & settings) extraction branch. The engine asks the
   // concrete probes deterministically; the LLM only extracts concrete impairment examples and
   // settings with grounding. The LLM NEVER rates — engine.assessImpairment owns the rating.
   if (args && args.stage === 'impairment') {
     return extractImpairmentEvidence(args, signal);
+  }
+  // Stage 5 (focused differential check) extraction branch. The engine asks the 7
+  // deterministic factor probes; the LLM ONLY extracts each factor's presence and any ADHD-like
+  // symptoms the user tied to it. The LLM NEVER decides whether the factor is flagged or what to
+  // surface — engine.flagDifferentials applies the §7 flagging rule (§9a-F). Flagging only;
+  // never a diagnosis of these conditions.
+  if (args && args.stage === 'differential') {
+    return extractDifferentialEvidence(args, signal);
   }
   // Stage 2 (per-criterion) evidence extraction.
   const { criterion, priorEvidence, transcript, userAnswer } = args;
@@ -221,6 +229,66 @@ async function extractImpairmentEvidence({ probe, priorEvidence, transcript, use
       example: typeof x.example === 'string' && x.example.trim() ? x.example.trim() : null,
       concrete: !!(x.example && x.example.trim()),
     }).filter(x => x.setting && x.example)),
+    uncertainty: typeof parsed.uncertainty === 'string' && parsed.uncertainty.trim() ? parsed.uncertainty.trim() : null,
+  };
+}
+
+const DIFFERENTIAL_SYSTEM_PROMPT = `You are a focused-differential screening extractor for a structured ADHD assessment. Your ONLY job is to read the user's answer to the CURRENT factor probe and report whether the user indicates this factor applies, plus any ADHD-like symptoms the user explicitly ties to it. You do NOT ask questions, do NOT decide whether the factor is flagged, do NOT diagnose, and do NOT assess the differential conditions.
+
+Flagging is the engine's job: a factor is flagged (by the engine) only if the user reports it AND an ADHD-like symptom was endorsed in the prior interview. You only extract presence and ties.
+
+Extract from THIS answer:
+- reported: true ONLY if the user clearly indicates they experience this factor (yes/affirming). false if absent, unclear, or not applicable.
+- symptom_mentions: ADHD-like symptoms the user explicitly tied to this factor (e.g., "my anxiety makes it hard to focus"). List each as a short string. [] if none.
+- uncertainty: set ONLY if the user explicitly said they don't know / can't say. null otherwise.
+
+Return STRICT JSON only (no prose, no markdown fences) with EXACTLY:
+{
+  "reported": bool,
+  "symptom_mentions": ["string"],
+  "uncertainty": "string|null"
+}`;
+
+async function extractDifferentialEvidence({ probe, priorEvidence, transcript, userAnswer }, signal) {
+  if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in the environment.');
+  const res = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [
+        { role: 'system', content: DIFFERENTIAL_SYSTEM_PROMPT },
+        {
+          role: 'user',
+          content: `Current factor probe:\n`
+            + `- ${probe.prompt}\n\n`
+            + `Factors already screened (JSON):\n${JSON.stringify((priorEvidence && priorEvidence.factors) || [])}\n\n`
+            + `Recent transcript (user/AI pairs):\n${JSON.stringify(transcript || [])}\n\n`
+            + `User's latest answer:\n${userAnswer || '(empty)'}\n\n`
+            + `Return STRICT JSON with reported + symptom_mentions + uncertainty only.`,
+        },
+      ],
+      temperature: 0.2,
+      response_format: { type: 'json_object' },
+      max_tokens: 512,
+    }),
+    signal,
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Groq error ${res.status}: ${txt}`);
+  }
+  const data = await res.json();
+  const raw = data.choices[0].message.content;
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch (e) { throw new Error('Extractor returned non-JSON: ' + raw.slice(0, 200)); }
+  if (!parsed || typeof parsed !== 'object' || !('reported' in parsed) || !('symptom_mentions' in parsed) || !('uncertainty' in parsed)) {
+    throw new Error('Differential extractor response missing required fields.');
+  }
+  return {
+    reported: !!parsed.reported,
+    symptom_mentions: Array.isArray(parsed.symptom_mentions) ? parsed.symptom_mentions.filter(x => typeof x === 'string' && x.trim()) : [],
     uncertainty: typeof parsed.uncertainty === 'string' && parsed.uncertainty.trim() ? parsed.uncertainty.trim() : null,
   };
 }

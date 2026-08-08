@@ -357,9 +357,93 @@ async function processStage4Turn(state, userAnswer) {
   return { completed: true, stage: 'IMPAIRMENT', ...a };
 }
 
+// --- §7: Stage 5 — Focused differential check (additive; M1–M4 untouched) ---
+// Flagging-only, never a diagnosis. The engine asks the 7 deterministic probes; the LLM ONLY
+// extracts each factor's presence + any ADHD-like symptoms the user tied to it. The ENGINE
+// applies the §7 flagging rule (§9a-F). Stores flagged labels in the locked top-level
+// state.differentials_flagged[] (consumed by evaluate() §9b-F / §9f).
+function beginStage5(state) {
+  state.stage = 'DIFFERENTIAL';
+  if (!state.differential) {
+    state.differential = { factors: [], probesAsked: 0, done: false, probe: 0 };
+  }
+  state.pending = { stage: 'DIFFERENTIAL', probe: 0, kind: 'differential' };
+  const factor = engine.DIFFERENTIAL_FACTORS[0];
+  return {
+    question: engine.formatDifferentialQuestion(factor),
+    probeId: factor.id,
+    kind: 'differential',
+    first: true,
+    completed: false,
+  };
+}
+
+const DIFFERENTIAL_PROBES = engine.DIFFERENTIAL_FACTORS;
+const DIFFERENTIAL_EXTRACT_DEFAULT = { reported: false, uncertainty: null, symptom_mentions: [] };
+
+function mergeDifferentialEvidence(state, extracted) {
+  const f = state.differential.factors;
+  // factors are visited once each (one probe per factor), so just push the parsed result
+  f.push({
+    factor: extracted.factor,
+    reported: !!extracted.reported,
+    uncertainty: extracted.uncertainty || null,
+    symptom_mentions: Array.isArray(extracted.symptom_mentions) ? extracted.symptom_mentions.slice() : [],
+  });
+}
+
+async function processStage5Turn(state, userAnswer) {
+  const pending = state.pending || { stage: 'DIFFERENTIAL', probe: 0, kind: 'differential' };
+  if (pending.stage !== 'DIFFERENTIAL') return beginStage5(state);
+
+  const idx = pending.probe == null ? 0 : pending.probe;
+  const factor = DIFFERENTIAL_PROBES[idx];
+  if (!factor) {
+    finalizeDifferential(state);
+    return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged };
+  }
+
+  let extracted = DIFFERENTIAL_EXTRACT_DEFAULT;
+  let extractionError = null;
+  try {
+    extracted = await extractEvidence({
+      stage: 'differential',
+      probe: { id: factor.id, prompt: factor.probe },
+      priorEvidence: { factors: state.differential.factors },
+      transcript: state.transcript,
+      userAnswer,
+    });
+    extracted.factor = factor.id;
+  } catch (e) {
+    extractionError = e.message;
+  }
+  if (extracted) mergeDifferentialEvidence(state, extracted);
+
+  state.differential.probesAsked = (state.differential.probesAsked || 0) + 1;
+  state.differential.probe = idx;
+  appendTranscript(state, 'user', userAnswer || '(no answer)');
+  if (extractionError) appendTranscript(state, 'engine', `differential extraction error: ${extractionError}`);
+
+  const nextIdx = idx + 1;
+  if (nextIdx < DIFFERENTIAL_PROBES.length) {
+    state.pending = { stage: 'DIFFERENTIAL', probe: nextIdx, kind: 'differential' };
+    return { question: engine.formatDifferentialQuestion(DIFFERENTIAL_PROBES[nextIdx]), probeId: DIFFERENTIAL_PROBES[nextIdx].id, kind: 'differential', completed: false };
+  }
+
+  finalizeDifferential(state);
+  return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged };
+}
+
+function finalizeDifferential(state) {
+  state.differentials_flagged = engine.flagDifferentials(state);
+  state.differential.done = true;
+  state.pending = null;
+}
+
 module.exports = {
   createStage2Assessment, begin, processTurn, nextOrDone, getReport, getProgress,
   beginStage3, processStage3Turn,
   beginStage4, processStage4Turn,
+  beginStage5, processStage5Turn,
   CRITERIA,
 };

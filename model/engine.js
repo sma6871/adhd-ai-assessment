@@ -439,6 +439,52 @@ function impairmentDone(state) {
   return state.stage === 'IMPAIRMENT' && state.impairment && state.impairment.done;
 }
 
+// --- §7: Focused differential check (Stage 5) — flagging ONLY, never a diagnosis ---
+// The 7 factors from CLINICAL_ADHD_PROTOCOL.md §7. By the protocol's own definition these are
+// factors that "could explain or contribute to ADHD-like symptoms," so plausibility is the
+// protocol's classification — the engine does NOT invent a plausibility table.
+const SYMPTOM_ENDORSED = ['Sometimes', 'Often', 'Very Often']; // a reported ADHD-like symptom (§2 core answer, past ~6 months)
+
+const DIFFERENTIAL_FACTORS = [
+  { id: 'anxiety', label: 'Anxiety', probe: 'Do you experience persistent worry, restlessness, muscle tension, or racing thoughts about threats? If so, does it seem related to your attention/focus difficulties?' },
+  { id: 'depression', label: 'Depression', probe: 'Do you get persistent low mood, loss of interest/pleasure, fatigue, sleep/appetite changes, or feelings of worthlessness? If so, does it seem related to concentration or energy?' },
+  { id: 'sleep', label: 'Sleep problems', probe: 'Do you have insomnia, fragmented or non-restorative sleep, signs of sleep apnea, or an irregular sleep schedule? If so, does it seem related to attention or fatigue?' },
+  { id: 'bipolar', label: 'Bipolar-spectrum', probe: 'Have you had periods of abnormally elevated mood/energy, decreased need for sleep, or racing thoughts (distinct from your baseline)? If so, does it relate to impulsivity or restlessness?' },
+  { id: 'substance', label: 'Substance/alcohol', probe: 'Do you use alcohol or substances regularly in a way that could affect your attention or self-regulation?' },
+  { id: 'stress', label: 'Chronic stress / burnout', probe: 'Are you experiencing prolonged overwhelm, exhaustion, or detachment from work/things? If so, does it relate to focus or executive difficulties?' },
+  { id: 'medical', label: 'Medical / physical', probe: 'Do you have or suspect any medical/physical condition (e.g., thyroid issues, sleep apnea, chronic pain) or take medications that affect attention? If so, does it relate to your focus/energy?' },
+];
+
+// Deterministic, engine-asked differential prompt (no LLM question-writing).
+function formatDifferentialQuestion(factor) {
+  return `${factor.probe}\n\nAnswer yes/no and, if applicable, briefly note how (if at all) it may relate to the attention/energy/focus difficulties described earlier. This is a flagging screen only — it is not a diagnosis.`;
+}
+
+// Flag differentials deterministically per §7: a factor is flagged when the user REPORTED it
+// AND an ADHD-like symptom was endorsed in Stage 2 (so the factor is plausibly linked to a
+// reported symptom). Reads ONLY state.differential (Stage 5) + Stage 2 core answers — never
+// onset / settings / impairment (no cross-stage inference). Returns flagged factor LABELS.
+function flagDifferentials(state) {
+  const symptomEndorsed = Object.keys(state.criteria || {}).some(id => {
+    const r = state.criteria[id];
+    return r && SYMPTOM_ENDORSED.includes(r.core_answer);
+  });
+  const collected = (state.differential && state.differential.factors) || [];
+  const flagged = [];
+  for (const f of collected) {
+    if (f && f.reported && symptomEndorsed) {
+      const label = (DIFFERENTIAL_FACTORS.find(d => d.id === f.factor) || {}).label || f.factor;
+      if (!flagged.includes(label)) flagged.push(label);
+    }
+  }
+  return flagged;
+}
+
+function differentialDone(state) {
+  return state.stage === 'DIFFERENTIAL' && state.differential && state.differential.done;
+}
+
+
 // --- §9a-B / §9b-B: derive ≥6-month duration/persistence from Stage 2 core answers ONLY.
 // Per protocol, the duration evidence source is "Stage 2 core answers (§2)" — the core question
 // is framed over the past ~6 months, so a positive frequency endorsement confirms persistence
@@ -470,4 +516,5 @@ module.exports = {
   deriveDuration,
   IMPAIRMENT_DOMAINS, formatImpairmentQuestion, formatSettingsQuestion,
   assessImpairment, impairmentDone,
+  DIFFERENTIAL_FACTORS, formatDifferentialQuestion, flagDifferentials, differentialDone,
 };
