@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMirror - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background-color: #FBFBFB;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-0 m-0">
+
+    <div id="main-container" class="w-[390px] h-[844px] flex flex-col relative overflow-hidden bg-[#FBFBFB]">
+        
+        <!-- Header -->
+        <header id="header" class="pt-24 pb-8 flex flex-col items-center">
+            <h1 class="text-2xl font-bold tracking-tight">خودارزیابی ADHD</h1>
+            
+            <!-- Language Selection -->
+            <div class="mt-8 flex items-center justify-center border border-neutral-200 rounded-full p-1 bg-white">
+                <div class="flex items-center px-4 py-2 space-x-3 space-x-reverse">
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="w-5 h-5 rounded-full border-2 border-neutral-900 bg-neutral-900 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <span class="text-sm font-medium">فارسی</span>
+                    </div>
+                    <div class="w-[1px] h-4 bg-neutral-200 mx-2"></div>
+                    <div class="flex items-center space-x-2 space-x-reverse opacity-40">
+                        <div class="w-5 h-5 rounded-full border-2 border-neutral-300"></div>
+                        <span class="text-sm font-medium">English</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="content" class="flex-1 px-10 flex flex-col items-center justify-center text-center space-y-12">
+            
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold leading-tight">
+                    بررسی کوتاهی برای <br> تمرکز و زندگی روزمره شما.
+                </h2>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-neutral-500 text-lg">حدود ۵ دقیقه زمان می‌برد.</p>
+                <p class="text-neutral-500 text-lg font-bold">غربالگری است، نه تشخیص.</p>
+            </div>
+
+            <div class="flex flex-col items-center space-y-3 pt-4">
+                <div class="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center">
+                    <i class="fa-solid fa-lock text-neutral-400"></i>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-neutral-400 font-bold uppercase tracking-wider">خصوصی و محرمانه</p>
+                    <p class="text-xs text-neutral-400 mt-1">پاسخ‌های شما در دستگاه خودتان باقی می‌ماند.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer id="footer" class="p-10">
+            <button class="w-full py-5 bg-neutral-900 text-white rounded-2xl text-lg font-bold shadow-xl shadow-neutral-200 transition-transform active:scale-[0.98]">
+                شروع
+            </button>
+        </footer>
+
+    </div>
+
+</body>
+</html>

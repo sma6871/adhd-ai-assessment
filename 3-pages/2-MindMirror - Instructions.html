@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMirror - Instructions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background-color: #FBFBFB;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-0 m-0">
+
+    <div id="main-container" class="w-[390px] h-[844px] flex flex-col relative overflow-hidden bg-[#FBFBFB]">
+        
+        <!-- Header -->
+        <header id="header" class="px-6 pt-12 pb-4 flex items-center justify-between">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-neutral-200">
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <h1 class="text-sm font-bold text-neutral-900">خودارزیابی ADHD</h1>
+            <div class="w-10"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="content" class="flex-1 px-8 pt-12 flex flex-col space-y-12">
+            
+            <h2 class="text-3xl font-bold">نحوه پاسخ‌دادن</h2>
+
+            <!-- Instruction Items -->
+            <div class="space-y-10">
+                <!-- Item 1 -->
+                <div class="flex items-start space-x-5 space-x-reverse">
+                    <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                        <i class="fa-regular fa-calendar-days text-xl text-neutral-900"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-bold text-lg">تجربه خود در ۶ ماه گذشته را در نظر بگیرید</h3>
+                        <p class="text-neutral-500 text-sm leading-relaxed">وضعیت خود را در طول ۶ ماه اخیر بسنجید.</p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="flex items-start space-x-5 space-x-reverse">
+                    <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                        <i class="fa-regular fa-user text-xl text-neutral-900"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-bold text-lg">گزینه‌ای را انتخاب کنید که به تجربه معمول شما نزدیک‌تر است</h3>
+                        <p class="text-neutral-500 text-sm leading-relaxed">گزینه‌ای که بهترین بازتاب از دفعات رخ دادن این تجربه برای شماست را انتخاب کنید.</p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="flex items-start space-x-5 space-x-reverse">
+                    <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                        <i class="fa-regular fa-circle-check text-xl text-neutral-900"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-bold text-lg">پاسخ درست یا غلطی وجود ندارد</h3>
+                        <p class="text-neutral-500 text-sm leading-relaxed">صادق باشید و بر اساس تجربه واقعی خود پاسخ دهید.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Estimate -->
+            <div class="flex items-center space-x-3 space-x-reverse text-neutral-500 pt-4">
+                <i class="fa-regular fa-clock text-sm"></i>
+                <p class="text-sm">تکمیل آن حدود ۵ دقیقه زمان می‌برد.</p>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer id="footer" class="p-10 flex flex-col items-center space-y-6">
+            <button class="w-full py-5 bg-neutral-900 text-white rounded-2xl text-lg font-bold shadow-xl shadow-neutral-200 transition-transform active:scale-[0.98]">
+                شروع پرسش‌ها
+            </button>
+            <p class="text-xs text-neutral-400 font-medium">غربالگری است، نه تشخیص</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

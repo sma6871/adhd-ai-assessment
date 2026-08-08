@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHD Self-Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #FBFBFB;
+    --text: #1A1A1A;
+    --heading: #171717;
+    --body: #737373;
+    --muted: #A3A3A3;
+    --border: #E5E5E5;
+    --line: #F5F5F5;
+    --white: #FFFFFF;
+  }
+  html, body { height: 100%; }
+  body {
+    background: #EBEBEA;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  html[lang="fa"] body, html[lang="fa"] .device, html[lang="fa"] button { font-family: "Vazirmatn", "Inter", sans-serif; }
+
+  .device {
+    width: 390px; height: 844px; background: var(--bg);
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.10);
+  }
+
+  /* ---------- welcome header: brand + merged language pill ---------- */
+  .hd-welcome { padding: 96px 24px 32px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .hd-welcome h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; text-align: center; }
+
+  .lang-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px;
+  }
+  .lang-opt {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: none; background: none; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 500; color: var(--text);
+    padding: 8px 14px; border-radius: 999px;
+  }
+  .lang-opt .lang-radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--border); flex: none; position: relative;
+  }
+  .lang-opt.selected { color: var(--heading); }
+  .lang-opt.selected .lang-radio { border-color: var(--heading); }
+  .lang-opt.selected .lang-radio::after {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%;
+    background: var(--heading);
+  }
+  .lang-opt:not(.selected) { opacity: 0.4; }
+  .lang-opt .lang-label { white-space: nowrap; }
+  .lang-opt .lang-label.lang-fa { font-family: "Vazirmatn", "Inter", sans-serif; }
+  .lang-divider { width: 1px; height: 18px; background: var(--border); }
+
+  /* ---------- generic headers ---------- */
+  .hd-bare { padding: 64px 24px 16px; display: flex; justify-content: center; }
+  .hd-bare h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; text-align: center; }
+
+  .hd-top { padding: 48px 24px 16px; }
+  .hd-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .btn-back {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--white); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .btn-back svg { width: 16px; height: 16px; stroke: var(--heading); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  html[dir="rtl"] .btn-back svg { transform: scaleX(-1); }
+  .hd-title { font-size: 14px; font-weight: 700; color: var(--heading); }
+  .hd-spacer { width: 40px; }
+
+  .dots { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+  .dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid var(--border); background: transparent;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .dot.done, .dot.active { background: var(--heading); border: 2px solid var(--heading); }
+  .dot.done svg { width: 9px; height: 9px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  main.q { display: flex; flex-direction: column; overflow: hidden; }
+  main.q .ctx-row { flex: none; }
+  main.q .question-box { flex: none; }
+  main.q .answers { flex: 1 1 auto; min-height: 0; }
+  main.q .answer-row { height: 70px; min-height: 56px; flex: 0 1 auto; }
+
+  /* ---------- welcome / how-to content ---------- */
+  .welcome { padding: 4px 40px; display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+  .welcome .lead { font-size: 20px; font-weight: 700; line-height: 1.5; color: var(--heading); }
+  .welcome p { font-size: 15px; line-height: 1.7; color: var(--body); }
+  .welcome .screening { font-size: 15px; font-weight: 700; color: var(--body); }
+  .time-row { display: inline-flex; align-items: center; gap: 8px; color: var(--body); font-size: 14px; margin-top: 4px; }
+  .time-row svg { width: 15px; height: 15px; fill: var(--body); }
+  .privacy { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .privacy .lock { width: 48px; height: 48px; border-radius: 16px; background: var(--line); display: flex; align-items: center; justify-content: center; }
+  .privacy .lock svg { width: 20px; height: 20px; fill: var(--muted); }
+  .privacy .privacy-label { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+  .crisis { font-size: 12px; line-height: 1.7; color: var(--muted); max-width: 310px; }
+
+  .how { padding: 40px 32px 0; display: flex; flex-direction: column; gap: 48px; }
+  .how-heading { font-size: 30px; font-weight: 700; line-height: 1.3; color: var(--heading); }
+  .how-items { display: flex; flex-direction: column; gap: 40px; }
+  .how-item { display: flex; align-items: flex-start; gap: 20px; }
+  .how-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--line); display: flex; align-items: center; justify-content: center; flex: none; color: var(--heading); }
+  .how-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .how-txt { display: flex; flex-direction: column; gap: 4px; }
+  .how-txt h3 { font-size: 18px; font-weight: 700; line-height: 1.4; color: var(--heading); }
+  .how-txt p { font-size: 14px; line-height: 1.7; color: var(--body); }
+
+  /* ---------- question screen ---------- */
+  .ctx-row { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px 0; margin-bottom: 12px; }
+  .ctx-count { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .help-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--line); border: none; border-radius: 999px; padding: 6px 16px;
+    font-family: inherit; font-size: 10px; font-weight: 700; color: var(--text); cursor: pointer;
+  }
+  .help-pill svg { width: 12px; height: 12px; fill: var(--muted); }
+  .help-pill.expanded { background: var(--heading); color: var(--white); }
+  .help-pill.expanded svg { fill: var(--white); transform: rotate(45deg); }
+
+  .question-box { padding: 0 32px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .question-text { font-size: 18px; font-weight: 700; line-height: 1.6; color: var(--heading); }
+  .help-text { font-size: 12px; font-style: italic; line-height: 1.7; color: var(--muted); border-inline-start: 2px solid var(--line); padding-inline-start: 16px; }
+
+  .answers { padding: 0 32px 8px; display: flex; flex-direction: column; gap: 12px; }
+  .answer-row {
+    width: 100%; height: 70px; background: var(--white);
+    border: 1px solid var(--line); border-radius: 20px; padding: 0 24px;
+    font-family: inherit; font-size: 18px; font-weight: 500; color: var(--text); text-align: start;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04); cursor: pointer;
+    transition: border-color .15s ease;
+  }
+  .answer-row:hover { border-color: var(--border); }
+  .answer-row.selected { border: 2px solid var(--heading); font-weight: 700; padding: 0 22px; }
+  .answer-check { display: none; flex: none; width: 24px; height: 24px; }
+  .answer-row.selected .answer-check { display: block; }
+  .answer-check svg { width: 24px; height: 24px; }
+
+  /* ---------- result ---------- */
+  .result-wrap { padding: 8px 40px; display: flex; flex-direction: column; justify-content: center; gap: 14px; flex: 1; }
+  .result-label { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px; }
+  .result-head { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: var(--heading); margin-bottom: 6px; }
+  .result-body { font-size: 18px; line-height: 1.625; color: var(--body); margin-bottom: 8px; }
+  .result-note { font-size: 14px; line-height: 1.625; color: var(--body); }
+
+  /* ---------- footer ---------- */
+  footer { padding: 32px 32px 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .primary {
+    width: 100%; padding: 20px 0; background: var(--heading); color: var(--white);
+    border: none; border-radius: 16px; font-family: inherit; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+    box-shadow: 0 20px 25px -5px rgba(229,229,229,1), 0 8px 10px -6px rgba(229,229,229,1);
+    cursor: pointer; transition: transform .12s ease;
+  }
+  .primary:active { transform: scale(0.98); }
+  .primary:disabled { background: var(--border); color: var(--muted); box-shadow: none; cursor: not-allowed; }
+  .secondary { background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--body); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; cursor: pointer; }
+  .disclaimer { font-size: 12px; font-weight: 500; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="device" id="app"></div>
+
+<script>
+/* ================= copy: single source of truth ================= */
+var LANG = {
+  en: {
+    dir: 'ltr',
+    brand: 'ADHD Self-Screening',
+    lead: 'A quick check-in on attention and everyday life.',
+    welcome: [
+      'This is a short self-screening check-in for adults aged 18 and over.',
+      'It uses the Adult ADHD Self-Report Scale (ASRS v1.1) Screener. It can help you decide whether a professional ADHD evaluation may be worth considering.',
+      'It cannot diagnose ADHD, rule it out, replace a clinician, or explain every reason someone may struggle with focus, organisation, restlessness, or procrastination.'
+    ],
+    privacyLabel: 'Private and confidential',
+    crisis: 'If you are in immediate danger or thinking about harming yourself, contact local emergency services or a crisis-support service now. This screening is not crisis support.',
+    startLabel: 'Start',
+    howTitle: 'How to answer',
+    howItems: [
+      { t: 'Consider your experience over the past six months.', d: 'Assess how you have been over the last six months.' },
+      { t: 'Choose the option closest to your usual experience.', d: 'Pick the option that best reflects how often this happens for you.' },
+      { t: 'There is no right or wrong answer.', d: 'Be honest and answer based on your real experience.' }
+    ],
+    howTime: 'It takes about 5 minutes to complete.',
+    beginLabel: 'Begin questions',
+    questionLabel: 'Question',
+    of: 'of',
+    helpLabel: 'Help & Example',
+    nextLabel: 'Next',
+    seeResultLabel: 'See result',
+    answers: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+    questions: [
+      { q: 'How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?', help: 'This refers to when the difficult parts are done and only minor tasks remain.' },
+      { q: 'How often do you have difficulty getting things in order when you have to do a task that requires organisation?', help: 'Think about your usual experience over the past six months.' },
+      { q: 'How often do you have problems remembering appointments or obligations?', help: 'Think about your usual experience over the past six months.' },
+      { q: 'When you have a task that requires a lot of thought, how often do you avoid or delay getting started?', help: 'Think about your usual experience over the past six months.' },
+      { q: 'How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?', help: 'Think about your usual experience over the past six months.' },
+      { q: 'How often do you feel overly active and compelled to do things, like you were driven by a motor?', help: 'Think about your usual experience over the past six months.' }
+    ],
+    resultLabel: 'Screening result',
+    positive: {
+      heading: 'Further evaluation may be worth considering',
+      body: 'Your answers fell within the screening range. This is not a diagnosis, but speaking with a qualified professional may be worthwhile, especially if these difficulties affect your daily life.',
+      note: 'Other factors, including stress, sleep, anxiety, depression, and physical health, can cause similar difficulties.'
+    },
+    negative: {
+      heading: 'This brief screen did not show a strong ADHD signal',
+      body: 'Your answers did not fall within the screening range. This does not rule out ADHD and is not a diagnosis.',
+      note: 'If attention, organisation, restlessness, or related difficulties significantly affect your life, speaking with a qualified professional may still be worthwhile.'
+    },
+    finishLabel: 'Finish',
+    startAgainLabel: 'Start again',
+    disclaimer: 'Screening, not a diagnosis'
+  },
+
+  fa: {
+    dir: 'rtl',
+    brand: 'خودارزیابی ADHD',
+    lead: 'بررسی کوتاهی برای توجه و زندگی روزمره',
+    welcome: [
+      'این یک غربالگری کوتاه برای بزرگسالان ۱۸ سال به بالا است.',
+      'این ابزار از پرسشنامه غربالگری ASRS v1.1 استفاده می‌کند و می‌تواند کمک کند تصمیم بگیرید آیا بررسی تخصصی ADHD ارزش پیگیری دارد یا نه.',
+      'این ابزار تشخیص ADHD نمی‌دهد، آن را رد نمی‌کند، جای متخصص را نمی‌گیرد و همه علت‌های احتمالی مشکلات تمرکز، نظم، بی‌قراری یا اهمال‌کاری را توضیح نمی‌دهد.'
+    ],
+    privacyLabel: 'خصوصی و محرمانه',
+    crisis: 'اگر در خطر فوری هستید یا به آسیب رساندن به خود فکر می‌کنید، همین حالا با اورژانس محلی یا خدمات حمایت در بحران تماس بگیرید. این ابزار برای کمک در بحران نیست.',
+    startLabel: 'شروع',
+    howTitle: 'نحوه پاسخ‌دادن',
+    howItems: [
+      { t: 'تجربه خود در ۶ ماه گذشته را در نظر بگیرید', d: 'وضعیت خود را در طول ۶ ماه اخیر بسنجید.' },
+      { t: 'گزینه‌ای را انتخاب کنید که به تجربه معمول شما نزدیک‌تر است', d: 'گزینه‌ای که بهترین بازتاب از دفعات رخ دادن این تجربه برای شماست را انتخاب کنید.' },
+      { t: 'پاسخ درست یا غلطی وجود ندارد', d: 'صادق باشید و بر اساس تجربه واقعی خود پاسخ دهید.' }
+    ],
+    howTime: 'تکمیل آن حدود ۵ دقیقه زمان می‌برد.',
+    beginLabel: 'شروع پرسش‌ها',
+    questionLabel: 'سؤال',
+    of: 'از',
+    helpLabel: 'راهنما و مثال',
+    nextLabel: 'ادامه',
+    seeResultLabel: 'مشاهده نتیجه',
+    answers: ['هرگز', 'به‌ندرت', 'گاهی اوقات', 'اغلب', 'بسیار زیاد'],
+    questions: [
+      { q: 'چند وقت یک‌بار مشکل در انجام جزئیات نهایی یک کار، بعد از اینکه بخش دشوارش تمام شده، دارید؟', help: 'منظور وقتی است که بخش‌های دشوار انجام شده و فقط جزئیات کوچک مانده است.' },
+      { q: 'چند وقت یک‌بار در مرتب‌کردن کارهایی که به سازمان‌دهی نیاز دارند مشکل دارید؟', help: 'به تجربه معمول خود در شش ماه گذشته فکر کنید.' },
+      { q: 'چند وقت یک‌بار قرارهای ملاقات یا وظایف را فراموش می‌کنید؟', help: 'به تجربهٔ معمول خود در شش ماه گذشته فکر کنید.' },
+      { q: 'چند وقت یک‌بار وقتی کاری به فکر زیاد نیاز دارد، شروعش را به تعویق می‌اندازید؟', help: 'به تجربهٔ معمول خود در شش ماه گذشته فکر کنید.' },
+      { q: 'چند وقت یک‌بار وقتی باید مدت طولانی بنشینید، با دست یا پاهایتان بی‌قراری می‌کنید؟', help: 'به تجربهٔ معمول خود در شش ماه گذشته فکر کنید.' },
+      { q: 'چند وقت یک‌بار احساس می‌کنید بیش از حد فعال هستید و انگار نوعی موتور شما را به حرکت وادار می‌کند؟', help: 'به تجربهٔ معمول خود در شش ماه گذشته فکر کنید.' }
+    ],
+    resultLabel: 'نتیجه غربالگری',
+    positive: {
+      heading: 'بررسی تخصصی ممکن است ارزشمند باشد',
+      body: 'پاسخ‌های شما در محدوده غربالگری قرار گرفتند. این نتیجه تشخیص پزشکی نیست، اما صحبت با یک متخصص واجد شرایط ممکن است ارزشمند باشد، به‌ویژه اگر این مشکلات بر زندگی روزمره شما اثر می‌گذارند.',
+      note: 'عوامل دیگری مانند استرس، مشکلات خواب، اضطراب، افسردگی و بیماری‌های جسمی نیز می‌توانند علائم مشابهی ایجاد کنند.'
+    },
+    negative: {
+      heading: 'این غربالگری کوتاه نشانه‌ای قوی از ADHD نشان نداد',
+      body: 'پاسخ‌های شما در محدوده غربالگری قرار نگرفتند. این نتیجه ADHD را رد نمی‌کند و تشخیص پزشکی نیست.',
+      note: 'اگر مشکلات تمرکز، نظم، بی‌قراری یا سایر مسائل مرتبط تأثیر قابل توجهی بر زندگی شما دارد، صحبت با متخصص همچنان ممکن است مفید باشد.'
+    },
+    finishLabel: 'پایان',
+    startAgainLabel: 'شروع دوباره',
+    disclaimer: 'غربالگری است، نه تشخیص'
+  }
+};
+</script>
+
+<script>
+/* ================= state ================= */
+var state = {
+  lang: 'en',
+  screen: 'welcome', // welcome | howto | question | results
+  qIndex: 0,
+  answers: [null, null, null, null, null, null],
+  showHelp: true
+};
+var app = document.getElementById('app');
+
+function t() { return LANG[state.lang]; }
+function faDigits(s) { return String(s).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+function num(n) { return state.lang === 'fa' ? faDigits(n) : String(n); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* ASRS v1.1 screener scoring */
+/* Q1-3: Sometimes(2)/Often(3)/VeryOften(4). Q4-6: Often(3)/VeryOften(4). count>=4 => positive */
+window.asrsScore = function (answers) {
+  var c = 0;
+  for (var i = 0; i < answers.length; i++) {
+    if (answers[i] == null) continue;
+    if (i < 3 ? answers[i] >= 2 : answers[i] >= 3) c++;
+  }
+  return c;
+};
+window.asrsOutcome = function (answers) { return asrsScore(answers) >= 4 ? 'positive' : 'negative'; };
+</script>
+
+<script>
+/* ================= icons ================= */
+var S = {
+  back: '<svg viewBox="0 0 24 24" fill="none"><path d="M15 6 L9 12 L15 18"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 9.5 17 19 7.5" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  dotCheck: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 9.5 17 19 7.5"/></svg>',
+  checkCircle: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#171717"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm1 15.4a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8zm-.6-13.6h-1.4V12.7l4.8 2.9.9-1.5-4.3-2.6z"/></svg>',
+  help: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm.9 13.6a1.1 1.1 0 1 1-1.1-1.1 1.1 1.1 0 0 1 1.1 1.1zm1.2-5h-4v-1.5h2v-1l-1.6-.7.5-1.3 2.4 1v2.5z"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a5 5 0 0 0-5 5v3H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1V8a5 5 0 0 0-5-5zm-3 11.6c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z" fill="currentColor"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.3-3.6 4-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/></svg>',
+  checkCircleOut: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7 5.3-6"/></svg>'
+};
+function icon(id) { return S[id] || ''; }
+</script>
+
+<script>
+/* ================= screens ================= */
+function langPill() {
+  var opts = state.lang === 'fa'
+    ? [['fa', 'فارسی'], ['en', 'English']]
+    : [['en', 'English'], ['fa', 'فارسی']];
+  var parts = [];
+  for (var i = 0; i < opts.length; i++) {
+    var code = opts[i][0], label = opts[i][1];
+    parts.push(
+      '<button class="lang-opt' + (state.lang === code ? ' selected' : '') + '" data-lang="' + code + '" tabindex="0" role="radio" aria-checked="' + (state.lang === code) + '">' +
+        '<span class="lang-radio"></span>' +
+        '<span class="lang-label' + (code === 'fa' ? ' lang-fa' : '') + '">' + esc(label) + '</span>' +
+      '</button>'
+    );
+    if (i === 0) parts.push('<span class="lang-divider"></span>');
+  }
+  return '<div class="lang-pill" role="radiogroup">' + parts.join('') + '</div>';
+}
+
+function sWelcome() {
+  var g = t();
+  return '' +
+    '<header class="hd-welcome"><h1>' + esc(g.brand) + '</h1>' + langPill() + '</header>' +
+    '<main><div class="welcome">' +
+      '<p class="lead">' + esc(g.lead) + '</p>' +
+      g.welcome.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      '<span class="time-row">' + S.clock + '<span>' + esc(g.howTime) + '</span></span>' +
+      '<p class="screening">' + esc(g.disclaimer) + '</p>' +
+      '<div class="privacy"><span class="lock">' + S.lock + '</span><span class="privacy-label">' + esc(g.privacyLabel) + '</span></div>' +
+      '<p class="crisis">' + esc(g.crisis) + '</p>' +
+    '</div></main>' +
+    '<footer><button class="primary" data-action="toHow">' + esc(g.startLabel) + '</button></footer>';
+}
+
+function sHow() {
+  var g = t();
+  var itemIcons = [S.calendar, S.user, S.checkCircleOut];
+  var items = g.howItems.map(function (it, idx) {
+    return '<div class="how-item">' +
+      '<span class="how-icon">' + itemIcons[idx] + '</span>' +
+      '<div class="how-txt"><h3>' + esc(it.t) + '</h3><p>' + esc(it.d) + '</p></div>' +
+    '</div>';
+  }).join('');
+  return '' +
+    '<header class="hd-top"><div class="hd-row">' +
+      '<button class="btn-back" data-action="back">' + S.back + '</button>' +
+      '<span class="hd-title">' + esc(g.brand) + '</span>' +
+      '<span class="hd-spacer"></span>' +
+    '</div></header>' +
+    '<main><div class="how">' +
+      '<h2 class="how-heading">' + esc(g.howTitle) + '</h2>' +
+      '<div class="how-items">' + items + '</div>' +
+      '<span class="time-row">' + S.clock + '<span>' + esc(g.howTime) + '</span></span>' +
+    '</div></main>' +
+    '<footer>' +
+      '<button class="primary" data-action="begin">' + esc(g.beginLabel) + '</button>' +
+      '<p class="disclaimer">' + esc(g.disclaimer) + '</p>' +
+    '</footer>';
+}
+
+function sQuestion() {
+  var g = t(), i = state.qIndex;
+  var q = g.questions[i];
+
+  var dots = '';
+  for (var d = 0; d < 6; d++) {
+    dots += '<span class="dot' + (d < i ? ' done' : (d === i ? ' active' : '')) + '">' +
+      (d < i ? S.dotCheck : '') + '</span>';
+  }
+
+  var ansHtml = g.answers.map(function (label, x) {
+    var sel = state.answers[i] === x;
+    return '<div class="answer-row' + (sel ? ' selected' : '') + '" tabindex="0" role="radio" data-answer="' + x + '">' +
+      '<span>' + esc(label) + '</span>' +
+      '<span class="answer-check">' + S.checkCircle + '</span>' +
+    '</div>';
+  }).join('');
+
+  var cta = (i === 5) ? g.seeResultLabel : g.nextLabel;
+  var ctxNum = g.questionLabel + ' ' + num(i + 1) + ' ' + g.of + ' ' + num(6);
+
+  return '' +
+    '<header class="hd-top"><div class="hd-row">' +
+      '<button class="btn-back" data-action="back">' + S.back + '</button>' +
+      '<span class="hd-title">' + esc(g.brand) + '</span>' +
+      '<span class="hd-spacer"></span>' +
+    '</div><div class="dots">' + dots + '</div></header>' +
+    '<main class="q">' +
+      '<div class="ctx-row">' +
+        '<span class="ctx-count">' + esc(ctxNum) + '</span>' +
+        '<button class="help-pill' + (state.showHelp ? ' expanded' : '') + '" data-action="toggleHelp">' + S.help + '<span>' + esc(g.helpLabel) + '</span></button>' +
+      '</div>' +
+      '<div class="question-box">' +
+        '<p class="question-text">' + esc(q.q) + '</p>' +
+        (state.showHelp ? '<p class="help-text">' + esc(q.help) + '</p>' : '') +
+      '</div>' +
+      '<div class="answers">' + ansHtml + '</div>' +
+    '</main>' +
+    '<footer><button class="primary" data-action="nextQ" id="cta"></button></footer>';
+}
+
+function sResult() {
+  var g = t();
+  var outcome = (state.screen === 'results') ? asrsOutcome(state.answers) : 'neutral';
+  var r = outcome === 'positive' ? g.positive : g.negative;
+  var head = outcome === 'positive' ? g.positive.heading : g.negative.heading;
+  var body = outcome === 'positive' ? g.positive.body : g.negative.body;
+  var note = outcome === 'positive' ? g.positive.note : g.negative.note;
+  return '' +
+    '<header class="hd-bare"><h1>' + esc(g.brand) + '</h1></header>' +
+    '<main><div class="result-wrap">' +
+      '<p class="result-label">' + esc(g.resultLabel) + '</p>' +
+      '<h2 class="result-head">' + esc(head) + '</h2>' +
+      '<p class="result-body">' + esc(body) + '</p>' +
+      '<p class="result-note">' + esc(note) + '</p>' +
+    '</div></main>' +
+    '<footer>' +
+      '<button class="primary" data-action="finish">' + esc(g.finishLabel) + '</button>' +
+      '<button class="secondary" data-action="restart">' + esc(g.startAgainLabel) + '</button>' +
+      '<p class="disclaimer">' + esc(g.disclaimer) + '</p>' +
+    '</footer>';
+}
+</script>
+
+<script>
+/* ================= router ================= */
+function render() {
+  var g = t();
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = g.dir;
+  document.title = state.screen === 'results'
+    ? 'ADHD Self-Screening — Screening Result'
+    : 'ADHD Self-Screening';
+
+  var html;
+  switch (state.screen) {
+    case 'welcome':  html = sWelcome(); break;
+    case 'howto':    html = sHow(); break;
+    case 'question': html = sQuestion(); break;
+    case 'results':  html = sResult(); break;
+  }
+  app.innerHTML = html;
+
+  if (state.screen === 'question') {
+    var cta = document.getElementById('cta');
+    if (cta) {
+      cta.textContent = (state.qIndex === 5)
+        ? t().seeResultLabel
+        : t().nextLabel;
+      cta.disabled = state.answers[state.qIndex] == null;
+    }
+  }
+}
+
+app.addEventListener('click', function (e) {
+  var langEl = e.target.closest('[data-lang]');
+  if (langEl) {
+    state.lang = langEl.getAttribute('data-lang');
+    render();
+    return;
+  }
+
+  var actEl = e.target.closest('[data-action]');
+  if (actEl) {
+    switch (actEl.getAttribute('data-action')) {
+      case 'toHow':
+        state.screen = 'howto';
+        break;
+      case 'back':
+        if (state.screen === 'howto') { state.screen = 'welcome'; }
+        else if (state.screen === 'question') {
+          if (state.qIndex > 0) { state.qIndex--; state.showHelp = true; }
+          else { state.screen = 'howto'; }
+        }
+        break;
+      case 'begin':
+        state.answers = [null, null, null, null, null, null];
+        state.qIndex = 0; state.showHelp = true;
+        state.screen = 'question';
+        break;
+      case 'toggleHelp':
+        state.showHelp = !state.showHelp;
+        break;
+      case 'nextQ':
+        if (state.answers[state.qIndex] == null) return;
+        if (state.qIndex < 5) {
+          state.qIndex++; state.showHelp = true;
+        } else {
+          state.screen = 'results';
+        }
+        break;
+      case 'finish':
+        state.screen = 'welcome';
+        break;
+      case 'restart':
+        state.answers = [null, null, null, null, null, null];
+        state.qIndex = 0; state.showHelp = true;
+        state.screen = 'welcome';
+        break;
+    }
+    render();
+    return;
+  }
+
+  var ansEl = e.target.closest('[data-answer]');
+  if (ansEl) {
+    state.answers[state.qIndex] = parseInt(ansEl.getAttribute('data-answer'), 10);
+    render();
+  }
+});
+
+app.addEventListener('keydown', function (e) {
+  if ((e.key === ' ' || e.key === 'Enter') && e.target.getAttribute('data-answer')) {
+    e.preventDefault();
+    e.target.click();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
