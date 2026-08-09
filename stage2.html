@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHD Assessment — Symptom Interview</title>
+<style>
+  :root { --bg:#faf8f5; --ink:#111; --muted:#666; --line:#e3e0db; --accent:#000; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:18px 20px 14px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:2; }
+  header h1 { margin:0; font-size:18px; font-weight:600; }
+  header .sub { color:var(--muted); font-size:13px; margin-top:2px; }
+  main { max-width:420px; margin:0 auto; padding:16px; }
+  .qs { font-size:14px; line-height:1.45; white-space:pre-wrap; margin:0 0 8px; }
+  .badge { display:inline-block; font-size:12px; background:#f0f0f0; color:#444; border:1px solid var(--line); border-radius:10px; padding:4px 10px; margin-left:6px; vertical-align:middle; }
+  .msg { margin:14px 0; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+  .msg.ai { border-color:var(--line); }
+  .msg.user { background:#f6f6f6; }
+  .row { display:flex; gap:8px; align-items:flex-end; }
+  textarea { flex:1; min-height:44px; max-height:120px; width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; font:inherit; resize:vertical; }
+  button { background:var(--accent); color:#fff; border:none; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .progress { height:4px; background:#e9e6e1; border-radius:4px; margin:10px 0; overflow:hidden; }
+  .bar { height:100%; background:var(--accent); width:var(--w,0%); }
+  .report { padding:0; }
+  .report .section { margin:18px 0; }
+  .report h2 { font-size:16px; margin:0 0 6px; }
+  .pill { font-size:12px; display:inline-block; padding:2px 8px; border-radius:8px; background:#f0f0f0; margin-right:4px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-top; }
+  .err { color:#b00020; font-size:13px; }
+  .quiet { color:var(--muted); font-size:12px; }
+  @media (max-width:460px) { main { padding:12px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>ADHD Symptom Interview</h1>
+  <div class="sub">Stage 2 of 5: Adult ADHD symptoms. <span class="quiet">Not a diagnosis — self-assessment only.</span></div>
+</header>
+<main id="root"><div class="quiet">Loading…</div></main>
+
+<script>
+const API = '';
+let STATE = { id: null, messages: [] };
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function byId(id){ return document.getElementById(id); }
+
+function renderMessages(){
+  const root = byId('root');
+  let out = '';
+  const pct = STATE.total ? Math.round((STATE.done||0)/STATE.total*100) : 0;
+  out += `<div class="progress"><div class="bar" style="--w:${pct}%"></div></div>`;
+  for (const m of STATE.messages){
+    const cls = m.role==='user' ? 'user' : 'ai';
+    const badge = m.cid ? `<span class="badge">${m.cid}</span>` : '';
+    out += `<div class="msg ${cls}"><div class="qs">${badge} ${esc(m.text)}</div></div>`;
+  }
+  root.innerHTML = out;
+  root.scrollTop = root.scrollHeight;
+}
+
+function renderReport(report){
+  const root = byId('root');
+  let out = '<div class="report">';
+  const tier = (report.tier||'').toUpperCase();
+  out += `<div class="section"><h2>Assessment Summary</h2><div style="font-size:15px;line-height:1.5">${esc(report.recommendation||'')}<br><br><b>Tier: ${esc(tier)}</b></div></div>`;
+  if (report.summary) out += `<div class="section"><h2>Summary</h2><div class="quiet">${esc(report.summary)}</div></div>`;
+  if (report.differential_note) out += `<div class="section"><h2>Differential Note</h2><div class="quiet">${esc(report.differential_note)}</div></div>`;
+  if (report.contradiction_note) out += `<div class="section"><h2>Contradiction Note</h2><div class="quiet">${esc(report.contradiction_note)}</div></div>`;
+  out += `<div class="section"><h2>Adult Symptom Pattern</h2><div class="quiet">Pattern: ${esc(report.adult_symptoms?.pattern||'n/a')} · Inattentive supported: ${report.adult_symptoms?.inattentive_supported||0} · Hyperactive supported: ${report.adult_symptoms?.hyperactive_supported||0} (threshold ≥${report.adult_symptoms?.threshold||5})</div></div>`;
+  out += `<div class="section"><h2>DSM-5 Criterion Evidence</h2>`;
+  const d = report.dsm5_criteria||{};
+  out += `<table><tr><th>Criterion</th><th>Evidence</th></tr>`;
+  for (const k of ['A_symptom_count','B_duration','C_onset','D_settings','E_impairment','F_not_better_explained']){
+    out += `<tr><td>${esc(k)}</td><td>${esc(d[k]||'not_supported')}</td></tr>`;
+  }
+  out += `</table></div>`;
+  out += `<div class="section"><h2>Per-Symptom Evidence</h2>
+    <table><tr><th>Criterion</th><th>Status</th><th>Confidence</th><th>Evidence</th></tr>`;
+  for (const c of report.per_criterion||[]){
+    const ev = c.example ? esc(c.example) : (Array.isArray(c.evidence)&&c.evidence.length?esc(c.evidence.join(' — ')):'<span class="quiet">no concrete example</span>');
+    out += `<tr><td><div style="max-width:160px">${esc(c.criterion)}</div></td><td>${esc(c.status)}</td><td>${esc(c.confidence)}</td><td><div style="max-width:200px">${ev}</div></td></tr>`;
+  }
+  out += `</table></div>`;
+  if (report.contradictions?.list?.length){
+    out += `<div class="section"><h2>Contradictory Evidence</h2><ul>${report.contradictions.list.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  }
+  if (report.differentials?.list?.length){
+    out += `<div class="section"><h2>Differential Considerations</h2><ul>${report.differentials.list.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  }
+  if (report.stage2_only){
+    out += `<div class="section"><h2>Not Yet Complete</h2><div class="quiet">${esc(report.stage2_only)}</div></div>`;
+  }
+  out += `<div class="section"><div class="quiet" style="font-size:12px">${esc(report.disclaimer||'')}</div></div>`;
+  out += `</div>`;
+  root.innerHTML = out;
+}
+
+async function api(path, opts={}){
+  const r = await fetch(path, { headers:{'Content-Type':'application/json'}, ...opts });
+  return r.json();
+}
+
+async function start(){
+  let id = localStorage.getItem('adhd_stage2_session');
+  let init;
+  if (id){
+    try { init = await api(`/api/state/${id}`); } catch(e){ id=null; }
+  }
+  if (!id){
+    const res = await api('/api/session', { method:'POST' });
+    id = res.id; localStorage.setItem('adhd_stage2_session', id);
+    STATE.total = res.first ? 18 : 18;
+    return handleStart(res);
+  }
+  // resume: re-fetch? keep simple — create fresh if no question. Here just create fresh.
+  const res = await api('/api/session', { method:'POST' });
+  id = res.id; localStorage.setItem('adhd_stage2_session', id);
+  return handleStart(res);
+}
+
+function handleStart(res){
+  STATE.id = res.id; STATE.total = 18; STATE.done = 0;
+  STATE.messages = [{ role:'ai', text:res.question, cid:res.criterionId }];
+  renderMessages();
+  byId('root').insertAdjacentHTML('beforeend', renderInput());
+}
+
+function renderInput(){
+  return `<div id="inputbar" class="row"><textarea id="ta" placeholder="Your answer..." autocomplete="off"></textarea><button id="send" disabled>Send</button></div>`;
+}
+
+function attachInput(){
+  const ta = byId('ta'); const btn = byId('send');
+  ta.addEventListener('input', ()=>{ btn.disabled = !ta.value.trim(); });
+  ta.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); if(!btn.disabled) submit(); } });
+  btn.addEventListener('click', submit);
+}
+
+async function submit(){
+  const ta = byId('ta'); const btn = byId('send');
+  const answer = ta.value.trim(); if(!answer) return;
+  ta.value=''; btn.disabled=true;
+  STATE.messages.push({role:'user', text:answer});
+  renderMessages();
+  // keep input bar
+  document.getElementById('inputbar')?.remove();
+  byId('root').insertAdjacentHTML('beforeend', renderInput()); attachInput();
+
+  try {
+    const res = await api(`/api/answer/${STATE.id}`, { method:'POST', body:JSON.stringify({answer}) });
+    if (res.error){ byId('root').insertAdjacentHTML('beforeend',`<div class="err">Error: ${esc(res.error)}</div>`); return; }
+    if (res.completed && res.report){ STATE.messages.push({role:'ai', text:'Assessment complete.'}); renderMessages(); renderReport(res.report); return; }
+    if (res.transitioned){
+      const stageLabel = res.stage === 'CHILDHOOD' ? 'Childhood Onset' : res.stage === 'IMPAIRMENT' ? 'Functional Impairment' : res.stage === 'DIFFERENTIAL' ? 'Differential Considerations' : res.stage;
+      STATE.messages.push({role:'ai', text:`(Stage complete — entering: ${stageLabel})`});
+    }
+    if (res.criterion_done){
+      STATE.done = (STATE.done||0)+1;
+      const shown = (res.evidence?.core_answer) ? ` — ${res.evidence.core_answer}` : '';
+      STATE.messages.push({role:'ai', text:`(${res.criterionId} recorded as ${res.status||'uncertain'})${shown}`, cid:res.criterionId});
+    } else if (res.followup){
+      // question already reflects the follow-up; messages already show ta removed/re-added
+    }
+    STATE.messages.push({role:'ai', text:res.question||'', cid:res.criterionId});
+    renderMessages();
+  } catch(e){
+    byId('root').insertAdjacentHTML('beforeend',`<div class="err">Network error: ${esc(String(e.message))}</div>`);
+  }
+}
+
+start().then(()=>{ document.getElementById('inputbar')?.remove(); byId('root').insertAdjacentHTML('beforeend', renderInput()); attachInput(); }).catch(e=>{ byId('root').innerHTML=`<div class="err">Failed to start: ${esc(String(e.message))}</div>`; });
+</script>
+</body>
+</html>

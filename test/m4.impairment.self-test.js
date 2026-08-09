@@ -139,7 +139,7 @@ function runStage4(domainsResult, settingsResult) {
   if (!okNI) failures++;
   console.log(`${okNI ? 'PASS' : 'FAIL'}: non-inference — assessImpairment reads Stage 4 evidence only (complete=${aSame.complete}, multiple=${aSame.multiple_settings})`);
 
-  // --- Regression: full Stage 2 -> Stage 3 -> Stage 4 pipeline still works end-to-end with fakes.
+  // --- Regression: full pipeline Stage2 → 3 → 4 → 5 → Report via unified processTurn ---
   async function fullPipeline(stage2Core, childhoodMemories, impairmentEvidence) {
     require.cache[extractorPath].exports = {
       extractEvidence: async function ({ stage, probe, criterion }) {
@@ -149,7 +149,7 @@ function runStage4(domainsResult, settingsResult) {
           if (probe.id === 'settings') return impairmentEvidence.settings;
           return { domains_impaired: [], settings: [], uncertainty: null };
         }
-        // Stage 2 per-criterion
+        if (stage === 'differential') return { reported: false, uncertainty: null, symptom_mentions: [] };
         const id = criterion.id;
         if (id === 'HYPERR_05') throw new Error('err');
         if (id === 'INATT_09') return { core_answer: 'Never', example: 'never', contexts: ['home'], consequence: null, counter_evidence: [], uncertainty: null };
@@ -163,17 +163,6 @@ function runStage4(domainsResult, settingsResult) {
     A.begin(s);
     for (let t = 0; t < 300; t++) {
       const r = await A.processTurn(s, 'Often, for example...');
-      if (r.completed) break;
-    }
-    // Stage 2 -> REPORT currently (Stage 3/4 not auto-wired); manually advance:
-    A.beginStage3(s);
-    for (let t = 0; t < 20; t++) {
-      const r = await A.processStage3Turn(s, 'childhood memory');
-      if (r.completed) break;
-    }
-    A.beginStage4(s);
-    for (let t = 0; t < 20; t++) {
-      const r = await A.processStage4Turn(s, 'concrete example');
       if (r.completed) break;
     }
     return s;
@@ -190,19 +179,17 @@ function runStage4(domainsResult, settingsResult) {
       settings: { domains_impaired: [], settings: [{ setting: 'work', example: 'office deadlines', concrete: true }, { setting: 'home', example: 'dinner table', concrete: true }], uncertainty: null },
     }
   );
-  const report = assessment.getReport
-    ? null
-    : null;
   const eng = require(path.join(ROOT, 'model/engine'));
   const rep = eng.evaluate(full);
-  const okFull = full.onset === 'strong'
+  const okFull = full.stage === 'REPORT' && full.report !== null
+    && full.onset === 'strong'
     && full.domains_impaired.length === 2
     && full.settings.length === 2
     && rep.dsm5_criteria.D_settings === 'supported'
     && rep.dsm5_criteria.E_impairment === 'supported'
     && full.duration === 'met';
   if (!okFull) failures++;
-  console.log(`${okFull ? 'PASS' : 'FAIL'}: full Stage2->3->4 pipeline -> onset=${full.onset} domains=${full.domains_impaired.length} settings=${full.settings.length} duration=${full.duration} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment}`);
+  console.log(`${okFull ? 'PASS' : 'FAIL'}: full pipeline 2->3->4->5->Report (unified processTurn) -> stage=${full.stage} onset=${full.onset} domains=${full.domains_impaired.length} settings=${full.settings.length} duration=${full.duration} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment}`);
 
   console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
   process.exit(failures === 0 ? 0 : 1);

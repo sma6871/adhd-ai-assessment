@@ -167,9 +167,40 @@ function evaluate(state) {
   const onset = state.onset;      // ONSET_RATINGS
   const duration = state.duration; // met | uncertain | not_met
   const settings = (state.settings || []).length;
+  const multiple_settings = settings >= 2; // DSM-5 D (§9a-D / §6)
   const domains_impaired = (state.domains_impaired || []).length;
-  const contradictions = (state.contradictions || []).length;
   const differentials = (state.differentials_flagged || []).length;
+
+  // §8: aggregate contradictory evidence (evidence weakening the ADHD hypothesis).
+  // Gathered from per-criterion counter_evidence (§2) + childhood evidence-against (§5).
+  // This is evidence-summary, NOT clinical inference; it surfaces what the user reported.
+  const contradictions_list = [];
+  const contraSeen = new Set();
+  for (const c of CRITERIA) {
+    const r = state.criteria[c.id];
+    if (r && Array.isArray(r.counter_evidence)) {
+      for (const ce of r.counter_evidence) {
+        const k = String(ce);
+        if (k && !contraSeen.has(k)) { contraSeen.add(k); contradictions_list.push(`[${c.id}] ${k}`); }
+      }
+    }
+  }
+  // §8: childhood 'against' memories are contradictions, even when onset is 'weak' (H3 mixed evidence).
+  const childhoodEvidence = (state.childhood && state.childhood.evidence) || [];
+  for (const ce of childhoodEvidence.filter(e => e && e.against)) {
+    const k = String(ce.behavior || '');
+    if (k && !contraSeen.has(k)) { contraSeen.add(k); contradictions_list.push(`[childhood] ${k}`); }
+  }
+  if (onset === 'evidence_against' && !contraSeen.has('onset')) { contraSeen.add('onset'); contradictions_list.push('Childhood evidence suggests ADHD-like behaviors were not present before age 12.'); }
+  const contradictions = contradictions_list.length;
+
+  // §7 / §9a-F: differentials. flagDifferentialEvidence (M6) examines Stage 5 factors
+  // and returns flagged labels + "strong" ones (user tied a factor to ADHD-like symptoms via
+  // symptom_mentions). §9b-F uses strong vs partial to classify §9a-F.
+  const diffEvidence = (state.differential && state.differential.evidence)
+    || flagDifferentialEvidence(state); // fallback: compute directly if not yet finalized
+  const differentialConsiderations = diffEvidence.considerations;
+  const stronglyExplanatory = diffEvidence.strong.length;
 
   const symptomatic = inatt_supported >= SYMPTOM_THRESHOLD || hyper_supported >= SYMPTOM_THRESHOLD;
 
@@ -182,7 +213,9 @@ function evaluate(state) {
       : 'not_supported', // insufficient | evidence_against -> not_supported
     D_settings: settings >= 2 ? 'supported' : (settings === 1 ? 'partially_supported' : 'not_supported'),
     E_impairment: domains_impaired >= 1 ? 'supported' : 'not_supported',
-    F_not_better_explained: differentials > 0 ? 'partially_supported' : 'supported',
+    // §9b-F: a STRONG alternative explanation (user reported a factor AND tied it to ADHD-like
+    // symptoms) -> not_supported; otherwise any flagged differential -> partially_supported.
+    F_not_better_explained: stronglyExplanatory > 0 ? 'not_supported' : (differentials > 0 ? 'partially_supported' : 'supported'),
   };
 
   // §9c pattern
@@ -195,15 +228,21 @@ function evaluate(state) {
 
   // §9d evidence-consistency summary
   const consistency = {
+    // §9d: Consistent requires zero contradictions (§8: contradictions lower confidence).
     consistent: symptomatic
       && (onset === 'strong' || onset === 'moderate')
       && settings >= 2
       && domains_impaired >= 1
       && duration === 'met'
-      && dsm.F_not_better_explained !== 'not_supported',
+      && dsm.F_not_better_explained !== 'not_supported'
+      && contradictions === 0,
     partially_consistent: symptomatic && !(
-      (onset === 'strong' || onset === 'moderate') && settings >= 2
-      && domains_impaired >= 1 && duration === 'met' && dsm.F_not_better_explained !== 'not_supported'
+      (onset === 'strong' || onset === 'moderate')
+      && settings >= 2
+      && domains_impaired >= 1
+      && duration === 'met'
+      && dsm.F_not_better_explained !== 'not_supported'
+      && contradictions === 0
     ),
     insufficient: !symptomatic || onset === 'evidence_against' || onset === 'insufficient' || duration === 'not_met',
   };
@@ -221,11 +260,13 @@ function evaluate(state) {
     text = 'Some of your responses are consistent with ADHD, but supporting evidence (early onset, impact across settings, or impairment) is limited or uncertain, or alternative explanations were flagged. A professional evaluation may still be worthwhile to clarify.';
   }
 
-  const perCriterion = CRITERIA.map(c => {
+    const perCriterion = CRITERIA.map(c => {
     const r = state.criteria[c.id];
     return {
       criterion: c.id,
       question: c.question,
+      dsm: c.dsm,      // A (inattentive) | B (hyperactive/impulsive) | C (combined)
+      domain: c.id.startsWith('INATT_') ? 'inattentive' : 'hyperactive_impulsive',
       status: r ? r.status : 'uncertain',
       confidence: r ? r.confidence : 'weak',
       evidence: r ? (r.evidence || []) : [],
@@ -234,6 +275,14 @@ function evaluate(state) {
       example: r ? (r.example || null) : null,
     };
   });
+
+  // §9f product-readable notes (evidence-summary; NOT clinical inference).
+  const differential_note = differentialConsiderations.length
+    ? `Alternative explanations noted: ${differentialConsiderations.map(x => `${x.factor}${x.could_explain_for_symptoms ? ' (tied to ADHD-like symptoms)' : ''}`).join(', ')}.`
+    : null;
+  const contradiction_note = contradictions_list.length
+    ? `Factors that the ADHD pattern does not cleanly explain: ${contradictions_list.join(' | ')}.`
+    : null;
 
   return {
     not_a_diagnosis: true,
@@ -252,14 +301,18 @@ function evaluate(state) {
     recommendation: text,
     childhood_onset: { rating: onset, source: 'Stage 3 (concrete pre-age-12 evidence)' },
     duration_persistence: { rating: duration, requirement: '>=6 months (DSM-5)' },
-    settings: { count: settings, requirement: '>=2 (DSM-5)' },
+    settings: { count: settings, multiple_settings, requirement: '>=2 (DSM-5)' },
     impairment: { domains: domains_impaired, count: domains_impaired },
     differentials: { flagged: differentials, list: state.differentials_flagged || [] },
-    contradictions: { count: contradictions, list: state.contradictions || [] },
+    contradictions: { count: contradictions, list: contradictions_list },
+    // §9f product-readable notes (evidence-summary; NOT clinical inference).
+    differential_note,
+    contradiction_note,
     per_criterion: perCriterion,
     stage2_only: !onset && settings === 0 && domains_impaired === 0 && differentials === 0
       ? 'Adult-symptom evidence collected. Childhood onset, multiple-settings, impairment, and differential check (Stages 3-5) remain to be completed for a full assessment.'
       : null,
+    summary: `${text} ${differential_note || ''} ${contradiction_note || ''} This is not a medical diagnosis and does not replace an evaluation by a qualified clinician.`.replace(/\s+/g, ' ').trim(),
   };
 }
 
@@ -351,7 +404,7 @@ function childhoodQuestion(probe) {
 //
 // Evidence item contract (produced by the extractor):
 //   { behavior, age, source, concrete:bool, against:bool, vague:bool }
-//   - age: numeric (must be < ONSET_AGE=12 to count as childhood), or null if unstated
+  //   - age: numeric if stated (engine excludes age >= ONSET_AGE), or null if unstated
 //   - source: 'report_card'|'teacher'|'parent'|'memory'|... (external corroboration = strong)
 //   - concrete: specific, attributable pre-12 behavior (true) vs general/vague
 //   - against: concrete recall that behaviors were NOT present (e.g., "attentive, organized child")
@@ -361,10 +414,16 @@ function rateOnset(childhoodEvidence) {
   const childhood = ev.filter(e => (e && (e.age == null || e.age < ONSET_AGE)));
 
   const againsts = childhood.filter(e => e.against);
-  if (againsts.length > 0) return 'evidence_against';
+  const concretes = childhood.filter(e => e.concrete && !e.against);
+  const externals = childhood.filter(e => e.concrete && !e.against && ['report_card', 'teacher', 'parent'].includes(e.source));
 
-  const concretes = childhood.filter(e => e.concrete);
-  const externals = childhood.filter(e => e.concrete && ['report_card', 'teacher', 'parent'].includes(e.source));
+  // H3 / §5 mixed-evidence rule: evidence_against only when against evidence fully
+  // negates supporting evidence (against memories exist AND no concrete supporting memories).
+  // When both against and supporting concrete memories exist -> weak (conflicted; against is a contradiction).
+  if (againsts.length > 0) {
+    if (concretes.length === 0) return 'evidence_against';
+    return 'weak';
+  }
 
   if (concretes.length === 0) {
     // No specific childhood behaviors recalled.
@@ -373,7 +432,7 @@ function rateOnset(childhoodEvidence) {
     return 'insufficient';                                    // "I'm not sure" / nothing recalled
   }
 
-  // Concrete pre-age-12 behaviors present.
+  // Concrete pre-age-12 behaviors present (no against evidence).
   if (externals.length > 0) return 'strong';                  // specific + external corroboration (report card/teacher/parent)
   if (concretes.length >= 2) return 'moderate';               // 2-4 concrete behaviors, recalled
   return 'weak';                                              // only 1 concrete childhood behavior
@@ -480,6 +539,29 @@ function flagDifferentials(state) {
   return flagged;
 }
 
+// §7 / §9b-F: enrich flagged differentials with "strong" evidence.
+// A flagged factor is a STRONG alternative explanation ONLY when the user themselves tied it
+// to ADHD-like symptoms (symptom_mentions non-empty). This is complementary to flagDifferentials
+// (which only decides whether to flag) — it adds the evidence dimension used by §9b-F.
+// Reads ONLY state.differential.factors (Stage 5) + Stage 2 core endorsements via flagDifferentials.
+function flagDifferentialEvidence(state) {
+  const flagged = flagDifferentials(state);
+  const collected = (state.differential && state.differential.factors) || [];
+  const flaggedLabels = new Set(flagged);
+  const considerations = [];
+  for (const f of collected) {
+    if (f && f.reported) {
+      const label = (DIFFERENTIAL_FACTORS.find(d => d.id === f.factor) || {}).label || f.factor;
+      // Only consider factors that pass the flagDifferentials gate (reported + Stage 2 symptom endorsed).
+      if (!flaggedLabels.has(label)) continue;
+      const couldExplain = Array.isArray(f.symptom_mentions) && f.symptom_mentions.length > 0;
+      considerations.push({ factor: label, could_explain_for_symptoms: couldExplain });
+    }
+  }
+  const strong = considerations.filter(x => x.could_explain_for_symptoms).map(x => x.factor);
+  return { flagged, strong, considerations };
+}
+
 function differentialDone(state) {
   return state.stage === 'DIFFERENTIAL' && state.differential && state.differential.done;
 }
@@ -516,5 +598,5 @@ module.exports = {
   deriveDuration,
   IMPAIRMENT_DOMAINS, formatImpairmentQuestion, formatSettingsQuestion,
   assessImpairment, impairmentDone,
-  DIFFERENTIAL_FACTORS, formatDifferentialQuestion, flagDifferentials, differentialDone,
+  DIFFERENTIAL_FACTORS, formatDifferentialQuestion, flagDifferentials, flagDifferentialEvidence, differentialDone,
 };

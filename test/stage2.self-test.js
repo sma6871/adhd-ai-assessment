@@ -38,11 +38,13 @@ const { CRITERIA } = assessment;
   let step = assessment.begin(state);
   let turns = 0;
   const cap = 400;
+  // Drive Stage 2 only — stop when it transitions to CHILDHOOD (per Phase 2 flow, Stage 2
+  // completion transitions to CHILDHOOD, NOT REPORT).
   while (turns < cap) {
     turns++;
     const ans = turns % 2 === 0 ? 'Often, for example when...' : 'Yeah that happens to me too, here: ...';
     const res = await assessment.processTurn(state, ans);
-    if (res.completed) break;
+    if (res.stage === 'CHILDHOOD') break;
   }
 
   const prog = assessment.getProgress(state);
@@ -59,7 +61,11 @@ const { CRITERIA } = assessment;
   console.log('INATT_09 (Never) ->', state.criteria['INATT_09'].status);
   console.log('INATT_04 (Sometimes, thin) ->', state.criteria['INATT_04'].status);
 
-  const rep = assessment.getReport(state);
+  // Stage 2 complete -> transitioned to CHILDHOOD (not REPORT, per Phase 2 flow).
+  console.log('stage after Stage 2:', state.stage);
+  // getReport returns null before REPORT stage; evaluate directly for stage2_only check.
+  const { evaluate } = require(path.join(ROOT, 'model/engine'));
+  const rep = evaluate(state);
   console.log('TIER:', rep.tier);
   console.log('pattern:', rep.adult_symptoms.pattern,
     '| inatt_sup:', rep.adult_symptoms.inattentive_supported,
@@ -70,4 +76,6 @@ const { CRITERIA } = assessment;
     '| F_not_better:', rep.dsm5_criteria.F_not_better_explained);
   console.log('stage2_only note present:', !!rep.stage2_only);
   console.log('disclaimer:', rep.disclaimer);
+  // Verify Phase 2: NOT in REPORT stage, so getReport returns null.
+  console.log('getReport returns null (pre-REPORT):', assessment.getReport(state) === null);
 })().catch(e => { console.error('FAIL:', e); process.exit(1); });

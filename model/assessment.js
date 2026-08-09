@@ -64,15 +64,16 @@ function nextOrDone(state, opts = {}) {
       ...opts,
     };
   }
-  state.stage = 'REPORT';
+// Stage 2 complete — signal transition to CHILDHOOD (NOT REPORT).
+// The unified processTurn() dispatcher handles the actual stage transition.
   state.duration = engine.deriveDuration(state);
-  state.report = engine.evaluate(state);
-  // completed:true must win over any opts.completed:false passed by processTurn.
-  return { ...opts, completed: true, report: state.report };
+  state.criterion_index = null;
+  return { ...opts, completed: false, stage_complete: 'ADULT_SYMPTOMS', duration: state.duration };
 }
 
-// Process a user answer within the current criterion.
-async function processTurn(state, userAnswer) {
+// Process a Stage 2 user answer. Internal — use processTurn() (the unified dispatcher)
+// for the production stage flow.
+async function _processStage2Turn(state, userAnswer) {
   const { cid, kind: kindPrev } = state.pending || { cid: null, kind: 'core' };
   if (!cid) return begin(state);
 
@@ -155,8 +156,53 @@ async function processTurn(state, userAnswer) {
   };
 }
 
+// Unified public stage-flow dispatcher.
+// Drives: ASRS/Stage2 → Childhood → Impairment → Differential → Report.
+// - Each stage transitions exactly once (no skips, no repeats).
+// - Stage completion triggers beginXxx() for the next stage.
+// - Report is generated ONLY after Stage 5 completion (§9d: evaluate only after all stages).
+async function processTurn(state, userAnswer) {
+  if (state.stage === 'ADULT_SYMPTOMS') {
+    const ret = await _processStage2Turn(state, userAnswer);
+    if (ret.stage_complete === 'ADULT_SYMPTOMS') {
+       return { ...ret, ...beginStage3(state), stage: 'CHILDHOOD', completed: false, transitioned: true, onset: null, duration: state.duration };
+     }
+    return ret;
+  }
+  if (state.stage === 'CHILDHOOD') {
+    const ret = await processStage3Turn(state, userAnswer);
+     if (ret.completed) {
+       return { ...ret, ...beginStage4(state), stage: 'IMPAIRMENT', completed: false, transitioned: true, onset: ret.onset };
+     }
+    return ret;
+  }
+  if (state.stage === 'IMPAIRMENT') {
+    const ret = await processStage4Turn(state, userAnswer);
+     if (ret.completed) {
+       return { ...ret, ...beginStage5(state), stage: 'DIFFERENTIAL', completed: false, transitioned: true };
+     }
+    return ret;
+  }
+  if (state.stage === 'DIFFERENTIAL') {
+    const ret = await processStage5Turn(state, userAnswer);
+    if (ret.completed) {
+      state.stage = 'REPORT';
+      state.report = engine.evaluate(state);
+      state.pending = null;
+      return { stage: 'REPORT', completed: true, report: state.report, transitioned: true };
+    }
+    return ret;
+  }
+  if (state.stage === 'REPORT') {
+    return { stage: 'REPORT', completed: true, report: getReport(state) };
+  }
+  return begin(state);
+}
+
+// Report is only available after ALL stages complete (state.stage === 'REPORT').
 function getReport(state) {
-  if (state.stage !== 'REPORT') state.report = engine.evaluate(state);
+  if (state.stage !== 'REPORT') return null;
+  if (!state.report) state.report = engine.evaluate(state);
   return state.report;
 }
 
@@ -436,6 +482,7 @@ async function processStage5Turn(state, userAnswer) {
 
 function finalizeDifferential(state) {
   state.differentials_flagged = engine.flagDifferentials(state);
+  state.differential.evidence = engine.flagDifferentialEvidence(state); // M6 §7/§9b-F: strong-vs-partial evidence
   state.differential.done = true;
   state.pending = null;
 }

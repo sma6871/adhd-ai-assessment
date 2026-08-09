@@ -92,16 +92,32 @@ const CHILDHOOD_SYSTEM_PROMPT = `You are a childhood-history evidence extractor 
 What to extract from the user's answer:
 - Only memories the user explicitly recalls/attributes as BEFORE age 12 childhood behavior.
 - Do NOT infer or map adult behaviors into childhood "evidence." If the user only describes adult behavior, return zero memories and note the deflection.
-- Each memory: behavior (specific recalled event/situation, brief), age (numeric < 12 if the user stated it, else null), source (report_card | teacher | parent | memory | other).
+- Each memory: behavior (specific recalled event/situation, brief), age (numeric if stated, else null — engine excludes age >= 12), source (report_card | teacher | parent | memory | other).
 - concrete=true if the user gave a specific attributable childhood situation; concrete=false + vague=true if only general phrasing ("always hyper") with no specifics.
 - against=true if the user reports concrete evidence that ADHD-like behaviors were NOT present in childhood (e.g., "I was attentive and organized," "teachers praised my focus").
 - uncertainty: set only if the user explicitly said they could not recall anything or were unsure.
 
 Return STRICT JSON only (no prose, no markdown fences) with EXACTLY:
 {
-  "memories": [ { "behavior": "string|null", "age": <number<12>|null>, "source": "report_card|teacher|parent|memory|other", "concrete": bool, "against": bool, "vague": bool } ],
+   "memories": [ { "behavior": "string|null", "age": <number|null>, "source": "report_card|teacher|parent|memory|other", "concrete": bool, "against": bool, "vague": bool } ],
   "uncertainty": "string|null"
 }`;
+
+// Normalize a single childhood memory extracted from the LLM response.
+// H2 fix: preserve the actual age value (including age >= ONSET_AGE) instead of
+// nullifying it. rateOnset() does the age < ONSET_AGE filtering — converting age >= 12
+// to null here would incorrectly treat it as "age unspecified" and let it qualify as
+// childhood evidence. Per CLINICAL_ADHD_PROTOCOL.md §5 age-boundary rule.
+function normalizeChildhoodMemory(m) {
+  return {
+    behavior: typeof m.behavior === 'string' && m.behavior.trim() ? m.behavior.trim() : null,
+    age: (typeof m.age === 'number' && Number.isFinite(m.age)) ? m.age : null,
+    source: ['report_card', 'teacher', 'parent', 'memory', 'other'].includes(m.source) ? m.source : 'memory',
+    concrete: !!m.concrete,
+    against: !!m.against,
+    vague: !!m.vague,
+  };
+}
 
 async function extractChildhoodEvidence({ probe, priorEvidence, transcript, userAnswer }, signal) {
   if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in the environment.');
@@ -141,14 +157,7 @@ async function extractChildhoodEvidence({ probe, priorEvidence, transcript, user
     throw new Error('Childhood extractor response missing required fields.');
   }
   const memories = Array.isArray(parsed.memories)
-    ? parsed.memories.map(m => ({
-      behavior: typeof m.behavior === 'string' && m.behavior.trim() ? m.behavior.trim() : null,
-      age: (typeof m.age === 'number' && m.age < ONSET_AGE) ? m.age : null,
-      source: ['report_card', 'teacher', 'parent', 'memory', 'other'].includes(m.source) ? m.source : 'memory',
-      concrete: !!m.concrete,
-      against: !!m.against,
-      vague: !!m.vague,
-    }))
+    ? parsed.memories.map(normalizeChildhoodMemory)
     : [];
   return {
     memories,
@@ -328,4 +337,4 @@ async function extractCriterionEvidence({ criterion, priorEvidence, transcript, 
   };
 }
 
-module.exports = { extractEvidence, SYSTEM_PROMPT };
+module.exports = { extractEvidence, SYSTEM_PROMPT, normalizeChildhoodMemory };

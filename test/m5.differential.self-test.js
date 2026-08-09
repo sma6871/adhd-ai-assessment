@@ -141,13 +141,8 @@ function stateWith(cores, factors) {
     const A = require(path.join(ROOT, 'model/assessment'));
     const s = A.createStage2Assessment('fullm5');
     A.begin(s);
-    for (let t = 0; t < 300; t++) { const r = await A.processTurn(s, 'Often, for example...'); if (r.completed) break; }
-    A.beginStage3(s);
-    for (let t = 0; t < 20; t++) { const r = await A.processStage3Turn(s, 'childhood memory'); if (r.completed) break; }
-    A.beginStage4(s);
-    for (let t = 0; t < 20; t++) { const r = await A.processStage4Turn(s, 'concrete example'); if (r.completed) break; }
-    A.beginStage5(s);
-    for (let t = 0; t < 30; t++) { const r = await A.processStage5Turn(s, 'factor yes'); if (r.completed) break; }
+    // Unified processTurn drives the full pipeline: Stage2 -> 3 -> 4 -> 5 -> Report.
+    for (let t = 0; t < 500; t++) { const r = await A.processTurn(s, 'Often, for example...'); if (r.completed) break; }
     return s;
   }
 
@@ -165,13 +160,14 @@ function stateWith(cores, factors) {
   );
   const eng = require(path.join(ROOT, 'model/engine'));
   const rep = eng.evaluate(full);
-  const okFull = full.differentials_flagged.length === 2
+  const okFull = full.stage === 'REPORT' && full.report !== null
+    && full.differentials_flagged.length === 2
     && full.domains_impaired.length === 2 && full.settings.length === 2
     && rep.dsm5_criteria.D_settings === 'supported' && rep.dsm5_criteria.E_impairment === 'supported'
     && rep.dsm5_criteria.F_not_better_explained === 'partially_supported'  // >=1 differential flagged -> partially (§9b-F)
     && rep.consistency.consistent === true;  // F is partially_supported (not 'not_supported'), so still consistent per §9d
   if (!okFull) failures++;
-  console.log(`${okFull ? 'PASS' : 'FAIL'}: full 2->3->4->5 pipeline -> onset=${full.onset} settings=${JSON.stringify(full.settings)} domains=${JSON.stringify(full.domains_impaired)} differentials=${JSON.stringify(full.differentials_flagged)} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment} F=${rep.dsm5_criteria.F_not_better_explained} consistent=${rep.consistency.consistent}`);
+  console.log(`${okFull ? 'PASS' : 'FAIL'}: full pipeline 2->3->4->5->Report (unified processTurn) -> stage=${full.stage} onset=${full.onset} settings=${JSON.stringify(full.settings)} domains=${JSON.stringify(full.domains_impaired)} differentials=${JSON.stringify(full.differentials_flagged)} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment} F=${rep.dsm5_criteria.F_not_better_explained} consistent=${rep.consistency.consistent}`);
 
   console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
   process.exit(failures === 0 ? 0 : 1);
