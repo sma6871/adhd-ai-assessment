@@ -63,7 +63,6 @@ function stateWith(cores, factors) {
 
   // --- Integration: full Stage 5 loop into LOCKED state.differentials_flagged[] ---
   async function runStage5(factorReports) {
-    const idToReported = Object.fromArgs ? null : null;
     setFakeFn(async function ({ probe }) {
       const rep = factorReports[probe.id] != null ? factorReports[probe.id] : { reported: false };
       return { reported: !!rep.reported, uncertainty: rep.uncertainty || null, symptom_mentions: rep.symptom_mentions || [] };

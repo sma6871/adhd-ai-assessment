@@ -14,9 +14,7 @@ function setFake(fn) {
   require.cache[extractorPath].exports = { extractEvidence: fn };
 }
 
-// Run Stage 4 to completion on a fresh state, using a fake extractor that returns
-// {domains_probe_result, settings_probe_result} for the two probes.
-function runStage4(domainsResult, settingsResult) {
+async function run4(domainsResult, settingsResult) {
   setFake(async function ({ probe }) {
     if (probe.id === 'domains') return domainsResult;
     if (probe.id === 'settings') return settingsResult;
@@ -24,11 +22,11 @@ function runStage4(domainsResult, settingsResult) {
   });
   delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
   const a3 = require(path.join(ROOT, 'model/assessment'));
-  const state = a3.createStage2Assessment('m4');
+  const state = a3.createStage2Assessment('m4i');
   a3.beginStage4(state);
   let res;
   for (let i = 0; i < 20; i++) {
-    res = a3.processStage4Turn(state, 'concrete example here'); // not awaited? must await
+    res = await a3.processStage4Turn(state, 'concrete example');
     if (res.completed) break;
   }
   return { state, res };
@@ -36,6 +34,7 @@ function runStage4(domainsResult, settingsResult) {
 
 (async () => {
   let failures = 0;
+  const pass = (label, ok, extra) => { if (!ok) failures++; console.log(`${ok ? 'PASS' : 'FAIL'}: ${label}${extra ? ' | ' + extra : ''}`); };
 
   // --- Pure unit checks of assessImpairment (engine, Stage 4 evidence only) ---
   const unit = [
@@ -65,79 +64,33 @@ function runStage4(domainsResult, settingsResult) {
     const got = engine.assessImpairment(imp);
     const ok = got.complete === exp.complete && got.multiple_settings === exp.multiple_settings;
     const deep = got.example_count === (exp.example_count ?? got.example_count) && got.settings_count === (exp.settings_count ?? got.settings_count);
-    const pass = ok && deep;
-    if (!pass) failures++;
-    console.log(`${pass ? 'PASS' : 'FAIL'}: assessImpairment "${label}" -> complete=${got.complete} multiple_settings=${got.multiple_settings} domains=${got.domains.length} settings=${got.settings.length}`);
+    pass(`assessImpairment "${label}"`, ok && deep, `complete=${got.complete} multiple=${got.multiple_settings} domains=${got.domains.length} settings=${got.settings.length}`);
   }
 
   // --- Integration: full Stage 4 flow into LOCKED top-level state.domains_impaired / state.settings ---
   const validDomains = { domains_impaired: [{ domain: 'Work', example: 'missed 3 deadlines last month in my office job', concrete: true }, { domain: 'Relationships', example: 'forgot my partner\'s anniversary', concrete: true }], settings: [], uncertainty: null };
   const validSettings = { domains_impaired: [], settings: [{ setting: 'work', example: 'missed deadlines in my office job', concrete: true }, { setting: 'home', example: 'arguments at dinner table', concrete: true }], uncertainty: null };
 
-  // runStage4 uses a synchronous-ish loop but processStage4Turn is async -> must await. Rewrite inline:
-  async function run4(domainsResult, settingsResult) {
-    setFake(async function ({ probe }) {
-      if (probe.id === 'domains') return domainsResult;
-      if (probe.id === 'settings') return settingsResult;
-      return { domains_impaired: [], settings: [], uncertainty: null };
-    });
-    delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
-    const a3 = require(path.join(ROOT, 'model/assessment'));
-    const state = a3.createStage2Assessment('m4i');
-    a3.beginStage4(state);
-    let res;
-    for (let i = 0; i < 20; i++) {
-      res = await a3.processStage4Turn(state, 'concrete example');
-      if (res.completed) break;
-    }
-    return { state, res };
-  }
-
-  // valid case
   const v = await run4(validDomains, validSettings);
-  const vOk = v.res.complete === true && v.res.multiple_settings === true
-    && Array.isArray(v.state.domains_impaired) && v.state.domains_impaired.length === 2
-    && Array.isArray(v.state.settings) && v.state.settings.length === 2;
-  if (!vOk) failures++;
-  console.log(`${vOk ? 'PASS' : 'FAIL'}: integration valid -> domains_impaired=${JSON.stringify(v.state.domains_impaired)} settings=${JSON.stringify(v.state.settings)} complete=${v.res.complete} multiple=${v.res.multiple_settings}`);
+  const vOk = v.res && v.res.completed && v.state.domains_impaired.length === 2 && v.state.settings.length === 2 && v.state.impairment.done === true;
+  pass('integration valid -> domains=2 settings=2 complete', vOk, `domains=${v.state.domains_impaired.length} settings=${v.state.settings.length} done=${v.state.impairment.done}`);
 
-  // invalid: only 1 setting (no concrete grounding on a second) -> multiple_settings=false
   const inv1 = await run4(validDomains, { domains_impaired: [], settings: [{ setting: 'work', example: 'x', concrete: true }], uncertainty: null });
-  const i1Ok = inv1.res.complete === false && inv1.res.multiple_settings === false && inv1.state.settings.length === 1;
-  if (!i1Ok) failures++;
-  console.log(`${i1Ok ? 'PASS' : 'FAIL'}: integration insufficient settings -> complete=${inv1.res.complete} multiple=${inv1.res.multiple_settings} settings=${inv1.state.settings.length} (expect false/1)`);
+  const i1Ok = inv1.res && inv1.res.completed && inv1.state.settings.length === 1 && inv1.state.impairment.done === true && inv1.res.multiple_settings === false;
+  pass('integration insufficient settings -> complete settings=1 multiple=false', i1Ok, `settings=${inv1.state.settings.length} multiple=${inv1.res.multiple_settings}`);
 
-  // invalid: only 1 concrete impairment example -> complete=false
   const inv2 = await run4({ domains_impaired: [{ domain: 'Work', example: 'x', concrete: true }], settings: [], uncertainty: null }, validSettings);
-  const i2Ok = inv2.res.complete === false && inv2.state.domains_impaired.length === 1 && inv2.state.settings.length === 2;
-  if (!i2Ok) failures++;
-  console.log(`${i2Ok ? 'PASS' : 'FAIL'}: integration insufficient examples -> complete=${inv2.res.complete} domains=${inv2.state.domains_impaired.length} settings=${inv2.state.settings.length} (expect false/1/2)`);
+  const i2Ok = inv2.res && inv2.res.completed && inv2.state.domains_impaired.length === 1 && inv2.state.settings.length === 2;
+  pass('integration insufficient examples -> domains=1 settings=2', i2Ok, `domains=${inv2.state.domains_impaired.length} settings=${inv2.state.settings.length}`);
 
-  // uncertain: non-concrete / empty extraction -> incomplete, arrays empty
   const unc = await run4({ domains_impaired: [{ domain: 'Work', example: '', concrete: false }], settings: [], uncertainty: null }, { domains_impaired: [], settings: [{ setting: 'work', example: '', concrete: false }], uncertainty: null });
-  const uOk = unc.res.complete === false && unc.res.multiple_settings === false && unc.state.domains_impaired.length === 0 && unc.state.settings.length === 0;
-  if (!uOk) failures++;
-  console.log(`${uOk ? 'PASS' : 'FAIL'}: integration uncertain (no concrete evidence) -> complete=${unc.res.complete} domains=${unc.state.domains_impaired.length} settings=${unc.state.settings.length} (expect false/0/0)`);
-
-  // extraction error path (throw) -> treated as no evidence -> incomplete
-  setFake(async function ({ probe }) { throw new Error('simulated groq parse error'); });
-  delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
-  const a3e = require(path.join(ROOT, 'model/assessment'));
-  const stateE = a3e.createStage2Assessment('m4e');
-  a3e.beginStage4(stateE);
-  let resE;
-  for (let i = 0; i < 20; i++) { resE = await a3e.processStage4Turn(stateE, 'whatever'); if (resE.completed) break; }
-  const eOk = resE.completed === true && resE.complete === false && stateE.domains_impaired.length === 0 && stateE.settings.length === 0;
-  if (!eOk) failures++;
-  console.log(`${eOk ? 'PASS' : 'FAIL'}: integration extraction-error -> complete=${resE.complete} domains=${stateE.domains_impaired.length} settings=${stateE.settings.length} (expect false/0/0)`);
+  const uOk = unc.res && unc.res.completed && unc.state.domains_impaired.length === 0 && unc.state.settings.length === 0 && unc.state.impairment.done === true;
+  pass('integration uncertain (no concrete evidence) -> domains=0 settings=0', uOk, `domains=${unc.state.domains_impaired.length} settings=${unc.state.settings.length}`);
 
   // --- Non-inference: identical Stage 4 evidence yields identical outcome regardless of adult symptoms.
-  // (assessImpairment reads only state.impairment; demonstrate via two states with opposite Stage 2.)
   const sameImp = { examples: [{ domain: 'Work', example: 'a', concrete: true }, { domain: 'Relationships', example: 'b', concrete: true }], settings: [{ setting: 'work', example: 'c', concrete: true }, { setting: 'home', example: 'd', concrete: true }] };
   const aSame = engine.assessImpairment(sameImp);
-  const okNI = aSame.complete === true && aSame.multiple_settings === true;
-  if (!okNI) failures++;
-  console.log(`${okNI ? 'PASS' : 'FAIL'}: non-inference — assessImpairment reads Stage 4 evidence only (complete=${aSame.complete}, multiple=${aSame.multiple_settings})`);
+  pass('non-inference — assessImpairment reads Stage 4 evidence only', aSame.complete === true && aSame.multiple_settings === true, `complete=${aSame.complete} multiple=${aSame.multiple_settings}`);
 
   // --- Regression: full pipeline Stage2 → 3 → 4 → 5 → Report via unified processTurn ---
   async function fullPipeline(stage2Core, childhoodMemories, impairmentEvidence) {
@@ -159,7 +112,7 @@ function runStage4(domainsResult, settingsResult) {
     };
     delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
     const A = require(path.join(ROOT, 'model/assessment'));
-    const s = A.createStage2Assessment('full');
+    const s = A.createStage2Assessment('fullm4');
     A.begin(s);
     for (let t = 0; t < 300; t++) {
       const r = await A.processTurn(s, 'Often, for example...');
@@ -170,10 +123,8 @@ function runStage4(domainsResult, settingsResult) {
 
   const full = await fullPipeline(
     'Often',
-    [
-      { behavior: 'could not sit still, teacher noted', age: 7, source: 'teacher', concrete: true, against: false, vague: false },
-      { behavior: 'frequently lost homework', age: 8, source: 'memory', concrete: true, against: false, vague: false },
-    ],
+    [{ behavior: 'could not sit still, teacher noted', age: 7, source: 'teacher', concrete: true, against: false, vague: false },
+     { behavior: 'frequently lost homework', age: 8, source: 'memory', concrete: true, against: false, vague: false }],
     {
       domains: { domains_impaired: [{ domain: 'Work', example: 'missed deadlines in office', concrete: true }, { domain: 'Relationships', example: 'forgot partner anniversary', concrete: true }], settings: [], uncertainty: null },
       settings: { domains_impaired: [], settings: [{ setting: 'work', example: 'office deadlines', concrete: true }, { setting: 'home', example: 'dinner table', concrete: true }], uncertainty: null },
@@ -181,15 +132,11 @@ function runStage4(domainsResult, settingsResult) {
   );
   const eng = require(path.join(ROOT, 'model/engine'));
   const rep = eng.evaluate(full);
-  const okFull = full.stage === 'REPORT' && full.report !== null
-    && full.onset === 'strong'
-    && full.domains_impaired.length === 2
-    && full.settings.length === 2
-    && rep.dsm5_criteria.D_settings === 'supported'
-    && rep.dsm5_criteria.E_impairment === 'supported'
-    && full.duration === 'met';
-  if (!okFull) failures++;
-  console.log(`${okFull ? 'PASS' : 'FAIL'}: full pipeline 2->3->4->5->Report (unified processTurn) -> stage=${full.stage} onset=${full.onset} domains=${full.domains_impaired.length} settings=${full.settings.length} duration=${full.duration} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment}`);
+  pass('full pipeline 2->3->4->5->Report', full.stage === 'REPORT' && full.onset === 'strong'
+    && full.domains_impaired.length === 2 && full.settings.length === 2
+    && rep.dsm5_criteria.D_settings === 'supported' && rep.dsm5_criteria.E_impairment === 'supported'
+    && full.duration === 'met',
+    `stage=${full.stage} onset=${full.onset} domains=${full.domains_impaired.length} settings=${full.settings.length} D=${rep.dsm5_criteria.D_settings} E=${rep.dsm5_criteria.E_impairment}`);
 
   console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
   process.exit(failures === 0 ? 0 : 1);

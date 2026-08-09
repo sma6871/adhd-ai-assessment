@@ -89,44 +89,37 @@ const NEG = ['Never', 'Rarely'];
     return state.duration;
   }
 
-  const intMet = await drain('Often');
-  const intNotMet = await drain('Never');
-  const intUnc = await drain(null);
-  // 'Never' on every default; but INATT_09 is Never, INATT_04 Sometimes -> mixed: INATT_04 Sometimes is positive -> 'met'!
-  // So 'Never' drain actually yields 'met' (INATT_04=Sometimes, HYPERR_09=Often, and defaults=Never only for 6 items but INATT_04 is Sometimes).
-  // Reflect expected behavior: INATT_04 Sometimes => positive => met.
-  const okIntMet = intMet === 'met';            // defaults often, INATT_04 Sometimes, INATT_09 Never, HYPERR_09 Often -> met
-  if (!okIntMet) failures++;
-  console.log(`${okIntMet ? 'PASS' : 'FAIL'}: integration Stage2 all-endorsed -> duration=${intMet} (expected met)`);
+   const intMet = await drain('Often');
+   const okIntMet = intMet === 'met';
+   if (!okIntMet) failures++;
+   console.log(`${okIntMet ? 'PASS' : 'FAIL'}: integration Stage2 mixed-extract -> duration=${intMet} (expected met)`);
 
-  // 'null' core on all defaults: INATT_04 Sometimes? No — core_answer=null. But INATT_09=Never, HYPERR_05 throws(null), HYPERR_09=Often. => positives exist (HYPERR_09 Often, INATT_04... no, INATT_04 returns Sometimes -> positive). So null-drain still has positives.
-  // To test not_met integration cleanly, force every default to Never and the specials too.
-  async function drainExplicit(allCore) {
-    require.cache[extractorPath].exports = {
-      extractEvidence: async function ({ criterion }) {
-        const id = criterion.id;
-        if (id === 'HYPERR_05') throw new Error('err');
-        return { core_answer: allCore, example: 'x', contexts: ['work', 'home'], consequence: 'y', counter_evidence: [], uncertainty: null };
-      },
-    };
-    delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
-    const a3 = require(path.join(ROOT, 'model/assessment'));
-    const state = a3.createStage2Assessment('int2');
-    a3.begin(state);
-    for (let t = 0; t < 200; t++) {
-      const res = await a3.processTurn(state, 'Sometimes, for example...');
-      if (res.completed) break;
-    }
-    return state.duration;
-  }
-  const intAllNever = await drainExplicit('Never');     // all Never -> not_met
-  const intAllSometimes = await drainExplicit('Sometimes'); // all Sometimes -> met
-  const okNotMet = intAllNever === 'not_met';
-  const okAllMet = intAllSometimes === 'met';
-  if (!okNotMet) failures++;
-  if (!okAllMet) failures++;
-  console.log(`${okNotMet ? 'PASS' : 'FAIL'}: integration all-Never -> duration=${intAllNever} (expected not_met)`);
-  console.log(`${okAllMet ? 'PASS' : 'FAIL'}: integration all-Sometimes -> duration=${intAllSometimes} (expected met)`);
+   async function drainExplicit(allCore) {
+     require.cache[extractorPath].exports = {
+       extractEvidence: async function ({ criterion }) {
+         const id = criterion.id;
+         if (id === 'HYPERR_05') throw new Error('err');
+         return { core_answer: allCore, example: 'x', contexts: ['work', 'home'], consequence: 'y', counter_evidence: [], uncertainty: null };
+       },
+     };
+     delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
+     const a3 = require(path.join(ROOT, 'model/assessment'));
+     const state = a3.createStage2Assessment('int2');
+     a3.begin(state);
+     for (let t = 0; t < 200; t++) {
+       const res = await a3.processTurn(state, 'Often, for example...');
+       if (res.completed) break;
+     }
+     return state.duration;
+   }
+   const intAllNever = await drainExplicit('Never');
+   const intAllSometimes = await drainExplicit('Sometimes');
+   const okNotMet = intAllNever === 'not_met';
+   const okAllMet = intAllSometimes === 'met';
+   if (!okNotMet) failures++;
+   if (!okAllMet) failures++;
+   console.log(`${okNotMet ? 'PASS' : 'FAIL'}: integration all-Never -> duration=${intAllNever} (expected not_met)`);
+   console.log(`${okAllMet ? 'PASS' : 'FAIL'}: integration all-Sometimes -> duration=${intAllSometimes} (expected met)`);
 
   console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
   process.exit(failures === 0 ? 0 : 1);

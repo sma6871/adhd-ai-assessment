@@ -101,8 +101,32 @@ async function runFullPipeline(config) {
   pass('Pipeline: full report evaluation (all DSM-5 criteria supported)', evalOk,
     `A=${rep1.dsm5_criteria.A_symptom_count} C=${rep1.dsm5_criteria.C_onset} D=${rep1.dsm5_criteria.D_settings} E=${rep1.dsm5_criteria.E_impairment} F=${rep1.dsm5_criteria.F_not_better_explained} tier=${rep1.tier}`);
 
+   // ========================================================================
+  // TEST 1.5: Protocol tier regression (§9d): symptomatic pattern + onset=insufficient
+  // → Partially consistent, NOT Insufficient. Only evidence_against onset triggers Insufficient.
   // ========================================================================
-  // TEST 2: getReport returns null before REPORT
+   setupFullExtractor({
+     stage2Core: 'Often',
+     childhoodMemories: [
+       { behavior: 'diagnosed with ADHD at 14, very hyper in high school', age: 14, source: 'memory', concrete: true, against: false, vague: false },
+     ],
+     impairment: {
+       domains: { domains_impaired: [{ domain: 'Work', example: 'missed deadlines', concrete: true }], settings: [], uncertainty: null },
+       settings: { domains_impaired: [], settings: [{ setting: 'work', example: 'office', concrete: true }, { setting: 'home', example: 'dinner', concrete: true }], uncertainty: null },
+     },
+     factors: {},
+   });
+   let { state: s1b, transitions: t1b } = await runFullPipeline({});
+   const rep1b = s1b.report;
+   const onsetInsuffNotInsufficient = rep1b.tier === 'Partially consistent'
+     && rep1b.consistency.insufficient === false
+     && rep1b.consistency.partially_consistent === true
+     && s1b.onset === 'insufficient';
+   pass('Pipeline: symptomatic + onset=insufficient → Partially consistent (NOT Insufficient)', onsetInsuffNotInsufficient,
+     `onset=${s1b.onset} tier=${rep1b.tier} insufficient=${rep1b.consistency.insufficient} partially_consistent=${rep1b.consistency.partially_consistent}`);
+
+   // ========================================================================
+   // TEST 2: getReport returns null before REPORT
   // ========================================================================
   setupFullExtractor({
     stage2Core: 'Often',

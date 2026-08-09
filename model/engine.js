@@ -244,7 +244,7 @@ function evaluate(state) {
       && dsm.F_not_better_explained !== 'not_supported'
       && contradictions === 0
     ),
-    insufficient: !symptomatic || onset === 'evidence_against' || onset === 'insufficient' || duration === 'not_met',
+    insufficient: !symptomatic || onset === 'evidence_against' || duration === 'not_met',
   };
 
   // §9e recommendation tiers (product wording; never a diagnosis)
