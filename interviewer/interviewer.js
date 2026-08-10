@@ -232,12 +232,12 @@ async function extractImpairmentEvidence({ probe, priorEvidence, transcript, use
       domain: typeof x.domain === 'string' && x.domain.trim() ? x.domain.trim() : null,
       example: typeof x.example === 'string' && x.example.trim() ? x.example.trim() : null,
       concrete: !!(x.example && x.example.trim()), // concrete => backed by a specific example
-    }).filter(x => x.domain && x.example)),
+    })).filter(x => x.domain && x.example),
     settings: cleanList(parsed.settings, { setting: '', example: '', concrete: false }).map(x => ({
       setting: typeof x.setting === 'string' && x.setting.trim() ? x.setting.trim() : null,
       example: typeof x.example === 'string' && x.example.trim() ? x.example.trim() : null,
       concrete: !!(x.example && x.example.trim()),
-    }).filter(x => x.setting && x.example)),
+    })).filter(x => x.setting && x.example),
     uncertainty: typeof parsed.uncertainty === 'string' && parsed.uncertainty.trim() ? parsed.uncertainty.trim() : null,
   };
 }
