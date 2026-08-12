@@ -2,177 +2,588 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ADHD Assessment — Symptom Interview</title>
+<link rel="icon" href="/favicon.ico" type="image/svg+xml">
+<link rel="stylesheet" href="/design-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#faf8f5; --ink:#111; --muted:#666; --line:#e3e0db; --accent:#000; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
-  header { padding:18px 20px 14px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:2; }
-  header h1 { margin:0; font-size:18px; font-weight:600; }
-  header .sub { color:var(--muted); font-size:13px; margin-top:2px; }
-  main { max-width:420px; margin:0 auto; padding:16px; }
-  .qs { font-size:14px; line-height:1.45; white-space:pre-wrap; margin:0 0 8px; }
-  .badge { display:inline-block; font-size:12px; background:#f0f0f0; color:#444; border:1px solid var(--line); border-radius:10px; padding:4px 10px; margin-left:6px; vertical-align:middle; }
-  .msg { margin:14px 0; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:#fff; }
-  .msg.ai { border-color:var(--line); }
-  .msg.user { background:#f6f6f6; }
-  .row { display:flex; gap:8px; align-items:flex-end; }
-  textarea { flex:1; min-height:44px; max-height:120px; width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; font:inherit; resize:vertical; }
-  button { background:var(--accent); color:#fff; border:none; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer; }
-  button:disabled { opacity:.45; cursor:not-allowed; }
-  .progress { height:4px; background:#e9e6e1; border-radius:4px; margin:10px 0; overflow:hidden; }
-  .bar { height:100%; background:var(--accent); width:var(--w,0%); }
-  .report { padding:0; }
-  .report .section { margin:18px 0; }
-  .report h2 { font-size:16px; margin:0 0 6px; }
-  .pill { font-size:12px; display:inline-block; padding:2px 8px; border-radius:8px; background:#f0f0f0; margin-right:4px; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  th,td { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-top; }
-  .err { color:#b00020; font-size:13px; }
-  .quiet { color:var(--muted); font-size:12px; }
-  @media (max-width:460px) { main { padding:12px; } }
+/* Stage 2 — Focus-First Design System (design-tokens.css). Single-file app shell. */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: auto; }
+html[lang="en"], html[lang="en"] body { font-family: var(--ff-font-body); }
+html[lang="fa"], html[lang="fa"] body { font-family: var(--ff-font-persian); }
+html[dir="rtl"] { text-align: right; }
+body {
+  background: var(--ff-surface);
+  color: var(--ff-on-surface);
+  display: flex; align-items: center; justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+.device {
+  width: 390px; height: 844px;
+  background: var(--ff-surface-container-lowest);
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.10);
+}
+
+/* === Header: brand + integrated language pill (no floating element) === */
+.hd-brand { padding: 44px 24px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.hd-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ff-on-surface); margin: 0; }
+html[dir="rtl"] .hd-brand { flex-direction: row-reverse; }
+.lang-pill { display: inline-flex; align-items: center; gap: 4px; background: var(--ff-surface-container-lowest); border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-full); padding: 4px; }
+.lang-opt { border: none; background: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ff-on-surface); padding: 6px 12px; border-radius: var(--ff-radius-full); transition: opacity .15s ease; font-family: inherit; }
+.lang-opt.selected { background: var(--ff-secondary); color: var(--ff-on-secondary); opacity: 1; }
+.lang-opt:not(.selected) { opacity: 0.4; }
+.lang-pill .lang-label.fa { font-family: var(--ff-font-persian); }
+.lang-divider { width: 1px; height: 18px; background: var(--ff-outline-variant); }
+
+/* === Stage sub-header + stage-aware progress === */
+.hd-sub { padding: 8px 24px 4px; flex-shrink: 0; }
+.stage-row { display: flex; align-items: baseline; justify-content: space-between; }
+html[dir="rtl"] .stage-row { flex-direction: row-reverse; }
+.stage-num { font-size: 13px; font-weight: 600; color: var(--ff-on-surface-variant); font-family: var(--ff-font-label); letter-spacing: .05em; }
+.hd-sub h2 { font-size: 18px; font-weight: 600; color: var(--ff-on-surface); margin: 2px 0; line-height: 1.3; }
+.hd-sub .sub-text { font-size: 12px; color: var(--ff-on-surface-variant); }
+.progress-wrap { padding: 0 24px 8px; flex-shrink: 0; }
+.progress-bar { height: 4px; background: var(--ff-surface-container); border-radius: var(--ff-radius-full); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--ff-secondary); border-radius: var(--ff-radius-full); width: 0%; transition: width .3s ease; }
+.progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--ff-on-surface-variant); margin-top: 6px; font-family: var(--ff-font-label); letter-spacing: .05em; }
+html[dir="rtl"] .progress-meta { flex-direction: row-reverse; }
+.stage-banner { margin: 6px 24px 10px; padding: 11px 14px; border-radius: var(--ff-radius-sm); background: var(--ff-surface-container-low); border: 1px solid var(--ff-outline-variant); font-size: 13px; color: var(--ff-on-surface-variant); font-style: italic; text-align: center; }
+
+/* === Messages (scrollable) + input (persistent, sticky footer) === */
+#messages { flex: 1 1 0; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 24px 4px; }
+.msg { margin: 8px 0; padding: 12px 16px; border-radius: var(--ff-radius-lg); font-size: 16px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; max-width: 100%; }
+.msg.ai { background: var(--ff-surface-container-low); border: 1px solid var(--ff-outline-variant); border-bottom-left-radius: 4px; align-self: flex-start; }
+html[dir="rtl"] .msg.ai { border-bottom-left-radius: var(--ff-radius-lg); border-bottom-right-radius: 4px; }
+.msg.user { background: var(--ff-surface-container-lowest); border: 1px solid var(--ff-outline-variant); border-bottom-right-radius: 4px; align-self: flex-end; }
+html[dir="rtl"] .msg.user { border-bottom-right-radius: var(--ff-radius-lg); border-bottom-left-radius: 4px; }
+.msg.transition { font-style: italic; color: var(--ff-on-surface-variant); }
+.msg.criterion-done { font-size: 13px; color: var(--ff-on-surface-variant); }
+.msg.error { color: var(--ff-error); }
+.badge { display: inline-block; font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; background: var(--ff-secondary-container); color: var(--ff-on-secondary-container); border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-full); padding: 2px 8px; margin-inline-end: 6px; vertical-align: middle; }
+html[dir="rtl"] .badge { margin-inline-end: 0; margin-inline-start: 6px; }
+.msg .qs { display: block; }
+.err { color: var(--ff-on-error-container); font-size: 13px; margin: 12px 0; padding: 10px 12px; background: var(--ff-error-container); border-radius: var(--ff-radius-sm); }
+#input-slot { flex-shrink: 0; }
+.input-area { padding: 12px 24px 20px; border-top: 1px solid var(--ff-outline-variant); background: var(--ff-surface-container-lowest); display: flex; gap: 12px; align-items: flex-end; }
+.input-area textarea { flex: 1; min-height: 44px; max-height: 120px; padding: 12px 16px; border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-sm); background: var(--ff-surface-container-lowest); font-family: inherit; font-size: 16px; color: var(--ff-on-surface); resize: none; outline: none; transition: border-color .15s ease; }
+.input-area textarea:focus { border-color: var(--ff-secondary); box-shadow: 0 0 0 2px var(--ff-secondary-container); }
+.input-area button { flex: none; padding: 12px 24px; background: var(--ff-primary); color: var(--ff-on-primary); border: none; border-radius: var(--ff-radius-sm); font-size: 16px; font-weight: 700; line-height: 24px; cursor: pointer; white-space: nowrap; transition: opacity .15s ease; }
+.input-area button:disabled { opacity: .45; cursor: not-allowed; background: var(--ff-outline); color: var(--ff-on-surface-variant); }
+.input-area button:hover:not(:disabled) { opacity: .85; }
+.input-hint { padding: 0 24px 6px; font-size: 11px; color: var(--ff-on-surface-variant); font-family: var(--ff-font-label); letter-spacing: .05em; }
+
+/* === Report (result page) === */
+.report-header { margin: 16px 24px 8px; flex-shrink: 0; }
+.report-header h1 { font-size: 20px; font-weight: 600; color: var(--ff-on-surface); }
+.report-header .sub { font-size: 13px; color: var(--ff-on-surface-variant); margin-top: 4px; }
+.tier-card { margin: 18px 24px; padding: 22px 20px; border-radius: var(--ff-radius-lg); border: 1px solid var(--ff-outline-variant); background: var(--ff-surface-container-lowest); }
+.tier-card .tier-label { font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ff-on-surface-variant); }
+.tier-card .tier-headline { font-size: 20px; font-weight: 700; color: var(--ff-on-surface); margin: 6px 0 10px; line-height: 1.3; }
+.tier-card .tier-body { font-size: 15px; line-height: 1.6; color: var(--ff-on-surface-variant); }
+.evidence-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 18px 24px; }
+.evidence-card { background: var(--ff-surface-container-lowest); border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-md); padding: 14px 16px; }
+.evidence-card .ec-label { font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; color: var(--ff-on-surface-variant); }
+.evidence-card .ec-value { font-size: 15px; font-weight: 600; color: var(--ff-on-surface); margin-top: 4px; }
+.dsm-table { width: 100%; border-collapse: collapse; margin: 18px 24px; font-size: 14px; }
+.dsm-table th { text-align: start; padding: 8px 10px; font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; color: var(--ff-on-surface-variant); border-bottom: 2px solid var(--ff-outline-variant); }
+.dsm-table td { text-align: start; padding: 8px 10px; border-bottom: 1px solid var(--ff-outline-variant); color: var(--ff-on-surface-variant); }
+.status-pill { display: inline-block; font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: var(--ff-radius-full); border: 1px solid var(--ff-outline-variant); }
+.sp-supported { background: var(--ff-secondary-container); color: var(--ff-on-secondary-container); }
+.sp-partially_supported { background: #fff3e0; color: #7a3f00; border-color: #ffd9b3; }
+.sp-unsupported { background: var(--ff-surface-container-low); color: var(--ff-on-surface-variant); }
+.sp-uncertain { background: var(--ff-error-container); color: var(--ff-on-error-container); }
+.tag-block { margin: 18px 24px; }
+.tag { display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; padding: 5px 12px; border-radius: var(--ff-radius-full); background: var(--ff-surface-container-low); color: var(--ff-on-surface); border: 1px solid var(--ff-outline-variant); margin: 4px 6px 4px 0; }
+html[dir="rtl"] .tag { margin: 4px 0 4px 6px; }
+.tag-head { font-weight: 700; cursor: default; opacity: .6; }
+.tag-contra { background: var(--ff-error-container); color: var(--ff-on-error-container); }
+.criterion-list { margin: 0 24px; }
+.criterion-group-title { font-size: 12px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; color: var(--ff-on-surface-variant); margin: 18px 0 6px; }
+.criterion-item { margin-bottom: 4px; }
+.ci-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px 0; border-bottom: 1px solid var(--ff-outline-variant); }
+html[dir="rtl"] .ci-head { flex-direction: row-reverse; }
+.ci-head .ci-id { font-size: 13px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; color: var(--ff-on-surface-variant); }
+.ci-head .ci-meta { display: inline-flex; align-items: center; gap: 8px; }
+.ci-head .ci-conf { font-size: 11px; color: var(--ff-on-surface-variant); }
+.ci-head .ci-toggle { font-size: 12px; color: var(--ff-on-surface-variant); opacity: .6; }
+.ci-body { overflow: hidden; max-height: 0; transition: max-height .2s ease; }
+.ci-body.open { max-height: 2000px; }
+.ci-details { padding: 8px 0 8px; }
+.ci-row-label { display: inline-block; font-size: 11px; font-family: var(--ff-font-label); font-weight: 700; letter-spacing: .05em; color: var(--ff-on-surface-variant); margin-inline-end: 6px; }
+.ci-details ul { margin: 4px 0; padding-inline-start: 18px; }
+html[dir="rtl"] .ci-details ul { padding-inline-start: 0; padding-inline-end: 18px; }
+.ci-details ul li { margin: 2px 0; }
+.report-footer { margin: 18px 24px; text-align: center; }
+.report-footer .quiet { font-size: 11px; font-family: var(--ff-font-label); letter-spacing: .05em; color: var(--ff-on-surface-variant); }
+.back-btn { display: inline-block; margin: 8px 0; padding: 10px 22px; background: var(--ff-secondary); color: var(--ff-on-secondary); border: none; border-radius: var(--ff-radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--ff-font-body); transition: opacity .15s ease; }
+.back-btn:hover { opacity: .85; }
+
+/* === Mobile === */
+@media (max-width: 400px) {
+  .device { width: 100%; height: 100vh; box-shadow: none; }
+  #messages { padding: 8px var(--ff-mobile-margin); }
+  .hd-brand { padding: 36px var(--ff-mobile-margin) 12px; }
+  .hd-sub { padding: 0 var(--ff-mobile-margin) 8px; }
+  .progress-wrap { padding: 0 var(--ff-mobile-margin) 8px; }
+  .stage-banner { margin: 6px var(--ff-mobile-margin) 10px; }
+  .evidence-grid, .dsm-table, .tag-block, .criterion-list, .tier-card, .report-header, .report-footer { margin: 18px var(--ff-mobile-margin); }
+  .ci-details ul { padding-inline-start: 16px; }
+  html[dir="rtl"] .ci-details ul { padding-inline-start: 0; padding-inline-end: 16px; }
+  .input-area { padding: 12px var(--ff-mobile-margin) 20px; }
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>ADHD Symptom Interview</h1>
-  <div class="sub">Stage 2 of 5: Adult ADHD symptoms. <span class="quiet">Not a diagnosis — self-assessment only.</span></div>
-</header>
-<main id="root"><div class="quiet">Loading…</div></main>
-
+<div class="device" id="app">
+  <div id="header-slot"></div>
+  <div id="progress-slot"></div>
+  <div id="messages"></div>
+  <div id="input-slot"></div>
+</div>
+<script src="/stage2-language.js"></script>
 <script>
-const API = '';
-let STATE = { id: null, messages: [] };
+/* ================= state ================= */
+const STATE = {
+  id: null, lang: 'en', messages: [], banner: null, report: null,
+  progress: { stage: 'ADULT_SYMPTOMS', label: 'ADULT_SYMPTOMS', completed: 0, total: 18, pct: 0, current: null, lang: 'en' },
+  openCriteria: new Set(),
+};
+const STORAGE_SESSION = 'adhd_stage2_session';
+const STORAGE_TRANSCRIPT = 'adhd_stage2_transcript';
+const STORAGE_LANG = 'adhd_stage2_lang';
 
-function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function byId(id){ return document.getElementById(id); }
-
-function renderMessages(){
-  const root = byId('root');
-  let out = '';
-  const pct = STATE.total ? Math.round((STATE.done||0)/STATE.total*100) : 0;
-  out += `<div class="progress"><div class="bar" style="--w:${pct}%"></div></div>`;
-  for (const m of STATE.messages){
-    const cls = m.role==='user' ? 'user' : 'ai';
-    const badge = m.cid ? `<span class="badge">${m.cid}</span>` : '';
-    out += `<div class="msg ${cls}"><div class="qs">${badge} ${esc(m.text)}</div></div>`;
-  }
-  root.innerHTML = out;
-  root.scrollTop = root.scrollHeight;
+function api(path, opts) {
+  const o = Object.assign({ headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin' }, opts || {});
+  if (o.body !== undefined && typeof o.body === 'object') o.body = JSON.stringify(o.body);
+  return fetch(path, o).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
 }
 
-function renderReport(report){
-  const root = byId('root');
-  let out = '<div class="report">';
-  const tier = (report.tier||'').toUpperCase();
-  out += `<div class="section"><h2>Assessment Summary</h2><div style="font-size:15px;line-height:1.5">${esc(report.recommendation||'')}<br><br><b>Tier: ${esc(tier)}</b></div></div>`;
-  if (report.summary) out += `<div class="section"><h2>Summary</h2><div class="quiet">${esc(report.summary)}</div></div>`;
-  if (report.differential_note) out += `<div class="section"><h2>Differential Note</h2><div class="quiet">${esc(report.differential_note)}</div></div>`;
-  if (report.contradiction_note) out += `<div class="section"><h2>Contradiction Note</h2><div class="quiet">${esc(report.contradiction_note)}</div></div>`;
-  out += `<div class="section"><h2>Adult Symptom Pattern</h2><div class="quiet">Pattern: ${esc(report.adult_symptoms?.pattern||'n/a')} · Inattentive supported: ${report.adult_symptoms?.inattentive_supported||0} · Hyperactive supported: ${report.adult_symptoms?.hyperactive_supported||0} (threshold ≥${report.adult_symptoms?.threshold||5})</div></div>`;
-  out += `<div class="section"><h2>DSM-5 Criterion Evidence</h2>`;
-  const d = report.dsm5_criteria||{};
-  out += `<table><tr><th>Criterion</th><th>Evidence</th></tr>`;
-  for (const k of ['A_symptom_count','B_duration','C_onset','D_settings','E_impairment','F_not_better_explained']){
-    out += `<tr><td>${esc(k)}</td><td>${esc(d[k]||'not_supported')}</td></tr>`;
-  }
-  out += `</table></div>`;
-  out += `<div class="section"><h2>Per-Symptom Evidence</h2>
-    <table><tr><th>Criterion</th><th>Status</th><th>Confidence</th><th>Evidence</th></tr>`;
-  for (const c of report.per_criterion||[]){
-    const ev = c.example ? esc(c.example) : (Array.isArray(c.evidence)&&c.evidence.length?esc(c.evidence.join(' — ')):'<span class="quiet">no concrete example</span>');
-    out += `<tr><td><div style="max-width:160px">${esc(c.criterion)}</div></td><td>${esc(c.status)}</td><td>${esc(c.confidence)}</td><td><div style="max-width:200px">${ev}</div></td></tr>`;
-  }
-  out += `</table></div>`;
-  if (report.contradictions?.list?.length){
-    out += `<div class="section"><h2>Contradictory Evidence</h2><ul>${report.contradictions.list.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
-  }
-  if (report.differentials?.list?.length){
-    out += `<div class="section"><h2>Differential Considerations</h2><ul>${report.differentials.list.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
-  }
-  if (report.stage2_only){
-    out += `<div class="section"><h2>Not Yet Complete</h2><div class="quiet">${esc(report.stage2_only)}</div></div>`;
-  }
-  out += `<div class="section"><div class="quiet" style="font-size:12px">${esc(report.disclaimer||'')}</div></div>`;
-  out += `</div>`;
-  root.innerHTML = out;
+function persistTranscript() {
+  if (!STATE.id) return;
+  try { localStorage.setItem(STORAGE_TRANSCRIPT, JSON.stringify({ id: STATE.id, lang: STATE.lang, messages: STATE.messages, progress: STATE.progress })); } catch (e) {}
+}
+function clearResume() { localStorage.removeItem(STORAGE_SESSION); localStorage.removeItem(STORAGE_TRANSCRIPT); }
+
+function applyLang() {
+  window.STAGE2_STATE.lang = STATE.lang;
+  document.documentElement.lang = STATE.lang;
+  document.documentElement.dir = typeof t2 === 'function' ? t2().dir : (STATE.lang === 'fa' ? 'rtl' : 'ltr');
+  document.title = (typeof t2 === 'function' && t2().title) || 'ADHD Assessment — Symptom Interview';
 }
 
-async function api(path, opts={}){
-  const r = await fetch(path, { headers:{'Content-Type':'application/json'}, ...opts });
-  return r.json();
+function g() { return (typeof t2 === 'function') ? t2() : {}; }
+function shortCid(cid) {
+  if (!cid) return '';
+  const m = cid.match(/(INATT|HYPERR)_?(\d+)/);
+  return m ? (cid.indexOf('INATT') > -1 ? 'I' : 'H') + m[2] : cid;
+}
+function stageLabelOf(stage) { const gg = g(); return (gg.stageLabels && gg.stageLabels[stage]) || (gg.brand && stage) || stage; }
+function stageProgressLabel(label) {
+  if (label === 'REPORT') return stageProgressLabel('DIFFERENTIAL');
+  const gg = g(); return (gg.stageProgress && gg.stageProgress[label]) || stageLabelOf(label);
+}
+function statusPill(status) {
+  const gg = g(); const rr = gg.result || {};
+  const map = { supported: 'sp-supported', partially_supported: 'sp-partially_supported', unsupported: 'sp-unsupported', not_supported: 'sp-unsupported', uncertain: 'sp-uncertain' };
+  const cls = map[status] || 'sp-unsupported';
+  const key = (status === 'not_supported' || !status) ? 'unsupported' : status;
+  const lbl = (rr.statusLabels && rr.statusLabels[key]) || status || '—';
+  return '<span class="status-pill ' + cls + '">' + esc(lbl) + '</span>';
+}
+function onsetLabel(rating) {
+  const gg = g(); const rr = gg.result || {};
+  return rating ? ((rr.onsetLabels && rr.onsetLabels[rating]) || rating) : '—';
+}
+function durationLabel(rating) {
+  const gg = g(); const rr = gg.result || {};
+  return rating ? ((rr.durationLabels && rr.durationLabels[rating]) || rating) : '—';
+}
+function evCard(label, valueHtml) {
+  return '<div class="evidence-card"><div class="ec-label">' + esc(label) + '</div><div class="ec-value">' + valueHtml + '</div></div>';
 }
 
-async function start(){
-  let id = localStorage.getItem('adhd_stage2_session');
-  let init;
-  if (id){
-    try { init = await api(`/api/state/${id}`); } catch(e){ id=null; }
+/* === Header (brand + integrated language pill) === */
+function langPill() {
+  const order = STATE.lang === 'fa' ? ['fa', 'en'] : ['en', 'fa'];
+  let html = '<div class="lang-pill" role="radiogroup">';
+  for (let i = 0; i < order.length; i++) {
+    const code = order[i];
+    const label = code === 'en' ? 'English' : 'فارسی';
+    const selected = STATE.lang === code;
+    html += '<button type="button" role="radio" aria-checked="' + (selected ? 'true' : 'false') + '" class="lang-opt' + (selected ? ' selected' : '') + '" data-lang="' + code + '">' +
+      '<span class="lang-label' + (code === 'fa' ? ' fa' : '') + '">' + esc(label) + '</span></button>';
+    if (i < order.length - 1) html += '<span class="lang-divider"></span>';
   }
-  if (!id){
-    const res = await api('/api/session', { method:'POST' });
-    id = res.id; localStorage.setItem('adhd_stage2_session', id);
-    STATE.total = res.first ? 18 : 18;
-    return handleStart(res);
+  html += '</div>';
+  return html;
+}
+function renderHeader() {
+  const box = byId('header-slot'); if (!box) return;
+  box.innerHTML = '<header class="hd-brand"><h1>' + esc(g().brand || 'ADHD Self-Screening') + '</h1>' + langPill() + '</header>';
+}
+
+/* === Stage sub-header + progress === */
+function renderProgress() {
+  const slot = byId('progress-slot'); if (!slot) return;
+  const p = STATE.progress || {};
+  const gg = g();
+  let stageNum, title;
+  if (STATE.report) {
+    stageNum = stageProgressLabel('DIFFERENTIAL');
+    title = gg.result && gg.result.summary ? gg.result.summary : stageLabelOf(p.label);
+  } else {
+    stageNum = stageProgressLabel(p.label);
+    title = stageLabelOf(p.label);
   }
-  // resume: re-fetch? keep simple — create fresh if no question. Here just create fresh.
-  const res = await api('/api/session', { method:'POST' });
-  id = res.id; localStorage.setItem('adhd_stage2_session', id);
-  return handleStart(res);
+  const pct = p.pct || 0;
+  const meta = p.total ? (num(p.completed || 0) + ' / ' + num(p.total)) : '';
+  slot.innerHTML =
+    '<div class="hd-sub">' +
+      '<div class="stage-row"><span class="stage-num">' + esc(stageNum) + '</span></div>' +
+      '<h2>' + esc(title) + '</h2>' +
+      '<div class="sub-text">' + esc(gg.headerSubtitle || '') + '</div>' +
+    '</div>' +
+    '<div class="progress-wrap">' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="progress-meta"><span>' + esc(stageLabelOf(p.label)) + '</span><span>' + esc(meta) + '</span></div>' +
+    '</div>';
+  byId('header-slot') && updateProgressFill();
+}
+function updateProgressFill() {
+  const pct = (STATE.progress && STATE.progress.pct) || 0;
+  const fill = document.querySelector('.progress-fill');
+  if (fill) fill.style.width = pct + '%';
 }
 
-function handleStart(res){
-  STATE.id = res.id; STATE.total = 18; STATE.done = 0;
-  STATE.messages = [{ role:'ai', text:res.question, cid:res.criterionId }];
-  renderMessages();
-  byId('root').insertAdjacentHTML('beforeend', renderInput());
+/* === Messages (scrollable; persistent input never touched here) === */
+function renderMessages() {
+  const box = byId('messages'); if (!box) return;
+  if (STATE.report) { box.innerHTML = ''; return; }
+  const atBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 24;
+  let html = '';
+  if (STATE.banner) html += '<div class="stage-banner">' + esc(STATE.banner) + '</div>';
+  for (let i = 0; i < STATE.messages.length; i++) {
+    const m = STATE.messages[i];
+    let classes = m.role === 'user' ? 'msg user' : 'msg ai';
+    if (m.kind === 'transition' || m.kind === 'error' || m.kind === 'completed') classes += ' transition';
+    else if (m.kind === 'criterion_done') classes += ' criterion-done';
+    else if (m.kind === 'error') classes += ' error';
+    const badge = (m.cid && (m.kind === 'question' || m.kind === 'criterion_done' || m.kind === 'followup'))
+      ? '<span class="badge">' + esc(shortCid(m.cid)) + '</span> ' : '';
+    html += '<div class="' + classes + '"><div class="qs">' + badge + esc(m.text) + '</div></div>';
+  }
+  box.innerHTML = html || ('<div class="quiet" style="margin:12px 0">' + esc(g().loading) + '</div>');
+  persistTranscript();
+  if (atBottom) box.scrollTop = box.scrollHeight;
+  announce();
 }
 
-function renderInput(){
-  return `<div id="inputbar" class="row"><textarea id="ta" placeholder="Your answer..." autocomplete="off"></textarea><button id="send" disabled>Send</button></div>`;
+function announce() {
+  let ann = byId('a11y-announcer');
+  if (!ann) {
+    ann = document.createElement('div');
+    ann.id = 'a11y-announcer';
+    ann.setAttribute('aria-live', 'polite');
+    ann.setAttribute('aria-atomic', 'true');
+    ann.style.cssText = 'position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;';
+    document.body.appendChild(ann);
+  }
+  const last = STATE.messages.length ? STATE.messages[STATE.messages.length - 1] : null;
+  ann.textContent = (last && last.role === 'ai') ? last.text : '';
 }
 
-function attachInput(){
+/* === Persistent input (built once; never destroyed -> keyboard/focus preserved) === */
+function renderInput() {
+  const slot = byId('input-slot'); if (!slot) return;
+  if (STATE.report) { slot.style.display = 'none'; return; }
+  slot.style.display = '';
+  if (!slot.dataset.bound) {
+    slot.dataset.bound = 'true';
+    slot.innerHTML = '<div class="input-area">' +
+      '<textarea id="ta" rows="1" autocomplete="off" aria-label="Your answer"></textarea>' +
+      '<button id="send" type="button">' + esc(g().sendBtn) + '</button>' +
+      '</div><div class="input-hint">' + esc(g().headerSubtitle) + '</div>';
+    const ta = byId('ta'); const btn = byId('send');
+    ta.addEventListener('input', function () { btn.disabled = !ta.value.trim(); });
+    ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!btn.disabled) submit(); } });
+    btn.addEventListener('click', submit);
+  }
   const ta = byId('ta'); const btn = byId('send');
-  ta.addEventListener('input', ()=>{ btn.disabled = !ta.value.trim(); });
-  ta.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); if(!btn.disabled) submit(); } });
-  btn.addEventListener('click', submit);
+  if (ta) ta.placeholder = g().placeholder;
+  if (btn) btn.textContent = g().sendBtn;
+  const hint = slot.querySelector('.input-hint');
+  if (hint) hint.textContent = g().headerSubtitle;
+  if (ta && btn) btn.disabled = !ta.value.trim();
 }
 
-async function submit(){
-  const ta = byId('ta'); const btn = byId('send');
-  const answer = ta.value.trim(); if(!answer) return;
-  ta.value=''; btn.disabled=true;
-  STATE.messages.push({role:'user', text:answer});
-  renderMessages();
-  // keep input bar
-  document.getElementById('inputbar')?.remove();
-  byId('root').insertAdjacentHTML('beforeend', renderInput()); attachInput();
+/* === Report (result page) === */
+function buildReport(r) {
+  const gg = t2(); const t = gg.result || {};
+  const R = r || {};
+  const adult = R.adult_symptoms || {};
+  const dur = R.duration_persistence || {};
+  const setts = R.settings || {};
+  const imp = R.impairment || {};
+  const on = R.childhood_onset || {};
+  const dsm = R.dsm5_criteria || {};
+  const contra = R.contradictions || { list: [] };
+  const diff = R.differentials || { list: [] };
+  const order = ['A_symptom_count', 'B_duration', 'C_onset', 'D_settings', 'E_impairment', 'F_not_better_explained'];
+  let h = '';
 
+  h += '<div class="report-header"><h1>' + esc(t.summary) + '</h1>' +
+    '<div class="sub">' + esc(t.notADiagnosis) + ' · ' + esc(t.subtitle) + '</div></div>';
+
+  const tierKey = R.tier || 'Insufficient';
+  h += '<div class="tier-card">' +
+    '<div class="tier-label">' + esc(t.notADiagnosis) + '</div>' +
+    '<div class="tier-headline">' + esc(t.tierLabels ? t.tierLabels[tierKey] : tierKey) + '</div>' +
+    '<div class="tier-body">' + esc(R.recommendation || '') + '</div>' +
+    '</div>';
+
+  h += '<div class="evidence-grid">';
+  h += evCard(t.grid.pattern, t.patternLabels ? (t.patternLabels[adult.pattern] || adult.pattern) : adult.pattern);
+  h += evCard(t.grid.symptoms, num(adult.inattentive_supported || 0) + ' / ' + num(adult.hyperactive_supported || 0) + ' ' + esc(t.statusLabels ? t.statusLabels.supported : 'Supported') + ' (\u2265' + num(adult.threshold || 5) + ')');
+  h += evCard(t.grid.childhood, onsetLabel(on.rating));
+  h += evCard(t.grid.duration, durationLabel(dur.rating));
+  h += evCard(t.grid.settings, num(setts.count || 0) + ' (' + esc(setts.multiple_settings ? t.settingsReq : '<2') + ')');
+  h += evCard(t.grid.impairment, num(imp.count || 0) + ' (' + esc(t.impairmentReq) + ')');
+  h += '</div>';
+
+  h += '<table class="dsm-table"><thead><tr><th>' + esc(t.criterionCol) + '</th><th>' + esc(t.statusCol) + '</th></tr></thead><tbody>';
+  for (let i = 0; i < order.length; i++) {
+    const k = order[i]; const v = dsm[k] || 'not_supported';
+    h += '<tr><td>' + esc(t.dsmLabels ? t.dsmLabels[k] : k) + '</td><td>' + statusPill(v) + '</td></tr>';
+  }
+  h += '</tbody></table>';
+
+  h += '<div class="tag-block">';
+  if (contra.list && contra.list.length) {
+    h += '<span class="tag tag-head">' + esc(t.contradictions) + '</span>';
+    for (let i = 0; i < contra.list.length; i++) h += '<span class="tag tag-contra">' + esc(contra.list[i]) + '</span>';
+  } else {
+    h += '<span class="quiet">' + esc(t.noContradictions) + '</span>';
+  }
+  h += '</div>';
+  h += '<div class="tag-block">';
+  if (diff.list && diff.list.length) {
+    h += '<span class="tag tag-head">' + esc(t.differentials) + '</span>';
+    for (let i = 0; i < diff.list.length; i++) h += '<span class="tag">' + esc(diff.list[i]) + '</span>';
+  } else {
+    h += '<span class="quiet">' + esc(t.noDifferentials) + '</span>';
+  }
+  h += '</div>';
+
+  const per = R.per_criterion || [];
+  const inatt = []; const hyper = [];
+  for (let i = 0; i < per.length; i++) { (per[i].domain === 'hyperactive' ? hyper : inatt).push(per[i]); }
+  h += '<div class="criterion-list">';
+  h += '<div class="criterion-group-title">' + esc(t.groupInattentive) + '</div>';
+  for (let i = 0; i < inatt.length; i++) h += criterionItem(inatt[i]);
+  h += '<div class="criterion-group-title">' + esc(t.groupHyperactive) + '</div>';
+  for (let i = 0; i < hyper.length; i++) h += criterionItem(hyper[i]);
+  h += '</div>';
+
+  if (R.stage2_only) h += '<div class="quiet" style="margin:0 24px">' + esc(R.stage2_only) + '</div>';
+
+  h += '<div class="report-footer">' +
+    '<button type="button" class="back-btn" data-action="backToStart">' + esc(t.backToStart) + '</button>' +
+    '<div class="quiet">' + esc(R.disclaimer || (t.footer || '')) + '</div>' +
+    '</div>';
+  return h;
+}
+
+function criterionItem(c) {
+  const t = t2().result || {};
+  const open = STATE.openCriteria.has(c.criterion);
+  let body = '<div class="ci-details">';
+  const ex = c.example ? esc(c.example) : ('<span class="quiet">' + esc(t.noExample) + '</span>');
+  body += '<div><span class="ci-row-label">' + esc(t.exampleLabel) + ':</span> ' + ex + '</div>';
+  if (c.contexts && c.contexts.length) body += '<div><span class="ci-row-label">' + esc(t.contextsLabel) + ':</span> ' + esc(c.contexts.join(', ')) + '</div>';
+  if (c.counter_evidence && c.counter_evidence.length) body += '<div><span class="ci-row-label">' + esc(t.counterLabel) + ':</span> <ul>' + c.counter_evidence.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+  if (c.evidence && c.evidence.length) body += '<div><span class="ci-row-label">' + esc(t.evidenceCol) + ':</span> <ul>' + c.evidence.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+  if (c.uncertainty) body += '<div><span class="ci-row-label">' + esc(t.uncertaintyLabel) + ':</span> ' + esc(c.uncertainty) + '</div>';
+  body += '</div>';
+  return '<div class="criterion-item">' +
+    '<div class="ci-head" data-cid="' + esc(c.criterion) + '" tabindex="0" role="button" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+      '<span class="ci-id">' + esc(c.criterion) + '</span>' +
+      '<span class="ci-meta">' + statusPill(c.status) +       '<span class="ci-conf">' + esc((t.confidenceLabels && t.confidenceLabels[c.confidence]) || c.confidence || '—') + '</span>' +
+      '<span class="ci-toggle">' + esc(open ? t.hideEvidence : t.showEvidence) + '</span></span>' +
+    '</div>' +
+    '<div class="ci-body' + (open ? ' open' : '') + '" data-cid="' + esc(c.criterion) + '">' + body + '</div>' +
+    '</div>';
+}
+
+function toggleCriterion(cid) {
+  if (!cid) return;
+  if (STATE.openCriteria.has(cid)) STATE.openCriteria.delete(cid);
+  else STATE.openCriteria.add(cid);
+  renderReport();
+}
+
+function renderReport() {
+  const box = byId('messages'); if (!box) return;
+  if (!STATE.report) return;
+  box.innerHTML = buildReport(STATE.report);
+  box.scrollTop = 0;
+  const slot = byId('input-slot'); if (slot) slot.style.display = 'none';
+  announce();
+}
+
+/* === App flow === */
+function renderAll() {
+  renderHeader();
+  renderProgress();
+  renderMessages();
+  renderInput();
+}
+
+async function createSession() {
   try {
-    const res = await api(`/api/answer/${STATE.id}`, { method:'POST', body:JSON.stringify({answer}) });
-    if (res.error){ byId('root').insertAdjacentHTML('beforeend',`<div class="err">Error: ${esc(res.error)}</div>`); return; }
-    if (res.completed && res.report){ STATE.messages.push({role:'ai', text:'Assessment complete.'}); renderMessages(); renderReport(res.report); return; }
-    if (res.transitioned){
-      const stageLabel = res.stage === 'CHILDHOOD' ? 'Childhood Onset' : res.stage === 'IMPAIRMENT' ? 'Functional Impairment' : res.stage === 'DIFFERENTIAL' ? 'Differential Considerations' : res.stage;
-      STATE.messages.push({role:'ai', text:`(Stage complete — entering: ${stageLabel})`});
-    }
-    if (res.criterion_done){
-      STATE.done = (STATE.done||0)+1;
-      const shown = (res.evidence?.core_answer) ? ` — ${res.evidence.core_answer}` : '';
-      STATE.messages.push({role:'ai', text:`(${res.criterionId} recorded as ${res.status||'uncertain'})${shown}`, cid:res.criterionId});
-    } else if (res.followup){
-      // question already reflects the follow-up; messages already show ta removed/re-added
-    }
-    STATE.messages.push({role:'ai', text:res.question||'', cid:res.criterionId});
-    renderMessages();
-  } catch(e){
-    byId('root').insertAdjacentHTML('beforeend',`<div class="err">Network error: ${esc(String(e.message))}</div>`);
+    const res = await api('/api/session', { method: 'POST', body: { lang: STATE.lang } });
+    if (res.error) throw new Error(res.error);
+    STATE.id = res.id;
+    localStorage.setItem(STORAGE_SESSION, STATE.id);
+    STATE.lang = res.lang || STATE.lang;
+    applyLang();
+    STATE.progress = res.progress || STATE.progress;
+    STATE.messages = res.question ? [{ role: 'ai', kind: 'question', text: res.question, cid: res.criterionId }] : [];
+    STATE.banner = null;
+    STATE.report = null;
+    renderAll();
+    persistTranscript();
+    byId('ta') && byId('ta').focus();
+  } catch (e) {
+    showError(g().failedToStart + ': ' + e.message);
   }
 }
 
-start().then(()=>{ document.getElementById('inputbar')?.remove(); byId('root').insertAdjacentHTML('beforeend', renderInput()); attachInput(); }).catch(e=>{ byId('root').innerHTML=`<div class="err">Failed to start: ${esc(String(e.message))}</div>`; });
+async function resume() {
+  const sess = localStorage.getItem(STORAGE_SESSION);
+  const trans = localStorage.getItem(STORAGE_TRANSCRIPT);
+  if (!sess || !trans) return false;
+  try {
+    const t = JSON.parse(trans);
+    if (t.id !== sess) return false;
+    const st = await api('/api/state/' + sess).catch(function () { return null; });
+    if (!st || st.error) { clearResume(); return false; }
+    STATE.id = sess;
+    STATE.lang = st.lang || t.lang || STATE.lang;
+    applyLang();
+    STATE.messages = t.messages || [];
+    STATE.progress = st.progress || STATE.progress;
+    renderAll();
+    if (st.stage === 'REPORT') {
+      const r = await api('/api/report/' + sess).catch(function () { return null; });
+      if (r && r.report) { STATE.report = r.report; renderReport(); }
+    }
+    return true;
+  } catch (e) {
+    clearResume();
+    return false;
+  }
+}
+
+async function start() {
+  const resumed = await resume();
+  if (!resumed) await createSession();
+}
+
+function showError(msg) {
+  const box = byId('messages'); if (box) box.innerHTML = '<div class="err">' + esc(msg) + '</div>';
+  const slot = byId('input-slot'); if (slot) slot.style.display = 'none';
+  renderProgress();
+}
+
+async function submit() {
+  const ta = byId('ta'); const btn = byId('send');
+  if (!ta || btn.disabled) return;
+  const answer = ta.value.trim();
+  if (!answer) return;
+  ta.value = ''; btn.disabled = true;
+  STATE.messages.push({ role: 'user', text: answer });
+  renderMessages();
+  ta.focus();
+  try {
+    const res = await api('/api/answer/' + STATE.id, { method: 'POST', body: { answer: answer, lang: STATE.lang } });
+    if (res.error) { STATE.messages.push({ role: 'ai', kind: 'error', text: g().errorMsg + ': ' + res.error }); renderMessages(); return; }
+    if (res.progress) STATE.progress = res.progress;
+    if (res.completed && res.report) {
+      STATE.report = res.report;
+      STATE.progress = res.progress || STATE.progress;
+      STATE.banner = null;
+      STATE.messages.push({ role: 'ai', kind: 'completed', text: g().assessmentComplete });
+      renderAll();
+      renderReport();
+      return;
+    }
+    if (res.transitioned) {
+      const nxt = stageLabelOf(res.stage);
+      STATE.banner = g().transitionMsg + ' ' + nxt;
+      STATE.messages.push({ role: 'ai', kind: 'transition', text: g().transitionMsg + ' ' + nxt });
+    } else {
+      STATE.banner = null;
+    }
+    if (res.criterion_done) {
+      const status = res.status || 'uncertain';
+      const sk = (status === 'not_supported' || !status) ? 'unsupported' : status;
+      const rr = g().result || {};
+      const slabel = (rr.statusLabels && rr.statusLabels[sk]) || status || '—';
+      const shown = (res.evidence && res.evidence.core_answer) ? ' \u2014 ' + res.evidence.core_answer : '';
+      STATE.messages.push({ role: 'ai', kind: 'criterion_done', text: '(' + res.criterionId + ' ' + g().criterionRecorded + ' ' + slabel + ')' + shown, cid: res.criterionId });
+    }
+    if (res.question) {
+      STATE.messages.push({ role: 'ai', kind: res.followup ? 'followup' : 'question', text: res.question, cid: res.criterionId });
+    }
+    renderAll();
+    persistTranscript();
+    ta.focus();
+  } catch (e) {
+    STATE.messages.push({ role: 'ai', kind: 'error', text: g().networkError + ': ' + e.message });
+    renderMessages();
+  }
+}
+
+function onDocClick(e) {
+  const langEl = e.target.closest('[data-lang]');
+  if (langEl) {
+    const code = langEl.getAttribute('data-lang');
+    if (code && code !== STATE.lang) { STATE.lang = code; localStorage.setItem(STORAGE_LANG, code); applyLang(); renderAll(); if (STATE.report) renderReport(); persistTranscript(); }
+    return;
+  }
+  const headEl = e.target.closest('.ci-head');
+  if (headEl) { toggleCriterion(headEl.getAttribute('data-cid')); return; }
+  const actEl = e.target.closest('[data-action]');
+  if (actEl) { if (actEl.getAttribute('data-action') === 'backToStart') window.location.href = '/'; }
+}
+
+function onKeyDown(e) {
+  const head = e.target.closest('.ci-head');
+  if (head && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleCriterion(head.getAttribute('data-cid')); }
+}
+
+function init() {
+  const savedLang = localStorage.getItem(STORAGE_LANG) || localStorage.getItem('adhd_lang');
+  STATE.lang = (savedLang === 'fa' || savedLang === 'en') ? savedLang : 'en';
+  applyLang();
+  renderHeader();
+  renderProgress();
+  renderMessages();
+  renderInput();
+  document.addEventListener('click', onDocClick);
+  document.addEventListener('keydown', onKeyDown);
+  start();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
 </script>
 </body>
 </html>

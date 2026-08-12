@@ -4,30 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ADHD Self-Screening</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" type="image/svg+xml">
+<link rel="stylesheet" href="/design-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --bg: #FBFBFB;
-    --text: #1A1A1A;
-    --heading: #171717;
-    --body: #737373;
-    --muted: #A3A3A3;
-    --border: #E5E5E5;
-    --line: #F5F5F5;
-    --white: #FFFFFF;
+    --bg: var(--ff-surface, #f8f9ff);
+    --text: var(--ff-on-surface, #0b1c30);
+    --heading: var(--ff-heading, var(--ff-on-surface));
+    --body: var(--ff-on-surface-variant, #45464d);
+    --muted: var(--ff-muted, var(--ff-on-surface-variant));
+    --border: var(--ff-outline-variant, #c6c6cd);
+    --line: var(--ff-outline-variant, #c6c6cd);
+    --white: var(--ff-surface-container-lowest, #ffffff);
+    --accent: var(--ff-secondary, #006a61);
+    --primary: var(--ff-primary, #000000);
+    --on-primary: var(--ff-on-primary, #ffffff);
+    --secondary: var(--ff-secondary, #006a61);
+    --outline: var(--ff-outline, #76777d);
+    --on-surface-variant: var(--ff-on-surface-variant, #45464d);
+    --font-label: "JetBrains Mono", "Segoe UI", Roboto, monospace;
+    --ff-font-body: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --ff-font-persian: "Vazirmatn", "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
   }
   html, body { height: 100%; }
   body {
-    background: #EBEBEA;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    font-family: var(--ff-font-body, "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif);
     color: var(--text);
     display: flex; align-items: center; justify-content: center;
     -webkit-font-smoothing: antialiased;
   }
-  html[lang="fa"] body, html[lang="fa"] .device, html[lang="fa"] button { font-family: "Vazirmatn", "Inter", sans-serif; }
+  html[lang="en"] body, html[lang="en"] .device, html[lang="en"] button { font-family: var(--ff-font-body, "Hanken Grotesk", sans-serif); }
+  html[lang="fa"] body, html[lang="fa"] .device, html[lang="fa"] button { font-family: var(--ff-font-persian, "Vazirmatn", "Hanken Grotesk", sans-serif); }
 
   .device {
     width: 390px; height: 844px; background: var(--bg);
@@ -122,11 +132,12 @@
 
   /* ---------- question screen ---------- */
   .ctx-row { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px 0; margin-bottom: 12px; }
-  .ctx-count { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .ctx-count { font-size: 12px; font-weight: 500; font-family: var(--ff-font-label); letter-spacing: 0.05em; color: var(--muted); }
   .help-pill {
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--line); border: none; border-radius: 999px; padding: 6px 16px;
-    font-family: inherit; font-size: 10px; font-weight: 700; color: var(--text); cursor: pointer;
+    font-family: var(--ff-font-label); font-size: 11px; font-weight: 700; color: var(--text); cursor: pointer;
+    letter-spacing: 0.05em;
   }
   .help-pill svg { width: 12px; height: 12px; fill: var(--muted); }
   .help-pill.expanded { background: var(--heading); color: var(--white); }
@@ -139,15 +150,16 @@
   .answers { padding: 0 32px 8px; display: flex; flex-direction: column; gap: 12px; }
   .answer-row {
     width: 100%; height: 70px; background: var(--white);
-    border: 1px solid var(--line); border-radius: 20px; padding: 0 24px;
-    font-family: inherit; font-size: 18px; font-weight: 500; color: var(--text); text-align: start;
+    border: 1px solid var(--line); border-radius: 16px; padding: 0 24px;
+    font-family: var(--ff-font-body, "Hanken Grotesk", sans-serif); font-size: 16px; font-weight: 500; color: var(--text); text-align: start;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04); cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer;
     transition: border-color .15s ease;
   }
-  html[lang="en"] .answer-row { font-size: 16px; }
-  .answer-row:hover { border-color: var(--border); }
-  .answer-row.selected { border: 2px solid var(--heading); font-weight: 700; padding: 0 22px; }
+  html[lang="en"] .answer-row { font-size: 16px; font-family: var(--ff-font-body, "Hanken Grotesk", sans-serif); }
+  html[lang="fa"] .answer-row { font-size: 16px; font-family: var(--ff-font-persian, "Vazirmatn", "Hanken Grotesk", sans-serif); }
+  .answer-row:hover { border-color: var(--accent); }
+  .answer-row.selected { border: 2px solid var(--accent); font-weight: 700; padding: 0 22px; }
   .answer-check { display: none; flex: none; width: 24px; height: 24px; }
   .answer-row.selected .answer-check { display: block; }
   .answer-check svg { width: 24px; height: 24px; }
@@ -158,20 +170,31 @@
   .result-head { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: var(--heading); margin-bottom: 6px; }
   .result-body { font-size: 18px; line-height: 1.625; color: var(--body); margin-bottom: 8px; }
   .result-note { font-size: 14px; line-height: 1.625; color: var(--body); }
+  .continue-promo { font-size: 14px; line-height: 1.5; color: var(--body); text-align: center; margin-top: 8px; font-style: italic; }
 
   /* ---------- footer ---------- */
   footer { padding: 32px 32px 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
   .primary {
-    width: 100%; padding: 20px 0; background: var(--heading); color: var(--white);
-    border: none; border-radius: 16px; font-family: inherit; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
-    box-shadow: 0 20px 25px -5px rgba(229,229,229,1), 0 8px 10px -6px rgba(229,229,229,1);
-    cursor: pointer; transition: transform .12s ease;
+    width: 100%; padding: 16px 0; background: var(--primary, #000000); color: var(--on-primary, #ffffff);
+    border: none; border-radius: 8px; font-size: 16px; font-weight: 700; line-height: 24px;
+    cursor: pointer; transition: opacity .15s ease;
   }
-  .primary:active { transform: scale(0.98); }
-  .primary:disabled { background: var(--border); color: var(--muted); box-shadow: none; cursor: not-allowed; }
-  .secondary { background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--body); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; cursor: pointer; }
+  html[lang="en"] .primary { font-family: var(--ff-font-body, "Hanken Grotesk", sans-serif); }
+  html[lang="fa"] .primary { font-family: var(--ff-font-persian, "Vazirmatn", "Hanken Grotesk", sans-serif); }
+  .primary:active { opacity: 0.85; }
+  .primary:disabled { background: var(--outline, #c6c6cd); color: var(--on-surface-variant, #45464d); cursor: not-allowed; }
+  .primary:hover:not(:disabled) { opacity: 0.85; }
+  .secondary {
+    background: transparent; color: var(--secondary, #006a61);
+    border: 1px solid var(--secondary); border-radius: 8px;
+    padding: 8px 16px; font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  html[lang="en"] .secondary { font-family: var(--ff-font-body, "Hanken Grotesk", sans-serif); }
+  html[lang="fa"] .secondary { font-family: var(--ff-font-persian, "Vazirmatn", "Hanken Grotesk", sans-serif); }
+  .secondary:hover { opacity: 0.8; }
   .disclaimer { font-size: 12px; font-weight: 500; color: var(--muted); }
-  .source-note { padding: 0 32px 24px; font-size: 10px; line-height: 1.6; color: var(--muted); text-align: center; }
+  .source-note { padding: 0 32px 24px; font-size: 10px; line-height: 1.6; font-family: var(--ff-font-label); letter-spacing: 0.05em; color: var(--muted); text-align: center; }
 </style>
 </head>
 <body>
@@ -183,6 +206,7 @@ var LANG = {
   en: {
     dir: 'ltr',
     brand: 'ADHD Self-Screening',
+    backLabel: 'Back',
     lead: 'A quick check-in on attention and everyday life.',
     welcome: [
       'This is a short self-screening check-in for adults aged 18 and over.',
@@ -227,6 +251,8 @@ var LANG = {
     },
     finishLabel: 'Finish',
     startAgainLabel: 'Start again',
+    interviewLabel: 'Continue to full interview',
+    continuePrompt: 'Would you like to continue with a fuller symptom interview for more detail?',
     disclaimer: 'Screening, not a diagnosis',
     sourceNote: 'ASRS-v1.1 Screener © World Health Organization. Citation: Kessler RC, Adler L, Ames M, et al. Psychological Medicine. 2005;35:245–256.'
   },
@@ -234,6 +260,7 @@ var LANG = {
   fa: {
     dir: 'rtl',
     brand: 'خودارزیابی ADHD',
+    backLabel: 'بازگشت',
     lead: 'بررسی کوتاهی برای توجه و زندگی روزمره',
     welcome: [
       'این یک غربالگری کوتاه برای بزرگسالان ۱۸ سال به بالا است.',
@@ -278,6 +305,8 @@ var LANG = {
     },
     finishLabel: 'پایان',
     startAgainLabel: 'شروع دوباره',
+    interviewLabel: 'ادامه به مصاحبه کامل',
+    continuePrompt: 'آیا مایلید به مصاحبهٔ جامع‌تری ادامه دهید؟',
     disclaimer: 'غربالگری است، نه تشخیص',
     sourceNote: 'پرسشنامه غربالگری ASRS-v1.1 © سازمان جهانی بهداشت. منبع: Kessler RC, Adler L, Ames M, et al. Psychological Medicine. 2005;35:245–256.'
   }
@@ -287,8 +316,8 @@ var LANG = {
 <script>
 /* ================= state ================= */
 var state = {
-  lang: 'en',
-  screen: 'welcome', // welcome | howto | question | results
+  lang: localStorage.getItem('adhd_lang') || 'en',
+  screen: 'welcome',
   qIndex: 0,
   answers: [null, null, null, null, null, null],
   showHelp: false
@@ -380,7 +409,7 @@ function sHow() {
   }).join('');
   return '' +
     '<header class="hd-top"><div class="hd-row">' +
-      '<button class="btn-back" data-action="back">' + S.back + '</button>' +
+      '<button class="btn-back" data-action="back" aria-label="' + esc(g.backLabel) + '">' + S.back + '</button>' +
       '<span class="hd-title">' + esc(g.brand) + '</span>' +
       '<span class="hd-spacer"></span>' +
     '</div></header>' +
@@ -418,7 +447,7 @@ function sQuestion() {
 
   return '' +
     '<header class="hd-top"><div class="hd-row">' +
-      '<button class="btn-back" data-action="back">' + S.back + '</button>' +
+      '<button class="btn-back" data-action="back" aria-label="' + esc(g.backLabel) + '">' + S.back + '</button>' +
       '<span class="hd-title">' + esc(g.brand) + '</span>' +
       '<span class="hd-spacer"></span>' +
     '</div><div class="dots">' + dots + '</div></header>' +
@@ -444,19 +473,23 @@ function sResult() {
   var body = outcome === 'positive' ? g.positive.body : g.negative.body;
   var note = outcome === 'positive' ? g.positive.note : g.negative.note;
   return '' +
-    '<header class="hd-bare"><h1>' + esc(g.brand) + '</h1></header>' +
-    '<main><div class="result-wrap">' +
-      '<p class="result-label">' + esc(g.resultLabel) + '</p>' +
-      '<h2 class="result-head">' + esc(head) + '</h2>' +
-      '<p class="result-body">' + esc(body) + '</p>' +
-      '<p class="result-note">' + esc(note) + '</p>' +
-    '</div></main>' +
-    '<footer>' +
-      '<button class="primary" data-action="finish">' + esc(g.finishLabel) + '</button>' +
-      '<button class="secondary" data-action="restart">' + esc(g.startAgainLabel) + '</button>' +
-      '<p class="disclaimer">' + esc(g.disclaimer) + '</p>' +
-    '</footer>' +
-    '<p class="source-note">' + esc(g.sourceNote) + '</p>';
+     '<header class="hd-bare"><h1>' + esc(g.brand) + '</h1></header>' +
+     '<main><div class="result-wrap">' +
+       '<p class="result-label">' + esc(g.resultLabel) + '</p>' +
+       '<h2 class="result-head">' + esc(head) + '</h2>' +
+       '<p class="result-body">' + esc(body) + '</p>' +
+       '<p class="result-note">' + esc(note) + '</p>' +
+       (outcome === 'positive' ? '<p class="continue-promo">' + esc(g.continuePrompt) + '</p>' : '') +
+     '</div></main>' +
+     '<footer>' +
+       (outcome === 'positive'
+         ? '<button class="primary" data-action="toStage2">' + esc(g.interviewLabel) + '</button>' +
+           '<button class="secondary" data-action="restart">' + esc(g.startAgainLabel) + '</button>'
+         : '<button class="primary" data-action="finish">' + esc(g.finishLabel) + '</button>' +
+           '<button class="secondary" data-action="restart">' + esc(g.startAgainLabel) + '</button>') +
+       '<p class="disclaimer">' + esc(g.disclaimer) + '</p>' +
+     '</footer>' +
+     '<p class="source-note">' + esc(g.sourceNote) + '</p>';
 }
 </script>
 
@@ -494,6 +527,7 @@ app.addEventListener('click', function (e) {
   var langEl = e.target.closest('[data-lang]');
   if (langEl) {
     state.lang = langEl.getAttribute('data-lang');
+    localStorage.setItem('adhd_lang', state.lang);
     render();
     return;
   }
@@ -530,6 +564,9 @@ app.addEventListener('click', function (e) {
       case 'finish':
         state.screen = 'welcome';
         break;
+      case 'toStage2':
+        window.location.href = '/stage2';
+        break;
       case 'restart':
         state.answers = [null, null, null, null, null, null];
         state.qIndex = 0; state.showHelp = false;
@@ -544,6 +581,8 @@ app.addEventListener('click', function (e) {
   if (ansEl) {
     state.answers[state.qIndex] = parseInt(ansEl.getAttribute('data-answer'), 10);
     render();
+    var sel = document.querySelector('.answer-row.selected');
+    if (sel) sel.focus();
   }
 });
 
