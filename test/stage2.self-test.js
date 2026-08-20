@@ -73,7 +73,39 @@ const engine = require(path.join(ROOT, 'model/engine'));
   pass('evaluate: stage2_only note present (Stages 3-5 not done)', !!rep.stage2_only, `stage2_only=${!!rep.stage2_only}`);
   pass('evaluate: disclaimer present', typeof rep.disclaimer === 'string' && rep.disclaimer.length > 0, `disclaimer_len=${rep.disclaimer?.length}`);
   pass('evaluate: not_a_diagnosis flag set', rep.not_a_diagnosis === true);
-  pass('evaluate: per_criterion has 18 entries', Array.isArray(rep.per_criterion) && rep.per_criterion.length === 18, `length=${rep.per_criterion?.length}`);
+  pass('evaluate: per_criterion has 18 entries', Array.isArray(rep.per_criterion) && rep.per_criterion.length === 18, `length=${rep.per_criteria?.length}`);
+
+  // --- Frequency UI labels must match server locale options and classify correctly ---
+  const locales = require('../model/locales');
+  const uiFreq = {
+    en: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+    fa: ['هرگز', 'ندرتاً', 'گاهی', 'اغلب', 'بسیار زیاد']
+  };
+  for (const lang of ['en', 'fa']) {
+    const serverFreq = locales.frequency(lang);
+    pass(`UI frequencyOpts[${lang}] matches server locales.frequency()`, JSON.stringify(uiFreq[lang]) === JSON.stringify(serverFreq), `ui=${JSON.stringify(uiFreq[lang])} server=${JSON.stringify(serverFreq)}`);
+    for (const label of uiFreq[lang]) {
+      const canon = locales.classifyFrequency(label);
+      pass(`classifyFrequency('${label}') -> canonical`, canon !== null, `label='${label}' result=${canon}`);
+    }
+  }
+
+  // --- Submitting a UI frequency label through the core pipeline ---
+  const s2 = assessment.createStage2Assessment('freq-regression');
+  s2.screening = 'positive';
+  assessment.begin(s2); // sets pending to INATT_01 core
+  const coreLabel = 'Often'; // EN UI frequency button label
+  const res2 = await assessment.processTurn(s2, coreLabel);
+  pass('UI frequency "Often" classified as core_answer', s2.criteria['INATT_01'].core_answer === 'Often', `core_answer=${s2.criteria['INATT_01'].core_answer}`);
+  pass('processTurn after frequency submit returns a kind field', typeof res2.kind === 'string', `kind=${res2.kind}`);
+
+  // Verify FA frequency label also classifies through the pipeline
+  const s3 = assessment.createStage2Assessment('freq-regression-fa');
+  s3.screening = 'positive';
+  s3.lang = 'fa';
+  assessment.begin(s3);
+  const res3 = await assessment.processTurn(s3, 'اغلب'); // FA UI frequency button label
+  pass('FA frequency "اغلب" classified as core_answer=Often (canonical)', s3.criteria['INATT_01'].core_answer === 'Often', `core_answer=${s3.criteria['INATT_01'].core_answer}`);
 
   console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
   process.exit(failures === 0 ? 0 : 1);

@@ -1,140 +1,105 @@
-# PRD: AI-Assisted ADHD Screening Companion
+# PRD: Structured ADHD Assessment Companion
 
 ## Summary
 
-Create a non-diagnostic self-assessment product that helps adults understand whether their attention, organization, impulsivity, restlessness, or daily-functioning struggles may be worth discussing with a qualified clinician.
+Create a non-diagnostic, evidence-based **ADHD assessment companion** that helps an adult decide whether a professional ADHD evaluation may be worthwhile. It combines a validated ASRS screener with a bounded, structured AI-led evidence interview across adult ADHD symptoms, childhood history, functional impairment, and a focused differential check — then produces a structured, traceable report.
 
-The product should feel like a structured clinical conversation, not a generic chatbot and not a casual internet quiz. It should guide the user through evidence-based ADHD screening and, over time, broader neurodivergence and mental-health screening.
+It is intentionally **ADHD-only** for now. A general mental-health / neurodivergence platform is explicitly out of scope (deferred).
 
-The first release must stay intentionally small so it can be finished.
+The first release must stay intentionally small so it can be finished: the ASRS screener (V1) plus the five-stage structured assessment + report (fast-track).
 
 ## Product Promise
 
-The product helps users answer one question:
+The product helps the user answer:
 
-“Is there enough evidence that I should seriously consider a professional ADHD evaluation?”
+> "Based on a short, structured ADHD screening and evidence-gathering, would it make sense for me to seek a professional ADHD evaluation?"
 
-The product must not answer:
+The product must **not** answer:
 
-“Do I officially have ADHD?”
+> "Do I officially have ADHD?"
 
-The output should help the user understand their own pattern, notice uncertainty, and prepare for a possible appointment with a psychiatrist, psychologist, therapist, or other qualified clinician.
+The output helps the user understand their own pattern, notice uncertainty, and prepare for a possible appointment with a psychiatrist, psychologist, therapist, or other qualified clinician. Every conclusion is traceable back to the user's own evidence.
+
+## Scope
+
+### In scope
+- **Stage 1 — ASRS v1.1 screener** (existing V1). Preserved verbatim.
+- **Stage 2 — Adult ADHD symptoms.** Structured interview of all 18 DSM-5/DSM-5-TR items (9 inattentive, 9 hyperactive/impulsive), collecting concrete evidence per item.
+- **Stage 3 — Childhood history.** Concrete pre-age-12 evidence (school, homework, organization, attention, impulsivity, behavior, etc.).
+- **Stage 4 — Functional impairment + multiple settings.** Evidence of meaningful impact across life domains and across settings.
+- **Stage 5 — Focused differential check.** Flagging of plausible alternative explanations (anxiety, depression, sleep, bipolar-spectrum, substance use, chronic stress, relevant medical factors) — flagging only, not diagnosing.
+- **Structured report.** Evidence-based summary: adult symptoms, childhood evidence, impairment, differentials, contradictory evidence, uncertainty, and a clinician-friendly summary. Always with a non-diagnosis disclaimer.
+
+### Explicitly out of scope (deferred)
+- Autism/ASD screening.
+- Full anxiety/depression diagnostic modules.
+- OCD, broad neurodivergence platform.
+- Clinician dashboard, accounts, payments, multi-user infrastructure.
+- General workflow engine or platform architecture.
+- Treatment / medication recommendations.
+- Diagnostic claims.
+
+These are future ideas, not current work.
+
+## Architecture principle (AI vs. engine)
+
+- **Interviewer LLM:** natural conversation, asking the current question, understanding free-text, bounded follow-ups, extracting evidence, detecting when a criterion is adequately evidenced or uncertain.
+- **Structured assessment engine:** stage/criterion tracking, evidence requirements, completion conditions, scoring/classification rules, progression, and report data.
+- The AI never decides the protocol, scoring, or conclusions. The protocol is structured and deterministic.
+
+The system uses a simple state model — **no general workflow engine**:
+
+```
+ONBOARDING → SCREENING → ADULT_SYMPTOMS → CHILDHOOD → IMPAIRMENT → DIFFERENTIAL → REPORT
+```
+
+State is persisted as a single JSON document per assessment. The core data structure is **evidence per criterion** (supported / partially_supported / unsupported / uncertain), not chat history.
 
 ## Clinical Foundations
 
-The product should be grounded in recognized ADHD assessment concepts, including:
+- **ASRS v1.1** — initial screening (existing V1). Preserve official wording and scoring.
+- **DSM-5 / DSM-5-TR** — 18 ADHD symptom items as the framework for Stage 2.
+- **DIVA-5** — principles for structured interviewing, childhood history, and impairment (reference only; not reproduced/branded as official DIVA-5; not copied without licensing).
 
-- `ASRS` for initial adult ADHD screening
-- `DSM-5 / DSM-5-TR` ADHD criteria as the main clinical framework for ADHD symptom areas
-- `DIVA-5-style` structured interview principles for deeper ADHD assessment
-- Functional impairment assessment across real life domains
-- Differential screening for common ADHD lookalikes and comorbidities
+Clinical requirements:
+- ASRS scoring must preserve its validated meaning.
+- DSM-derived items should guide symptom mapping; plain-language explanations over clinical jargon.
+- Any public/commercial version must verify permissions for copyrighted instruments, translations, and branding before use.
 
-Clinical use requirements:
+## Assessment Flow & Timing
 
-- ASRS-style screening must preserve scoring meaning and should not casually rewrite validated question logic.
-- DIVA-5 should be treated as a clinical reference and inspiration, not copied or branded as “official DIVA-5” unless licensing and permission are confirmed.
-- DSM-5/DSM-5-TR criteria should guide symptom mapping, but the product should explain results in plain language.
-- Any public or commercial version must verify permissions for copyrighted or licensed instruments before including exact wording, scoring, translations, or branding.
+Approximately **50–75 minutes** total:
 
-## Phase 1: Simple ADHD Screening
+| Stage | Duration | Notes |
+| --- | --- | --- |
+| ASRS screening | 3–5 min | Existing V1; valid standalone endpoint. |
+| Adult ADHD symptoms | 20–30 min | 18 DSM-5 items, structured evidence. |
+| Childhood history | 10–15 min | Concrete pre-age-12 evidence. |
+| Functional impairment | 10–15 min | Domains + multiple settings. |
+| Differential check | 10–15 min | Confounder flagging. |
+| Report | — | Evidence-based, traceable. |
 
-Goal: ship a very small, useful first version.
+## Evidence model
 
-The first release should include:
+Every conclusion is traceable back to user-provided evidence. Per criterion:
 
-- Adult ADHD quick screening based on ASRS-style logic
-- A short context section about age, current life situation, and main difficulties
-- A result such as low, moderate, or high indication for further ADHD evaluation
-- A plain-language explanation of what drove the result
-- Clear disclaimers that this is screening, not diagnosis
+```json
+{
+  "criterion": "adult_inattention_01",
+  "status": "supported",
+  "confidence": "strong",
+  "evidence": ["...concrete examples..."],
+  "counter_evidence": [],
+  "contexts": ["work"],
+  "impairment": "moderate"
+}
+```
 
-This phase should avoid deeper clinical interview complexity. It should be easy to complete in under 10 minutes.
-
-Success criteria:
-
-- User can finish without feeling overwhelmed.
-- User understands whether further ADHD evaluation may be worth considering.
-- User does not leave thinking they received a diagnosis.
-
-## Phase 2: Deeper ADHD Assessment
-
-Goal: move from quick screening toward a clinician-useful intake report.
-
-This phase should add:
-
-- Current adult ADHD symptoms mapped to DSM-5/DSM-5-TR symptom areas
-- Childhood symptom history, especially before age 12
-- Evidence across multiple settings, such as home, school, university, work, and relationships
-- Functional impairment across work, study, relationships, finances, time management, household tasks, and emotional consequences
-- Follow-up questions that ask for concrete examples, not only ratings
-
-The final report should become useful as preparation for a clinical appointment.
-
-## Phase 3: Differential Screening
-
-Goal: reduce false confidence by checking common ADHD lookalikes and co-occurring issues.
-
-Add screening for:
-
-- Anxiety
-- Depression
-- Sleep problems
-- Substance or alcohol use
-- Chronic stress and burnout
-- Basic lifestyle and medical factors that may affect attention and energy
-
-The product should not diagnose these conditions. It should explain when another explanation may also be worth exploring.
-
-## Phase 4: Neurodivergence Expansion
-
-Goal: expand beyond ADHD into related neurodivergence screening.
-
-Add autism/ASD screening after ADHD is working well.
-
-Later candidates:
-
-- Dyslexia
-- Dyscalculia
-- Dysgraphia
-- Tics or Tourette-related screening
-- Sensory sensitivity patterns
-
-This phase should help users understand whether ADHD alone explains their experience or whether a broader neurodivergence profile may be worth exploring.
-
-## Phase 5: Broader Assessment Platform
-
-Goal: only after earlier phases prove useful, evolve into a broader structured assessment platform.
-
-The long-term idea is a product that can run multiple structured screening flows consistently. This may eventually resemble a workflow engine, but that must not be a first-release requirement.
-
-The workflow-engine idea belongs in the long-term vision, not the first build.
-
-## Report Requirements
-
-Every final report should include:
-
-- Overall screening result
-- Main evidence supporting the result
-- Main evidence against or weakening the result
-- Areas of uncertainty
-- Whether professional evaluation is recommended
-- A short clinician-friendly summary
-- A reminder that this is not a diagnosis
-
-For deeper phases, the report should also include:
-
-- Adult ADHD symptom pattern
-- Childhood evidence
-- Functional impairment evidence
-- Differential-screening notes
-- Possible ADHD presentation: inattentive, hyperactive/impulsive, or combined, only as a non-diagnostic indication
+Status: `supported` / `partially_supported` / `unsupported` / `uncertain`.
 
 ## Safety And Trust Requirements
 
-The product must always be careful with mental-health claims.
-
-It must clearly state:
+The product must always be careful with mental-health claims. It must clearly state:
 
 - It is not a medical diagnosis.
 - It is not emergency support.
@@ -145,12 +110,12 @@ It must clearly state:
 
 The product must avoid:
 
-- Saying “you have ADHD”
-- Recommending medication
-- Giving treatment instructions
-- Using scary or absolute language
-- Overclaiming accuracy
-- Presenting AI judgment as clinical certainty
+- Saying "you have ADHD".
+- Recommending medication.
+- Giving treatment instructions.
+- Using scary or absolute language.
+- Overclaiming accuracy.
+- Presenting AI judgment as clinical certainty.
 
 ## Product Tone
 
@@ -160,8 +125,8 @@ The product should feel:
 - Serious but not cold
 - Supportive but not flattering
 - Clear about uncertainty
-- Respectful of the user’s lived experience
-- More like a structured intake conversation than a quiz
+- Respectful of the user's lived experience
+- More like a structured intake conversation than a quiz or chatbot
 
 The product should not feel:
 
@@ -170,26 +135,25 @@ The product should not feel:
 - Like a viral personality test
 - Like a medical authority pretending to know more than it does
 
-## Explicitly Not In Scope For V1
+## Implementation order (recommended)
 
-The first release should not include:
+Smallest sensible sequence — no upfront architecture.
 
-- Full DIVA-style interview
-- Autism/ASD screening
-- Anxiety/depression/sleep modules
-- Clinician dashboard
-- Multi-user accounts
-- Formal diagnostic claims
-- Treatment planning
-- Medication recommendations
-- Full workflow-engine platform
+**Gate 0 (mandatory before step 2):** Lock `CLINICAL_ADHD_PROTOCOL.md` — the deterministic evidence rules, childhood/onset criteria, impairment/multiple-settings rules, differential red flags, contradictory evidence handling, and final DSM-5 evaluation. Step 2 onward cannot begin until this gate is cleared.
 
-These are later-phase ideas.
+1. Gate 0 — Lock the clinical protocol (`CLINICAL_ADHD_PROTOCOL.md`).
+2. Lock the assessment protocol and data model (stages, criteria, evidence schema).
+3. Implement Adult ADHD Symptoms interview (18 items).
+4. Implement Childhood History.
+5. Implement Functional Impairment + Multiple Settings.
+6. Implement Focused Differential Check.
+7. Implement structured report.
+8. Connect the existing ASRS V1 as Stage 1.
+9. Run manual/self testing + clinician review before adding anything else.
 
 ## Assumptions
 
 - First release is private or self-use first.
-- V1 is ADHD-only and intentionally small.
-- “Atheism tests” was interpreted as autism/ASD tests.
-- The document is a PRD from a product and clinical-assessment perspective.
-- Technical architecture, database design, AI model structure, and implementation details are intentionally excluded.
+- V1 ASRS is the screening foundation; the fast-track assessment is the next stage.
+- Technical architecture is intentionally lightweight: a simple state machine and one JSON state document per assessment.
+- This PRD is from a product and clinical-assessment perspective; implementation details are intentionally lightweight.

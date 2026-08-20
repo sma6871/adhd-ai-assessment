@@ -94,24 +94,24 @@ const NEG = ['Never', 'Rarely'];
    if (!okIntMet) failures++;
    console.log(`${okIntMet ? 'PASS' : 'FAIL'}: integration Stage2 mixed-extract -> duration=${intMet} (expected met)`);
 
-   async function drainExplicit(allCore) {
-     require.cache[extractorPath].exports = {
-       extractEvidence: async function ({ criterion }) {
-         const id = criterion.id;
-         if (id === 'HYPERR_05') throw new Error('err');
-         return { core_answer: allCore, example: 'x', contexts: ['work', 'home'], consequence: 'y', counter_evidence: [], uncertainty: null };
-       },
-     };
-     delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
-     const a3 = require(path.join(ROOT, 'model/assessment'));
-     const state = a3.createStage2Assessment('int2');
-     a3.begin(state);
-     for (let t = 0; t < 200; t++) {
-       const res = await a3.processTurn(state, 'Often, for example...');
-       if (res.completed) break;
-     }
-     return state.duration;
-   }
+    async function drainExplicit(allCore) {
+      require.cache[extractorPath].exports = {
+        extractEvidence: async function ({ criterion }) {
+          const id = criterion.id;
+          if (id === 'HYPERR_05') throw new Error('err');
+          return { core_answer: allCore, example: 'x', contexts: ['work', 'home'], consequence: 'y', counter_evidence: [], uncertainty: null };
+        },
+      };
+      delete require.cache[require.resolve(path.join(ROOT, 'model/assessment'))];
+      const a3 = require(path.join(ROOT, 'model/assessment'));
+      const state = a3.createStage2Assessment('int2');
+      a3.begin(state);
+      for (let t = 0; t < 200; t++) {
+        const res = await a3.processTurn(state, allCore + ', for example when...');
+        if (res.completed) break;
+      }
+      return state.duration;
+    }
    const intAllNever = await drainExplicit('Never');
    const intAllSometimes = await drainExplicit('Sometimes');
    const okNotMet = intAllNever === 'not_met';

@@ -6,7 +6,7 @@
 <title>ADHD Assessment — Symptom Interview</title>
 <link rel="icon" href="/favicon.ico" type="image/svg+xml">
 <link rel="stylesheet" href="/design-tokens.css">
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Stage 2 — Focus-First Design System (design-tokens.css). Single-file app shell. */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,6 +15,15 @@ html { scroll-behavior: auto; }
 html[lang="en"], html[lang="en"] body { font-family: var(--ff-font-body); }
 html[lang="fa"], html[lang="fa"] body { font-family: var(--ff-font-persian); }
 html[dir="rtl"] { text-align: right; }
+/* Issue #2: override font-family vars for Persian so every element — headers,
+   body, labels, badges, buttons, inputs, report — uses Vazirmatn.
+   Do NOT add font declarations to individual elements; cascade via vars. */
+html[lang="fa"] {
+  --ff-font-body: var(--ff-font-persian);
+  --ff-font-label: var(--ff-font-persian);
+  --ff-font-display: var(--ff-font-persian);
+  --ff-font-mono: var(--ff-font-persian);
+}
 body {
   background: var(--ff-surface);
   color: var(--ff-on-surface);
@@ -28,16 +37,16 @@ body {
   box-shadow: 0 24px 60px rgba(0,0,0,0.10);
 }
 
-/* === Header: brand + integrated language pill (no floating element) === */
-.hd-brand { padding: 44px 24px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+/* === Header: brand + compact overflow menu (focus-first, minimal) === */
+.hd-brand { padding: 44px 24px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; }
 .hd-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ff-on-surface); margin: 0; }
+.hd-actions { display: inline-flex; align-items: center; }
 html[dir="rtl"] .hd-brand { flex-direction: row-reverse; }
-.lang-pill { display: inline-flex; align-items: center; gap: 4px; background: var(--ff-surface-container-lowest); border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-full); padding: 4px; }
-.lang-opt { border: none; background: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ff-on-surface); padding: 6px 12px; border-radius: var(--ff-radius-full); transition: opacity .15s ease; font-family: inherit; }
-.lang-opt.selected { background: var(--ff-secondary); color: var(--ff-on-secondary); opacity: 1; }
-.lang-opt:not(.selected) { opacity: 0.4; }
-.lang-pill .lang-label.fa { font-family: var(--ff-font-persian); }
-.lang-divider { width: 1px; height: 18px; background: var(--ff-outline-variant); }
+.overflow { width: 38px; height: 38px; min-width: 0; padding: 0; border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-full); background: var(--ff-surface-container-lowest); color: var(--ff-on-surface-variant); font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s ease; }
+.overflow:hover { opacity: .7; }
+.header-menu { position: absolute; left: 0; top: 0; min-width: 180px; background: var(--ff-surface-container-lowest); border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-md); box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 4px; z-index: 20; }
+.header-menu-item { width: 100%; text-align: start; border: none; background: none; padding: 10px 14px; font-size: 14px; font-weight: 500; color: var(--ff-on-surface); border-radius: var(--ff-radius-sm); cursor: pointer; transition: background .12s ease; font-family: inherit; white-space: nowrap; }
+.header-menu-item:hover { background: var(--ff-surface-container); }
 
 /* === Stage sub-header + stage-aware progress === */
 .hd-sub { padding: 8px 24px 4px; flex-shrink: 0; }
@@ -51,6 +60,7 @@ html[dir="rtl"] .stage-row { flex-direction: row-reverse; }
 .progress-fill { height: 100%; background: var(--ff-secondary); border-radius: var(--ff-radius-full); width: 0%; transition: width .3s ease; }
 .progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--ff-on-surface-variant); margin-top: 6px; font-family: var(--ff-font-label); letter-spacing: .05em; }
 html[dir="rtl"] .progress-meta { flex-direction: row-reverse; }
+.progress-label { font-weight: 600; opacity: .7; }
 .stage-banner { margin: 6px 24px 10px; padding: 11px 14px; border-radius: var(--ff-radius-sm); background: var(--ff-surface-container-low); border: 1px solid var(--ff-outline-variant); font-size: 13px; color: var(--ff-on-surface-variant); font-style: italic; text-align: center; }
 
 /* === Messages (scrollable) + input (persistent, sticky footer) === */
@@ -69,12 +79,56 @@ html[dir="rtl"] .badge { margin-inline-end: 0; margin-inline-start: 6px; }
 .err { color: var(--ff-on-error-container); font-size: 13px; margin: 12px 0; padding: 10px 12px; background: var(--ff-error-container); border-radius: var(--ff-radius-sm); }
 #input-slot { flex-shrink: 0; }
 .input-area { padding: 12px 24px 20px; border-top: 1px solid var(--ff-outline-variant); background: var(--ff-surface-container-lowest); display: flex; gap: 12px; align-items: flex-end; }
-.input-area textarea { flex: 1; min-height: 44px; max-height: 120px; padding: 12px 16px; border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-sm); background: var(--ff-surface-container-lowest); font-family: inherit; font-size: 16px; color: var(--ff-on-surface); resize: none; outline: none; transition: border-color .15s ease; }
+.input-area textarea { flex: 1; min-height: 120px; max-height: 160px; padding: 12px 16px; border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-sm); background: var(--ff-surface-container-lowest); font-family: inherit; font-size: 16px; color: var(--ff-on-surface); resize: none; outline: none; transition: opacity .15s ease, border-color .15s ease; }
 .input-area textarea:focus { border-color: var(--ff-secondary); box-shadow: 0 0 0 2px var(--ff-secondary-container); }
 .input-area button { flex: none; padding: 12px 24px; background: var(--ff-primary); color: var(--ff-on-primary); border: none; border-radius: var(--ff-radius-sm); font-size: 16px; font-weight: 700; line-height: 24px; cursor: pointer; white-space: nowrap; transition: opacity .15s ease; }
 .input-area button:disabled { opacity: .45; cursor: not-allowed; background: var(--ff-outline); color: var(--ff-on-surface-variant); }
 .input-area button:hover:not(:disabled) { opacity: .85; }
 .input-hint { padding: 0 24px 6px; font-size: 11px; color: var(--ff-on-surface-variant); font-family: var(--ff-font-label); letter-spacing: .05em; }
+.freq-options { display: none; flex-wrap: wrap; gap: 6px; align-content: center; justify-content: center; width: 100%; opacity: 1; transition: opacity .15s ease; }
+button.freq-opt { flex: 0 1 auto; min-width: 0; height: 36px; padding: 0 14px; border: 1px solid var(--ff-outline-variant); border-radius: var(--ff-radius-full); background: var(--ff-surface-container-lowest); color: var(--ff-on-surface); font-size: 14px; font-weight: 500; line-height: 36px; cursor: pointer; text-align: center; white-space: nowrap; transition: background .12s ease, border-color .15s ease, color .15s ease; outline: none; font-family: inherit; }
+button.freq-opt:hover { background: var(--ff-secondary-container); border-color: var(--ff-secondary); color: var(--ff-on-secondary-container); }
+button.freq-opt:focus-visible { border-color: var(--ff-secondary); box-shadow: 0 0 0 2px var(--ff-secondary-container); }
+button.freq-opt:active { opacity: .8; }
+html[dir="rtl"] .freq-options { direction: ltr; }
+html[lang="fa"] button.freq-opt { font-family: var(--ff-font-persian); }
+
+/* === Processing state (full-screen overlay after Stage 5) === */
+#processing-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  background: var(--ff-surface-container-lowest);
+  padding: 0 24px;
+  text-align: center;
+  pointer-events: none;
+}
+#processing-overlay:not([hidden]) {
+  display: flex;
+  pointer-events: auto;
+}
+#processing-overlay .proc-spinner {
+  width: 32px; height: 32px; border: 2.5px solid var(--ff-outline-variant);
+  border-top-color: var(--ff-secondary); border-radius: 50%;
+  animation: procSpin 1s linear infinite;
+  margin-bottom: 16px;
+}
+html[dir="rtl"] #processing-overlay .proc-spinner { transform: rotate(180deg); }
+@keyframes procSpin { to { transform: rotate(360deg); } }
+#processing-overlay .proc-title {
+  font-size: 18px; font-weight: 600; color: var(--ff-on-surface); margin-bottom: 4px;
+}
+#processing-overlay .proc-subtitle {
+  font-size: 13px; color: var(--ff-on-surface-variant);
+}
+
+/* === Toast for share-copied feedback === */
+#share-copied-toast {
+  position: fixed; bottom: 24px; left: 50%; translate: -50% 0;
+  background: rgba(0, 0, 0, 0.8); color: #fff;
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 13px; z-index: 9999;
+}
 
 /* === Report (result page) === */
 .report-header { margin: 16px 24px 8px; flex-shrink: 0; }
@@ -122,6 +176,269 @@ html[dir="rtl"] .ci-details ul { padding-inline-start: 0; padding-inline-end: 18
 .back-btn { display: inline-block; margin: 8px 0; padding: 10px 22px; background: var(--ff-secondary); color: var(--ff-on-secondary); border: none; border-radius: var(--ff-radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--ff-font-body); transition: opacity .15s ease; }
 .back-btn:hover { opacity: .85; }
 
+/* === Collapsible report details section === */
+.details-toggle { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ff-outline-variant); background: var(--ff-surface-container-low); }
+html[dir="rtl"] .details-toggle { flex-direction: row-reverse; }
+.details-toggle .dt-label { font-size: 14px; font-weight: 600; color: var(--ff-on-surface); }
+.details-toggle .dt-sub { font-size: 12px; color: var(--ff-on-surface-variant); margin-top: 2px; }
+.details-toggle .dt-chevron { font-size: 18px; color: var(--ff-on-surface-variant); line-height: 1; font-family: 'Material Symbols Outlined', sans-serif; transition: opacity .15s ease; }
+.details-content { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+.details-content.open { max-height: 10000px; }
+
+/* === Result action bar (print / share) === */
+.result-actions { margin: 12px 24px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.result-action { flex: 1 1 0; min-width: 120px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; background: var(--ff-secondary); color: var(--ff-on-secondary); border: 1px solid var(--ff-secondary); border-radius: var(--ff-radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s ease, background .15s ease; font-family: inherit; }
+.result-action:hover { opacity: .85; background: var(--ff-primary); color: var(--fff, var(--ff-on-primary)); border-color: var(--ff-primary); }
+.result-action:active { opacity: .7; }
+.result-action .ra-icon { font-size: 20px; line-height: 1; font-family: 'Material Symbols Outlined', sans-serif; }
+html[dir="rtl"] .result-actions { direction: ltr; }
+@media (min-width: 480px) {
+  .result-actions { justify-content: flex-start; }
+}
+
+/* === Print styles (A4 report output) === */
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html, body {
+    height: auto;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+    line-height: 1.5;
+    padding: 20mm;
+    box-sizing: border-box;
+  }
+  .device {
+    box-shadow: none;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background: white;
+    border: none;
+    padding: 0;
+  }
+  #messages {
+    overflow: visible;
+    -webkit-overflow-scrolling: auto;
+    padding: 0;
+  }
+  .hd-brand, .hd-sub, .progress-wrap, .stage-banner, #input-slot {
+    display: none !important;
+  }
+  .report-header {
+    margin: 0 0 18pt 0;
+    flex-shrink: 0;
+  }
+  .report-header h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    color: black;
+    margin: 0 0 4pt 0;
+  }
+  .report-header .sub {
+    font-size: 10pt;
+    color: #45464d;
+    margin-top: 2pt;
+  }
+  .tier-card {
+    margin: 18pt 0;
+    padding: 16pt 14pt;
+    border: 1pt solid #c6c6cd;
+    border-radius: 6pt;
+    background: #ffffff;
+    page-break-inside: avoid;
+  }
+  .tier-card .tier-label {
+    font-size: 8pt;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #45464d;
+  }
+  .tier-card .tier-headline {
+    font-size: 14pt;
+    font-weight: 700;
+    margin: 6pt 0 10pt;
+  }
+  .tier-card .tier-body {
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #45464d;
+  }
+  .evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12pt;
+    margin: 18pt 0;
+  }
+  .evidence-card {
+    background: #ffffff;
+    border: 1pt solid #c6c6cd;
+    border-radius: 6pt;
+    padding: 12pt 14pt;
+  }
+  .evidence-card .ec-label {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #45464d;
+  }
+  .evidence-card .ec-value {
+    font-size: 11pt;
+    font-weight: 600;
+    margin-top: 4pt;
+  }
+  .dsm-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18pt 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  .dsm-table th {
+    text-align: start;
+    padding: 6pt 8pt;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #45464d;
+    border-bottom: 2pt solid #c6c6cd;
+  }
+  .dsm-table td {
+    text-align: start;
+    padding: 6pt 8pt;
+    border-bottom: 1pt solid #c6c6cd;
+    color: #45464d;
+  }
+  .status-pill {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2pt 8pt;
+    border-radius: 999px;
+    border: 1pt solid #c6c6cd;
+  }
+  .sp-supported { background: #2e7d32; color: white; }
+  .sp-partially_supported { background: #ef6c00; color: white; }
+  .sp-unsupported { background: #eeeeee; color: #45464d; }
+  .sp-uncertain { background: #c62828; color: white; }
+  .tag-block {
+    margin: 18pt 0;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 9pt;
+    font-weight: 500;
+    padding: 4pt 10pt;
+    border-radius: 999px;
+    background: #e5eeff;
+    color: #0b1c30;
+    border: 1pt solid #c6c6cd;
+    margin: 3pt 6pt 3pt 0;
+  }
+  html[dir="rtl"] .tag { margin: 3pt 0 3pt 6pt; }
+  .tag-head { font-weight: 700; opacity: 0.6; }
+  .tag-contra { background: #ffebee; color: #c62828; }
+  .criterion-list {
+    margin: 0;
+    page-break-inside: avoid;
+  }
+  .criterion-group-title {
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #45464d;
+    margin: 18pt 0 6pt;
+  }
+  .criterion-item {
+    margin-bottom: 8pt;
+    page-break-inside: avoid;
+  }
+  .ci-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8pt 0;
+    border-bottom: 1pt solid #c6c6cd;
+  }
+  html[dir="rtl"] .ci-head { flex-direction: row-reverse; }
+  .ci-head .ci-id {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #45464d;
+  }
+  .ci-head .ci-meta { display: inline-flex; align-items: center; gap: 6pt; }
+  .ci-head .ci-conf { font-size: 8pt; color: #45464d; }
+  .ci-head .ci-toggle { font-size: 10pt; color: #45464d; opacity: 0.6; display: none; }
+  .ci-body {
+    overflow: visible;
+    max-height: none !important;
+    margin-bottom: 6pt;
+  }
+  .ci-details { padding: 6pt 0; }
+  .ci-row-label {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #45464d;
+    margin-inline-end: 6pt;
+  }
+  .ci-details ul { margin: 4pt 0; padding-inline-start: 14pt; }
+  html[dir="rtl"] .ci-details ul { padding-inline-start: 0; padding-inline-end: 14pt; }
+  .ci-details ul li { margin: 2pt 0; }
+  .report-footer { margin: 18pt 0 0; text-align: center; }
+  .report-footer .back-btn { display: none !important; }
+  .report-footer .quiet {
+    font-size: 9pt;
+    font-family: var(--ff-font-label);
+    letter-spacing: 0.05em;
+    color: #45464d;
+    text-align: center;
+  }
+  .details-toggle {
+    display: none !important;
+  }
+  .details-content {
+    max-height: none !important;
+    overflow: visible;
+  }
+  .details-content.open { max-height: none !important; }
+  .result-actions { display: none !important; }
+  #processing-overlay { display: none !important; }
+  html[dir="rtl"] body { text-align: right; }
+  body * {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}
+
+/* === Buttons (header secondary, resume banner primary/danger, etc.) === */
+.primary { padding: 12px 22px; background: var(--ff-primary); color: var(--ff-on-primary); border: none; border-radius: var(--ff-radius-sm); font-size: 16px; font-weight: 700; line-height: 24px; cursor: pointer; white-space: nowrap; transition: opacity .15s ease; font-family: inherit; }
+.primary:hover { opacity: .85; }
+.primary:disabled { opacity: .45; cursor: not-allowed; background: var(--ff-outline); color: var(--ff-on-surface-variant); }
+.primary.danger { background: var(--ff-error); color: var(--ff-on-primary); }
+.primary.danger:hover { opacity: .85; }
+.secondary { background: transparent; color: var(--ff-secondary); border: 1px solid var(--ff-secondary); border-radius: var(--ff-radius-sm); padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s ease; font-family: inherit; }
+.secondary:hover { opacity: .8; }
+.secondary.soft { background: transparent; color: var(--ff-on-surface-variant); border: 1px solid var(--ff-outline-variant); font-size: 13px; font-weight: 500; }
+  .secondary.soft:hover { opacity: .7; }
+
+/* === Resume / destructive-confirmation banner === */
+.resume-banner { margin: 12px 24px; padding: 16px 18px; border-radius: var(--ff-radius-lg); background: var(--ff-surface-container-low); border: 1px solid var(--ff-outline-variant); }
+.resume-banner .resume-title { font-size: 15px; font-weight: 700; color: var(--ff-on-surface); margin-bottom: 6px; }
+.resume-banner .resume-body { font-size: 13px; color: var(--ff-on-surface-variant); margin-bottom: 12px; line-height: 1.5; }
+.resume-banner .resume-actions { display: inline-flex; gap: 10px; flex-wrap: wrap; }
+html[dir="rtl"] .resume-actions { flex-direction: row-reverse; justify-content: flex-end; }
+
 /* === Mobile === */
 @media (max-width: 400px) {
   .device { width: 100%; height: 100vh; box-shadow: none; }
@@ -144,6 +461,11 @@ html[dir="rtl"] .ci-details ul { padding-inline-start: 0; padding-inline-end: 18
   <div id="messages"></div>
   <div id="input-slot"></div>
 </div>
+<div id="processing-overlay" hidden>
+  <div class="proc-spinner"></div>
+  <div class="proc-title" id="proc-title"></div>
+  <div class="proc-subtitle" id="proc-subtitle"></div>
+</div>
 <script src="/stage2-language.js"></script>
 <script>
 /* ================= state ================= */
@@ -151,10 +473,18 @@ const STATE = {
   id: null, lang: 'en', messages: [], banner: null, report: null,
   progress: { stage: 'ADULT_SYMPTOMS', label: 'ADULT_SYMPTOMS', completed: 0, total: 18, pct: 0, current: null, lang: 'en' },
   openCriteria: new Set(),
+  showResumeBanner: false,
+  resetConfirm: false,
+  questionKind: null,
+  detailsExpanded: false,
 };
+// Canonical resume reference: only the session id is persisted. Language is NEVER
+// stored client-side — it is locked at Stage 1 and read solely from the server.
 const STORAGE_SESSION = 'adhd_stage2_session';
 const STORAGE_TRANSCRIPT = 'adhd_stage2_transcript';
-const STORAGE_LANG = 'adhd_stage2_lang';
+const FRESH_FLAG = 'adhd_stage2_just_created';
+const RESUME_CONFIRMED = 'adhd_stage2_resume_confirmed';
+const ellipsisSvg = '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 
 function api(path, opts) {
   const o = Object.assign({ headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin' }, opts || {});
@@ -165,11 +495,27 @@ function api(path, opts) {
   });
 }
 
+// Display history only. Language is intentionally NOT persisted here (server is canonical).
 function persistTranscript() {
   if (!STATE.id) return;
-  try { localStorage.setItem(STORAGE_TRANSCRIPT, JSON.stringify({ id: STATE.id, lang: STATE.lang, messages: STATE.messages, progress: STATE.progress })); } catch (e) {}
+  try { localStorage.setItem(STORAGE_TRANSCRIPT, JSON.stringify({ id: STATE.id, messages: STATE.messages, progress: STATE.progress })); } catch (e) {}
 }
-function clearResume() { localStorage.removeItem(STORAGE_SESSION); localStorage.removeItem(STORAGE_TRANSCRIPT); }
+function readTranscript() {
+  try {
+    const raw = localStorage.getItem(STORAGE_TRANSCRIPT);
+    if (!raw) return null;
+    const t = JSON.parse(raw);
+    if (t && t.id === STATE.id) return t;
+    return null;
+  } catch (e) { return null; }
+}
+function clearAllStorage() {
+  localStorage.removeItem(STORAGE_SESSION);
+  localStorage.removeItem(STORAGE_TRANSCRIPT);
+  sessionStorage.removeItem(FRESH_FLAG);
+  sessionStorage.removeItem(RESUME_CONFIRMED);
+}
+function clearResume() { clearAllStorage(); }
 
 function applyLang() {
   window.STAGE2_STATE.lang = STATE.lang;
@@ -209,24 +555,80 @@ function evCard(label, valueHtml) {
   return '<div class="evidence-card"><div class="ec-label">' + esc(label) + '</div><div class="ec-value">' + valueHtml + '</div></div>';
 }
 
-/* === Header (brand + integrated language pill) === */
-function langPill() {
-  const order = STATE.lang === 'fa' ? ['fa', 'en'] : ['en', 'fa'];
-  let html = '<div class="lang-pill" role="radiogroup">';
-  for (let i = 0; i < order.length; i++) {
-    const code = order[i];
-    const label = code === 'en' ? 'English' : 'فارسی';
-    const selected = STATE.lang === code;
-    html += '<button type="button" role="radio" aria-checked="' + (selected ? 'true' : 'false') + '" class="lang-opt' + (selected ? ' selected' : '') + '" data-lang="' + code + '">' +
-      '<span class="lang-label' + (code === 'fa' ? ' fa' : '') + '">' + esc(label) + '</span></button>';
-    if (i < order.length - 1) html += '<span class="lang-divider"></span>';
-  }
-  html += '</div>';
-  return html;
-}
+/* === Header (brand + compact overflow menu for non-primary actions) === */
+// Language is locked at Stage 1 onboarding and is intentionally NOT exposed as a control on
+// Stage 2+. The header stays focus-first: brand title + a single overflow control that hosts
+// non-primary actions ("Start new assessment"). Starting over still requires destructive
+// confirmation (see startNewAssessment -> confirmReset).
 function renderHeader() {
   const box = byId('header-slot'); if (!box) return;
-  box.innerHTML = '<header class="hd-brand"><h1>' + esc(g().brand || 'ADHD Self-Screening') + '</h1>' + langPill() + '</header>';
+  const gg = g();
+  box.innerHTML =
+    '<header class="hd-brand"><h1>' + esc(gg.brand || 'ADHD Self-Screening') + '</h1>' +
+    '<div class="hd-actions">' +
+      '<button type="button" id="header-overflow-btn" class="overflow" data-action="toggleHeaderMenu" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(gg.moreLabel) + '">' + ellipsisSvg + '</button>' +
+      '<div id="header-menu" class="header-menu" hidden>' +
+        '<button type="button" class="header-menu-item" data-action="startNew">' + esc(gg.startNewLabel) + '</button>' +
+      '</div></div></header>';
+  closeHeaderMenu();
+}
+let headerMenuOpen = false;
+// Anchor the dropdown to the trigger button, relative to the brand bar (position:absolute,
+// .hd-brand is the positioned containing block). This keeps the menu under the ⋯ button and
+// inside the device in both LTR and RTL, flipping away from an edge when the menu would overflow.
+function positionHeaderMenu() {
+  const btn = document.getElementById('header-overflow-btn');
+  const menu = document.getElementById('header-menu');
+  if (!btn || !menu) return;
+  const brand = document.querySelector('.hd-brand');
+  if (!brand) return;
+  const brandRect = brand.getBoundingClientRect();
+  const b = btn.getBoundingClientRect();
+  const isRtl = document.documentElement.dir === 'rtl';
+  menu.style.position = 'absolute';
+  if (isRtl) {
+    // RTL: align menu's right edge with the button's right edge (logical "end" edge)
+    menu.style.right = Math.round(brandRect.right - b.right) + 'px';
+    menu.style.left = 'auto';
+  } else {
+    menu.style.left = Math.round(b.left - brandRect.left) + 'px';
+  }
+  menu.style.top = Math.round(b.top - brandRect.top + b.height) + 'px';
+  let mr = menu.getBoundingClientRect();
+  // Edge-flip: if menu overflows the brand bar on the opening side, flip to the other edge.
+  if (isRtl) {
+    const overflowLeft = brandRect.left - mr.left;
+    if (overflowLeft > 0) {
+      menu.style.right = 'auto';
+      menu.style.left = Math.round(b.left - brandRect.left) + 'px';
+      mr = menu.getBoundingClientRect();
+    }
+  } else {
+    const overflowRight = mr.right - brandRect.right;
+    if (overflowRight > 0) {
+      const flipped = b.right - brandRect.left - mr.width;
+      menu.style.left = Math.round(Math.max(0, flipped)) + 'px';
+      mr = menu.getBoundingClientRect();
+    }
+  }
+  const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  if (mr.bottom > vh) {
+    menu.style.top = Math.round(b.top - brandRect.top - mr.height) + 'px';
+  }
+}
+function toggleHeaderMenu() {
+  headerMenuOpen = !headerMenuOpen;
+  const btn = document.getElementById('header-overflow-btn');
+  const menu = document.getElementById('header-menu');
+  if (btn && menu) { menu.hidden = !headerMenuOpen; btn.setAttribute('aria-expanded', String(headerMenuOpen)); }
+  if (headerMenuOpen) positionHeaderMenu();
+}
+function closeHeaderMenu() {
+  headerMenuOpen = false;
+  const btn = document.getElementById('header-overflow-btn');
+  const menu = document.getElementById('header-menu');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  if (menu) menu.hidden = true;
 }
 
 /* === Stage sub-header + progress === */
@@ -252,7 +654,7 @@ function renderProgress() {
     '</div>' +
     '<div class="progress-wrap">' +
       '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-      '<div class="progress-meta"><span>' + esc(stageLabelOf(p.label)) + '</span><span>' + esc(meta) + '</span></div>' +
+      '<div class="progress-meta"><span class="progress-label">' + esc(gg.progressLabel || '') + '</span><span>' + esc(meta) + '</span></div>' +
     '</div>';
   byId('header-slot') && updateProgressFill();
 }
@@ -263,11 +665,32 @@ function updateProgressFill() {
 }
 
 /* === Messages (scrollable; persistent input never touched here) === */
-function renderMessages() {
+function resumeBannerHtml() {
+  // Two-step destructive confirmation, localized per canonical STATE.lang.
+  const gg = g();
+  if (STATE.resetConfirm) {
+    return '<div class="resume-banner">' +
+      '<div class="resume-title">' + esc(gg.startOverConfirm) + '</div>' +
+      '<div class="resume-body">' + esc(gg.startOverBody) + '</div>' +
+      '<div class="resume-actions">' +
+        '<button type="button" class="secondary soft" data-action="cancelReset">' + esc(gg.continueBtn) + '</button>' +
+        '<button type="button" class="primary danger" data-action="confirmReset">' + esc(gg.startOverBtn) + '</button>' +
+      '</div></div>';
+  }
+  return '<div class="resume-banner">' +
+    '<div class="resume-title">' + esc(gg.resumeConfirm) + '</div>' +
+    '<div class="resume-body">' + esc(gg.resumeConfirmBody) + '</div>' +
+    '<div class="resume-actions">' +
+      '<button type="button" class="secondary soft" data-action="resumeStartOver">' + esc(gg.startOverBtn) + '</button>' +
+      '<button type="button" class="primary" data-action="resumeContinue">' + esc(gg.continueBtn) + '</button>' +
+    '</div></div>';
+}
+function renderMessages(atBottom) {
   const box = byId('messages'); if (!box) return;
   if (STATE.report) { box.innerHTML = ''; return; }
-  const atBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 24;
+  if (atBottom === undefined) atBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 24;
   let html = '';
+  if (STATE.showResumeBanner) html += resumeBannerHtml();
   if (STATE.banner) html += '<div class="stage-banner">' + esc(STATE.banner) + '</div>';
   for (let i = 0; i < STATE.messages.length; i++) {
     const m = STATE.messages[i];
@@ -275,14 +698,38 @@ function renderMessages() {
     if (m.kind === 'transition' || m.kind === 'error' || m.kind === 'completed') classes += ' transition';
     else if (m.kind === 'criterion_done') classes += ' criterion-done';
     else if (m.kind === 'error') classes += ' error';
+    else if (m.kind === 'processing') classes += ' processing';
     const badge = (m.cid && (m.kind === 'question' || m.kind === 'criterion_done' || m.kind === 'followup'))
       ? '<span class="badge">' + esc(shortCid(m.cid)) + '</span> ' : '';
     html += '<div class="' + classes + '"><div class="qs">' + badge + esc(m.text) + '</div></div>';
   }
   box.innerHTML = html || ('<div class="quiet" style="margin:12px 0">' + esc(g().loading) + '</div>');
   persistTranscript();
-  if (atBottom) box.scrollTop = box.scrollHeight;
+  if (atBottom) {
+    scrollToLastMessage();
+  }
   announce();
+}
+
+function scrollToLastMessage() {
+  const box = byId('messages'); if (!box) return;
+  const lastMsg = box.querySelector('.msg:last-child');
+  if (!lastMsg) return;
+  const inputSlot = byId('input-slot');
+  const inputHeight = inputSlot ? inputSlot.offsetHeight : 0;
+  const isRtl = document.documentElement.dir === 'rtl';
+  if (isRtl) {
+    box.scrollLeft = 0;
+  }
+  lastMsg.scrollIntoView({ block: 'end', inline: 'nearest', behavior: 'auto' });
+  requestAnimationFrame(function () {
+    const target = box.scrollHeight - box.clientHeight;
+    const inputOffset = inputHeight + 16;
+    const desired = target + inputOffset;
+    if (box.scrollTop < desired) {
+      box.scrollTop = desired;
+    }
+  });
 }
 
 function announce() {
@@ -300,27 +747,131 @@ function announce() {
 }
 
 /* === Persistent input (built once; never destroyed -> keyboard/focus preserved) === */
+// Two input modes: frequency buttons for 'core' questions, textarea for free-text questions.
+// Both DOM subtrees are created once and toggled via style.display to preserve the textarea's
+// focus/cursor state across re-renders (renderAll calls renderInput after every turn).
+// A brief opacity fade smooths the transition between chip and textarea modes.
+let _lastInputCore = null;
 function renderInput() {
   const slot = byId('input-slot'); if (!slot) return;
-  if (STATE.report) { slot.style.display = 'none'; return; }
+  if (STATE.report || STATE.showResumeBanner) { slot.style.display = 'none'; return; }
   slot.style.display = '';
   if (!slot.dataset.bound) {
     slot.dataset.bound = 'true';
     slot.innerHTML = '<div class="input-area">' +
-      '<textarea id="ta" rows="1" autocomplete="off" aria-label="Your answer"></textarea>' +
+      '<div class="freq-options" id="freq-options"></div>' +
+      '<textarea id="ta" rows="4" autocomplete="off" aria-label="Your answer"></textarea>' +
       '<button id="send" type="button">' + esc(g().sendBtn) + '</button>' +
-      '</div><div class="input-hint">' + esc(g().headerSubtitle) + '</div>';
+      '</div><div class="input-hint">' + esc(g().headerSubtitle) + '</div>';;
     const ta = byId('ta'); const btn = byId('send');
     ta.addEventListener('input', function () { btn.disabled = !ta.value.trim(); });
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!btn.disabled) submit(); } });
     btn.addEventListener('click', submit);
   }
   const ta = byId('ta'); const btn = byId('send');
-  if (ta) ta.placeholder = g().placeholder;
-  if (btn) btn.textContent = g().sendBtn;
+  const freqBox = byId('freq-options');
+  const isCore = STATE.questionKind === 'core';
+  const modeChanged = _lastInputCore !== isCore;
+  if (freqBox) {
+    if (isCore) {
+      const opts = g().frequencyOpts || [];
+      let html = '';
+      for (let i = 0; i < opts.length; i++) {
+        html += '<button type="button" class="freq-opt" data-freq="' + esc(opts[i]) + '">' + esc(opts[i]) + '</button>';
+      }
+      freqBox.innerHTML = html;
+      freqBox.style.display = 'flex';
+      if (modeChanged) { freqBox.style.opacity = '0'; requestAnimationFrame(function () { if (freqBox) freqBox.style.opacity = '1'; }); }
+    } else {
+      freqBox.innerHTML = '';
+      freqBox.style.display = 'none';
+    }
+  }
+  if (ta) {
+    if (isCore) {
+      ta.style.display = 'none';
+    } else {
+      ta.style.display = '';
+      ta.placeholder = g().placeholder;
+      if (modeChanged) { ta.style.opacity = '0'; requestAnimationFrame(function () { if (ta) ta.style.opacity = '1'; }); }
+    }
+  }
+  if (btn) {
+    btn.textContent = g().sendBtn;
+    btn.disabled = isCore ? false : !ta.value.trim();
+    btn.style.display = isCore ? 'none' : '';
+  }
   const hint = slot.querySelector('.input-hint');
   if (hint) hint.textContent = g().headerSubtitle;
-  if (ta && btn) btn.disabled = !ta.value.trim();
+   if (isCore && freqBox) {
+    const first = freqBox.querySelector('.freq-opt');
+    if (first) first.focus();
+  } else if (ta && !isCore) {
+    ta.focus();
+  }
+  _lastInputCore = isCore;
+}
+
+/* === Report result actions (print / share) === */
+function buildResultActions() {
+  const t = t2().result || {};
+  const shareSupported = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  let html = '<div class="result-actions">';
+  html += '<button type="button" class="result-action" data-action="printReport"><span class="ra-icon">download</span> ' + esc(t.printBtn) + '</button>';
+  if (shareSupported) {
+    html += '<button type="button" class="result-action" data-action="shareReport"><span class="ra-icon">share</span> ' + esc(t.shareBtn) + '</button>';
+  }
+  html += '</div>';
+  return html;
+}
+function printReport() { window.print(); }
+function shareReport() {
+  const t = t2().result || {};
+  const summary = document.querySelector('.tier-headline')?.textContent || '';
+  const rec = document.querySelector('.tier-body')?.textContent || '';
+  const shareText = summary + ' — ' + rec + ' ' + t.notADiagnosis + ' ' + t.shareSource;
+  if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    navigator.share({
+      title: t.shareTitle,
+      text: shareText,
+    }).catch(function () {});
+  } else {
+    copyToClipboard(shareText);
+  }
+}
+
+function copyToClipboard(text) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () {
+      showShareCopied();
+    }).catch(function () {
+      fallbackCopyText(text);
+    });
+  } else {
+    fallbackCopyText(text);
+  }
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:absolute;left:-9999px;top:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  showShareCopied();
+}
+
+function showShareCopied() {
+  const gg = g();
+  const el = document.createElement('div');
+  el.textContent = gg.shareCopied;
+  el.style.cssText = 'position:fixed;bottom:24px;left:50%;translate:-50% 0;background:rgba(0,0,0,0.8);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;z-index:9999;';
+  document.body.appendChild(el);
+  setTimeout(function () {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 2000);
 }
 
 /* === Report (result page) === */
@@ -347,6 +898,14 @@ function buildReport(r) {
     '<div class="tier-headline">' + esc(t.tierLabels ? t.tierLabels[tierKey] : tierKey) + '</div>' +
     '<div class="tier-body">' + esc(R.recommendation || '') + '</div>' +
     '</div>';
+
+  const detailsOpen = STATE.detailsExpanded;
+  const detailsId = 'report-details-' + STATE.id;
+  h += '<div class="details-toggle" role="button" tabindex="0" aria-expanded="' + (detailsOpen ? 'true' : 'false') + '" aria-controls="' + detailsId + '" data-action="toggleDetails">' +
+    '<div><div class="dt-label">' + esc(t.detailsLabel) + '</div><div class="dt-sub">' + esc(t.detailsSubtitle) + '</div></div>' +
+     '<span class="dt-chevron" aria-hidden="true">' + detailsChevron(detailsOpen) + '</span>' +
+    '</div>';
+  h += '<div class="details-content' + (detailsOpen ? ' open' : '') + '" id="' + detailsId + '">';
 
   h += '<div class="evidence-grid">';
   h += evCard(t.grid.pattern, t.patternLabels ? (t.patternLabels[adult.pattern] || adult.pattern) : adult.pattern);
@@ -391,7 +950,11 @@ function buildReport(r) {
   for (let i = 0; i < hyper.length; i++) h += criterionItem(hyper[i]);
   h += '</div>';
 
-  if (R.stage2_only) h += '<div class="quiet" style="margin:0 24px">' + esc(R.stage2_only) + '</div>';
+  if (R.stage2_only) h += '<div class="quiet" style="margin:0 24px 12px">' + esc(R.stage2_only) + '</div>';
+
+   h += '</div>'; /* close details-content */
+
+  h += buildResultActions();
 
   h += '<div class="report-footer">' +
     '<button type="button" class="back-btn" data-action="backToStart">' + esc(t.backToStart) + '</button>' +
@@ -428,6 +991,26 @@ function toggleCriterion(cid) {
   renderReport();
 }
 
+// Returns the correct Material Symbols chevron for the details toggle:
+// Expanded → 'expand_more' (down), Collapsed → 'chevron_right' (LTR) / 'chevron_left' (RTL)
+function detailsChevron(open) {
+  if (open) return 'expand_more';
+  return document.documentElement.dir === 'rtl' ? 'chevron_left' : 'chevron_right';
+}
+
+function toggleDetails() {
+  STATE.detailsExpanded = !STATE.detailsExpanded;
+  // Re-render only the details toggle + content to preserve scroll position.
+  const box = byId('messages'); if (!box) return;
+  const detailsToggle = box.querySelector('.details-toggle');
+  if (detailsToggle) detailsToggle.setAttribute('aria-expanded', STATE.detailsExpanded ? 'true' : 'false');
+  const chevron = box.querySelector('.dt-chevron');
+   if (chevron) chevron.textContent = detailsChevron(STATE.detailsExpanded);
+  const content = box.querySelector('.details-content');
+  if (content) content.classList.toggle('open', STATE.detailsExpanded);
+  announce();
+}
+
 function renderReport() {
   const box = byId('messages'); if (!box) return;
   if (!STATE.report) return;
@@ -438,62 +1021,158 @@ function renderReport() {
 }
 
 /* === App flow === */
-function renderAll() {
+// Entry gate for Stage 2: a session id MUST already exist (created by Stage 1,
+// which locked the language). If there is no session, redirect to Stage 1 so the
+// user can pick a language and run the screener. Language is read ONLY from the
+// server (state.lang) — never from localStorage or the transcript blob.
+async function start() {
+  const sessId = localStorage.getItem(STORAGE_SESSION);
+  const justCreated = sessId && sessionStorage.getItem(FRESH_FLAG) === sessId;
+  const resumeParam = new URLSearchParams(location.search).get('resume') === '1';
+  const confirmed = sessionStorage.getItem(RESUME_CONFIRMED) === '1';
+  if (sessId && justCreated) sessionStorage.removeItem(FRESH_FLAG);
+  if (confirmed) sessionStorage.removeItem(RESUME_CONFIRMED);
+
+  // No session at all → must go through Stage 1 to lock a language.
+  if (!sessId) { goHome(); return; }
+
+  // Resume the canonical session from the server.
+  let st;
+  try { st = await api('/api/state/' + sessId); } catch (e) { st = { error: String(e) }; }
+  if (!st || st.error) {
+    // Stale/corrupt reference → wipe and send back to Stage 1.
+    clearAllStorage();
+    goHome();
+    return;
+  }
+
+  STATE.id = sessId;
+  STATE.lang = st.lang || 'en';     // canonical, server-only
+  applyLang();
+
+  // Restore the display transcript (messages + progress) from the client cache,
+  // but only if it belongs to this session.
+  const cached = readTranscript();
+  STATE.messages = (cached && cached.messages) || [];
+  STATE.progress = st.progress || STATE.progress;
+
+  if (st.completed) {
+    // Completed → render the report (re-fetched to be canonical).
+    await loadReport();
+    renderHeader();
+    renderProgress();
+    renderInput();
+    byId('messages') && (byId('messages').innerHTML = '');
+    renderReport();
+    return;
+  }
+
+  // Unfinished assessment. If we have a reconstructed in-flight question from the
+  // server, and the last displayed message isn't already it, surface it so the user
+  // lands on the exact prompt they were answering.
+  if (st.question) {
+    const last = STATE.messages.length ? STATE.messages[STATE.messages.length - 1] : null;
+    const same = last && last.role === 'ai' && (last.text || '') === (st.question || '');
+    // Mid-turn if the last message was a user answer with no following question yet.
+    const midTurn = last && last.role === 'user';
+    if (!same && (midTurn || STATE.messages.length === 0)) {
+      STATE.messages.push({ role: 'ai', kind: (st.pendingKind === 'core' ? 'question' : 'followup'), text: st.question, cid: st.pendingCid });
+    }
+    STATE.questionKind = st.pendingKind || null;
+  } else {
+    STATE.questionKind = null;
+  }
+
   renderHeader();
   renderProgress();
   renderMessages();
   renderInput();
+  persistTranscript();
+
+  // Show the resume confirmation only for a genuine re-entry (not a fresh start
+  // and not a continue-through from Stage 1).
+  const showBanner = !justCreated && !resumeParam && !confirmed;
+  STATE.showResumeBanner = !!showBanner;
+  STATE.resetConfirm = false;
+  if (STATE.showResumeBanner) {
+    renderMessages();
+    renderInput();
+  }
+  byId('ta') && byId('ta').focus();
 }
 
-async function createSession() {
-  try {
-    const res = await api('/api/session', { method: 'POST', body: { lang: STATE.lang } });
-    if (res.error) throw new Error(res.error);
-    STATE.id = res.id;
-    localStorage.setItem(STORAGE_SESSION, STATE.id);
-    STATE.lang = res.lang || STATE.lang;
-    applyLang();
-    STATE.progress = res.progress || STATE.progress;
-    STATE.messages = res.question ? [{ role: 'ai', kind: 'question', text: res.question, cid: res.criterionId }] : [];
-    STATE.banner = null;
-    STATE.report = null;
-    renderAll();
-    persistTranscript();
-    byId('ta') && byId('ta').focus();
-  } catch (e) {
-    showError(g().failedToStart + ': ' + e.message);
+function goHome() { window.location.href = '/'; }
+
+// Resume confirmation: "Continue where you left off" → dismiss banner, keep state.
+function resumeContinue() {
+  STATE.showResumeBanner = false;
+  STATE.resetConfirm = false;
+  renderMessages();
+  renderInput();
+}
+
+// Resume banner → "Start over" (first step): switch to the destructive confirmation.
+function resumeStartOver() {
+  STATE.resetConfirm = true;
+  renderMessages();
+}
+
+function cancelReset() {
+  STATE.resetConfirm = false;
+  renderMessages();
+}
+
+// Destructive reset: wipes the server session + snapshot + all client state,
+// then returns to Stage 1 (so language can be re-selected). Enforces "changing
+// language requires starting a new assessment from Stage 1."
+async function confirmReset() {
+  if (!STATE.id) { goHome(); return; }
+  try { await api('/api/session/reset', { method: 'POST', body: { id: STATE.id } }); } catch (e) { /* best-effort */ }
+  clearAllStorage();
+  goHome();
+}
+
+// Header "Start new assessment" link → always goes through the destructive confirmation.
+async function startNewAssessment() {
+  const gg = g();
+  if (confirm(gg.startOverConfirm + '\n\n' + gg.startOverBody)) {
+    await confirmReset();
   }
 }
 
-async function resume() {
-  const sess = localStorage.getItem(STORAGE_SESSION);
-  const trans = localStorage.getItem(STORAGE_TRANSCRIPT);
-  if (!sess || !trans) return false;
-  try {
-    const t = JSON.parse(trans);
-    if (t.id !== sess) return false;
-    const st = await api('/api/state/' + sess).catch(function () { return null; });
-    if (!st || st.error) { clearResume(); return false; }
-    STATE.id = sess;
-    STATE.lang = st.lang || t.lang || STATE.lang;
-    applyLang();
-    STATE.messages = t.messages || [];
-    STATE.progress = st.progress || STATE.progress;
-    renderAll();
-    if (st.stage === 'REPORT') {
-      const r = await api('/api/report/' + sess).catch(function () { return null; });
-      if (r && r.report) { STATE.report = r.report; renderReport(); }
-    }
-    return true;
-  } catch (e) {
-    clearResume();
-    return false;
-  }
+async function loadReport() {
+  const r = await api('/api/report/' + STATE.id).catch(function () { return null; });
+  if (r && r.report) { STATE.report = r.report; }
 }
 
-async function start() {
-  const resumed = await resume();
-  if (!resumed) await createSession();
+function showProcessingOverlay() {
+  const overlay = byId('processing-overlay'); if (!overlay) return;
+  const tt = byId('proc-title'); const st = byId('proc-subtitle');
+  const gg = g(); const rr = gg.result || {};
+  if (tt) tt.textContent = gg.reviewingResponses;
+  if (st) st.textContent = (rr.processingSubtitle !== undefined ? rr.processingSubtitle : (gg.processingSubtitle || ''));
+  byId('messages') && (byId('messages').innerHTML = '');
+  byId('input-slot') && (byId('input-slot').style.display = 'none');
+  byId('header-slot') && (byId('header-slot').style.display = 'none');
+  byId('progress-slot') && (byId('progress-slot').style.display = 'none');
+  overlay.hidden = false;
+}
+
+function hideProcessingOverlay() {
+  const overlay = byId('processing-overlay'); if (!overlay) return;
+  overlay.hidden = true;
+  byId('header-slot') && (byId('header-slot').style.display = '');
+  byId('progress-slot') && (byId('progress-slot').style.display = '');
+  byId('input-slot') && (byId('input-slot').style.display = 'none');
+}
+
+function renderAll() {
+  const box = byId('messages');
+  const atBottomBeforeInput = box ? (box.scrollHeight - box.scrollTop - box.clientHeight) < 24 : true;
+  renderHeader();
+  renderProgress();
+  renderInput();
+  renderMessages(atBottomBeforeInput);
 }
 
 function showError(msg) {
@@ -502,26 +1181,38 @@ function showError(msg) {
   renderProgress();
 }
 
-async function submit() {
+async function submit(answer) {
   const ta = byId('ta'); const btn = byId('send');
-  if (!ta || btn.disabled) return;
-  const answer = ta.value.trim();
-  if (!answer) return;
-  ta.value = ''; btn.disabled = true;
+  if (typeof answer !== 'string') {
+    if (!ta || btn.disabled) return;
+    answer = ta.value.trim();
+    if (!answer) return;
+  }
+  if (btn.disabled) return;
+  if (ta) ta.value = '';
+  if (btn) btn.disabled = true;
   STATE.messages.push({ role: 'user', text: answer });
-  renderMessages();
-  ta.focus();
+   renderMessages();
+  if (ta && STATE.questionKind !== 'core') ta.focus();
   try {
-    const res = await api('/api/answer/' + STATE.id, { method: 'POST', body: { answer: answer, lang: STATE.lang } });
+    const res = await api('/api/answer/' + STATE.id, { method: 'POST', body: { answer: answer } });
     if (res.error) { STATE.messages.push({ role: 'ai', kind: 'error', text: g().errorMsg + ': ' + res.error }); renderMessages(); return; }
     if (res.progress) STATE.progress = res.progress;
     if (res.completed && res.report) {
-      STATE.report = res.report;
+      const finalReport = res.report;
       STATE.progress = res.progress || STATE.progress;
       STATE.banner = null;
-      STATE.messages.push({ role: 'ai', kind: 'completed', text: g().assessmentComplete });
-      renderAll();
-      renderReport();
+      persistTranscript();
+      showProcessingOverlay();
+      setTimeout(function () {
+        STATE.report = finalReport;
+        persistTranscript();
+        hideProcessingOverlay();
+        renderHeader();
+        renderProgress();
+        renderInput();
+        renderReport();
+      }, 3000);
       return;
     }
     if (res.transitioned) {
@@ -540,11 +1231,14 @@ async function submit() {
       STATE.messages.push({ role: 'ai', kind: 'criterion_done', text: '(' + res.criterionId + ' ' + g().criterionRecorded + ' ' + slabel + ')' + shown, cid: res.criterionId });
     }
     if (res.question) {
+      STATE.questionKind = res.kind || null;
       STATE.messages.push({ role: 'ai', kind: res.followup ? 'followup' : 'question', text: res.question, cid: res.criterionId });
+    } else {
+      STATE.questionKind = null;
     }
     renderAll();
     persistTranscript();
-    ta.focus();
+    if (ta && STATE.questionKind !== 'core') ta.focus();
   } catch (e) {
     STATE.messages.push({ role: 'ai', kind: 'error', text: g().networkError + ': ' + e.message });
     renderMessages();
@@ -552,34 +1246,57 @@ async function submit() {
 }
 
 function onDocClick(e) {
-  const langEl = e.target.closest('[data-lang]');
-  if (langEl) {
-    const code = langEl.getAttribute('data-lang');
-    if (code && code !== STATE.lang) { STATE.lang = code; localStorage.setItem(STORAGE_LANG, code); applyLang(); renderAll(); if (STATE.report) renderReport(); persistTranscript(); }
-    return;
-  }
+  // Close the header overflow menu when clicking outside it (or its toggle).
+  if (headerMenuOpen && !(e.target.closest('#header-menu') || e.target.closest('#header-overflow-btn'))) closeHeaderMenu();
+  const freqEl = e.target.closest('.freq-opt');
+  if (freqEl) { submit(freqEl.getAttribute('data-freq')); return; }
+  const detailsEl = e.target.closest('.details-toggle');
+  if (detailsEl) { toggleDetails(); return; }
   const headEl = e.target.closest('.ci-head');
   if (headEl) { toggleCriterion(headEl.getAttribute('data-cid')); return; }
   const actEl = e.target.closest('[data-action]');
-  if (actEl) { if (actEl.getAttribute('data-action') === 'backToStart') window.location.href = '/'; }
+  if (actEl) {
+    const act = actEl.getAttribute('data-action');
+    if (act === 'backToStart') { window.location.href = '/'; return; }
+    if (act === 'printReport') { printReport(); return; }
+    if (act === 'shareReport') { shareReport(); return; }
+    if (act === 'toggleHeaderMenu') { toggleHeaderMenu(); return; }
+    if (act === 'resumeContinue') { resumeContinue(); return; }
+    if (act === 'resumeStartOver') { resumeStartOver(); return; }
+    if (act === 'cancelReset') { cancelReset(); return; }
+    if (act === 'confirmReset') { confirmReset(); return; }
+    if (act === 'startNew') { closeHeaderMenu(); startNewAssessment(); return; }
+  }
 }
 
 function onKeyDown(e) {
+  if (e.key === 'Escape' && headerMenuOpen) { closeHeaderMenu(); return; }
   const head = e.target.closest('.ci-head');
   if (head && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleCriterion(head.getAttribute('data-cid')); }
+  const dt = e.target.closest('.details-toggle');
+  if (dt && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleDetails(); }
 }
 
 function init() {
-  const savedLang = localStorage.getItem(STORAGE_LANG) || localStorage.getItem('adhd_lang');
-  STATE.lang = (savedLang === 'fa' || savedLang === 'en') ? savedLang : 'en';
-  applyLang();
-  renderHeader();
-  renderProgress();
-  renderMessages();
-  renderInput();
+  // Stage 2 requires a session that was created on Stage 1 (where the language was
+  // locked). No session → no locked language → send the user to Stage 1.
+  const sessId = localStorage.getItem(STORAGE_SESSION);
+  if (!sessId) {
+    window.location.href = '/';
+    return;
+  }
+  wireEvents();
+  // Brief loading shell while the server restores canonical state (lang + stage).
+  document.documentElement.lang = 'en';
+  document.documentElement.dir = 'ltr';
+  byId('header-slot') && (byId('header-slot').innerHTML = '<header class="hd-brand"><h1>' + esc(g().brand || 'ADHD Self-Screening') + '</h1></header>');
+  byId('messages') && (byId('messages').innerHTML = '<div class="quiet" style="margin:12px 0">' + esc(g().loading) + '</div>');
+  const islot = byId('input-slot'); if (islot) islot.style.display = 'none';
+  start();
+}
+function wireEvents() {
   document.addEventListener('click', onDocClick);
   document.addEventListener('keydown', onKeyDown);
-  start();
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

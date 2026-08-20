@@ -39,6 +39,7 @@ function blankEvidenceRecord(criterionId) {
 function newAssessment(id) {
   return {
     id,
+    lang: 'en',              // canonical assessment language, locked at Stage 1 onboarding (en|fa)
     stage: 'SCREENING',       // current stage (see STAGES in criteria.js)
     criterion_index: null,   // index into the ordered criteria list for the current stage
     created_at: new Date().toISOString(),

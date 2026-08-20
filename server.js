@@ -17,6 +17,20 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const sessions = new Map();
 
+// Restore a session from the in-memory map, or rehydrate it from its disk snapshot.
+// Makes /api/state, /api/answer, /api/report and resume survive a server restart.
+function getOrLoadSession(id) {
+  let state = sessions.get(id);
+  if (!state) {
+    state = assessment.loadSnapshot(id);
+    if (state) sessions.set(id, state);
+  }
+  return state || null;
+}
+
+// Single canonical persistence path (replaces the old server-local snapshot()).
+function persist(state) { assessment.snapshot(state); }
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -45,14 +59,6 @@ function readBody(req) {
   });
 }
 
-function snapshot(state) {
-  try {
-    fs.writeFileSync(path.join(DATA_DIR, `${state.id}.json`), JSON.stringify(state, null, 2));
-  } catch (e) {
-    console.error('snapshot failed:', e.message);
-  }
-}
-
 function sendJson(res, code, obj) {
   const body = JSON.stringify(obj);
   res.writeHead(code, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
@@ -77,52 +83,95 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
 
   // --- API routes ---
+  // Stage 1 (ASRS screener) hands off to Stage 2 here with the LOCKED language.
   if (p === '/api/session' && (req.method === 'POST' || req.method === 'GET')) {
+    const body = await readBody(req).catch(() => ({}));
     const id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const state = assessment.createStage2Assessment(id);
+    // Language is set ONCE, at creation. createStage2Assessment locks it to en|fa; anything
+    // else defaults to 'en'. There is no later path to change it server-side (locked after Stage 1).
+    const state = assessment.createStage2Assessment(id, body.lang);
     sessions.set(id, state);
-    snapshot(state);
-    const init = assessment.begin(state);
+    const init = assessment.begin(state);   // mutates state.pending (first criterion)
+    persist(state);                          // snapshot AFTER begin() so resume sees the in-flight question
     return sendJson(res, 200, { id, ...init });
+  }
+
+  // Reset: destructive. Deletes the in-memory session + on-disk snapshot.
+  const mReset = p.match(/^\/api\/session\/reset$/);
+  if (mReset && req.method === 'POST') {
+    const body = await readBody(req).catch(() => ({}));
+    const id = body.id || url.searchParams.get('id');
+    if (!id) return sendJson(res, 400, { error: 'missing id' });
+    sessions.delete(id);
+    assessment.clearSnapshot(id);
+    return sendJson(res, 200, { reset: true, id });
   }
 
   const mAnswer = p.match(/^\/api\/answer\/([A-Za-z0-9_-]+)$/);
   if (mAnswer && req.method === 'POST') {
     const id = mAnswer[1];
-    const state = sessions.get(id);
+    const state = getOrLoadSession(id);
     if (!state) return sendJson(res, 404, { error: 'session not found' });
     const body = await readBody(req).catch(e => ({ _error: e.message }));
     const answer = body.answer || '';
+    // NOTE: state.lang is LOCKED at creation (Stage 1 onboarding). Any lang
+    // field sent here is intentionally ignored — no competing language sources.
     const result = await assessment.processTurn(state, answer);
-    snapshot(state);
+    persist(state);
     return sendJson(res, 200, result);
   }
 
+  // Resume state for an existing session id. Language comes ONLY from the server
+  // (state.lang), never from the client. Returns the reconstructed in-flight
+  // question so the UI can restore exactly where it left off.
   const mState = p.match(/^\/api\/state\/([A-Za-z0-9_-]+)$/);
   if (mState && req.method === 'GET') {
     const id = mState[1];
-    const state = sessions.get(id);
-    if (!state) return sendJson(res, 404, { error: 'session not found' });
-    return sendJson(res, 200, { id, progress: getProgress(state), stage: state.stage, pending: state.pending });
+    const state = getOrLoadSession(id);
+    if (!state) return sendJson(res, 200, { id, error: 'session not found' });
+    const question = (state.stage !== 'REPORT' && state.stage !== 'SCREENING')
+      ? assessment.currentQuestion(state, state.lang)
+      : null;
+    return sendJson(res, 200, {
+      id,
+      lang: state.lang,
+      screening: state.screening,
+      stage: state.stage,
+      pending: state.pending,
+      completed: state.stage === 'REPORT',
+      progress: getProgress(state),
+      question: question || null,
+      pendingKind: (state.pending && state.pending.kind) || null,
+      pendingCid: (state.pending && state.pending.cid) || null,
+    });
   }
 
   const mReport = p.match(/^\/api\/report\/([A-Za-z0-9_-]+)$/);
   if (mReport && req.method === 'GET') {
     const id = mReport[1];
-    const state = sessions.get(id);
-    if (!state) return sendJson(res, 404, { error: 'session not found' });
+    const state = getOrLoadSession(id);
+    if (!state) return sendJson(res, 200, { id, error: 'session not found' });
     return sendJson(res, 200, { id, report: assessment.getReport(state) });
   }
 
-  // --- Static routes ---
+   // --- Static routes ---
   if (p === '/' || p === '/index.html') {
     return serveStatic(res, path.join(__dirname, 'index.html'));
   }
-  if (p === '/stage2') {
+  if (p === '/stage2' || p === '/stage2.html') {
     return serveStatic(res, path.join(__dirname, 'stage2.html'));
   }
-  if (p === '/stage2.html') {
-    return serveStatic(res, path.join(__dirname, 'stage2.html'));
+  if (p === '/design-tokens.css') {
+    return serveStatic(res, path.join(__dirname, 'design-tokens.css'));
+  }
+  if (p === '/stage2-language.js') {
+    return serveStatic(res, path.join(__dirname, 'stage2-language.js'));
+  }
+  if (p === '/favicon.ico') {
+    const ico = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%23006a61"/><path d="M8 8h16v2H8zM8 12h16v2H8zM8 16h10v2H8zM8 20h16v2H8zM8 24h10v2H8z" fill="%23ffffff"/></svg>';
+    res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+    res.end(ico);
+    return;
   }
 
   // Deny sensitive paths

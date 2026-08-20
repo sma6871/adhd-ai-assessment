@@ -78,8 +78,18 @@ V1 is successful when you can complete it yourself in under 10 minutes and it:
 - makes the next step obvious;
 - is useful enough that you would use it again or show it to one trusted tester.
 
+## Relationship to the fast-track plan
+
+**V1 = the ASRS screening foundation.** This screener is preserved verbatim and reused as **Stage 1** of the larger Structured ADHD Assessment Companion.
+
+- A screen-negative result is a valid endpoint; the user is not forced to continue.
+- A screen-positive result offers to continue into the deeper, evidence-based assessment.
+- The next product step is `FAST_TRACK_ADHD_ASSESSMENT_PLAN.md`: a five-stage structured ADHD assessment (adult symptoms → childhood history → functional impairment → focused differential check → evidence-based report), ADHD-only, ~50–75 minutes. It is intentionally **not** a general assessment platform or workflow engine.
+
 ## Next Product Step After This Spec
 
-Create a **V1 Question and Result Script**: the exact user-facing wording for the welcome screen, screening questions, answer options, result explanations, and safety language.
+1. Use `V1 product spec.md` + `V1 product spec.md` to lock the ASRS wording/scoring. *(Done — see `index.html` and `V1_QUESTION_AND_RESULT_SCRIPT.md`.)*
+2. Validate V1 with a tiny 3-person usability test (the V1 gate).
+3. Then proceed to `FAST_TRACK_ADHD_ASSESSMENT_PLAN.md` Stage 2–5 + report.
 
-That is the right next artifact—not a workflow engine, full platform architecture, or a large clinical interview.
+That next step is a structured ADHD assessment — not a workflow engine, full platform architecture, or an open-ended clinical interview.

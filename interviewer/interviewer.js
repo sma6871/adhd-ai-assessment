@@ -45,9 +45,13 @@ Output STRICT JSON only (no prose, no markdown fences) with EXACTLY:
   "uncertainty": "string|null"
 }`;
 
-function buildMessages({ criterion, priorEvidence, transcript, userAnswer }) {
+const LANG_INSTRUCTION_FA = `\n\nIMPORTANT: The user is communicating in Persian (Farsi). The user's answer may be in Persian. Extract evidence from their Persian answer accurately. Your JSON output field values (core_answer, etc.) must remain in English as specified above, but understand the Persian input correctly.`;
+const LANG_INSTRUCTION_EN = '';
+
+function buildMessages({ criterion, priorEvidence, transcript, userAnswer, lang }) {
+  const langNote = lang === 'fa' ? LANG_INSTRUCTION_FA : LANG_INSTRUCTION_EN;
   return [
-    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'system', content: SYSTEM_PROMPT + langNote },
     {
       role: 'user',
       content: `Current criterion:\n`
@@ -62,29 +66,22 @@ function buildMessages({ criterion, priorEvidence, transcript, userAnswer }) {
 }
 
 async function extractEvidence(args, signal) {
-  // Stage 3 (childhood-onset) extraction branch. The engine asks the concrete probes
-  // deterministically; the LLM only extracts recalled childhood memories into a structured
-  // array. The LLM NEVER rates onset — that is the engine's deterministic job (engine.rateOnset).
+  const lang = args && args.lang;
+  // Stage 3 (childhood-onset) extraction branch.
   if (args && args.stage === 'childhood') {
     return extractChildhoodEvidence(args, signal);
   }
-   // Stage 4 (functional impairment & settings) extraction branch. The engine asks the
-  // concrete probes deterministically; the LLM only extracts concrete impairment examples and
-  // settings with grounding. The LLM NEVER rates — engine.assessImpairment owns the rating.
+   // Stage 4 (functional impairment & settings) extraction branch.
   if (args && args.stage === 'impairment') {
     return extractImpairmentEvidence(args, signal);
   }
-  // Stage 5 (focused differential check) extraction branch. The engine asks the 7
-  // deterministic factor probes; the LLM ONLY extracts each factor's presence and any ADHD-like
-  // symptoms the user tied to it. The LLM NEVER decides whether the factor is flagged or what to
-  // surface — engine.flagDifferentials applies the §7 flagging rule (§9a-F). Flagging only;
-  // never a diagnosis of these conditions.
+  // Stage 5 (focused differential check) extraction branch.
   if (args && args.stage === 'differential') {
     return extractDifferentialEvidence(args, signal);
   }
   // Stage 2 (per-criterion) evidence extraction.
   const { criterion, priorEvidence, transcript, userAnswer } = args;
-  return extractCriterionEvidence({ criterion, priorEvidence, transcript, userAnswer }, signal);
+  return extractCriterionEvidence({ criterion, priorEvidence, transcript, userAnswer, lang }, signal);
 }
 
 const CHILDHOOD_SYSTEM_PROMPT = `You are a childhood-history evidence extractor for a structured ADHD assessment. Your ONLY job is to read the user's answer to the childhood probe and pull out specific memories the user attributes to BEFORE AGE 12. You do NOT ask questions, do NOT rate onset strength, and do NOT diagnose.
@@ -119,15 +116,16 @@ function normalizeChildhoodMemory(m) {
   };
 }
 
-async function extractChildhoodEvidence({ probe, priorEvidence, transcript, userAnswer }, signal) {
+async function extractChildhoodEvidence({ probe, priorEvidence, transcript, userAnswer, lang }, signal) {
   if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in the environment.');
+  const langNote = lang === 'fa' ? LANG_INSTRUCTION_FA : LANG_INSTRUCTION_EN;
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: GROQ_MODEL,
       messages: [
-        { role: 'system', content: CHILDHOOD_SYSTEM_PROMPT },
+        { role: 'system', content: CHILDHOOD_SYSTEM_PROMPT + langNote },
         {
           role: 'user',
           content: `Current childhood probe:\n`
@@ -183,15 +181,16 @@ Return STRICT JSON only (no prose, no markdown fences) with EXACTLY:
   "uncertainty": "string|null"
 }`;
 
-async function extractImpairmentEvidence({ probe, priorEvidence, transcript, userAnswer }, signal) {
+async function extractImpairmentEvidence({ probe, priorEvidence, transcript, userAnswer, lang }, signal) {
   if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in the environment.');
+  const langNote = lang === 'fa' ? LANG_INSTRUCTION_FA : LANG_INSTRUCTION_EN;
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: GROQ_MODEL,
       messages: [
-        { role: 'system', content: IMPAIRMENT_SYSTEM_PROMPT },
+        { role: 'system', content: IMPAIRMENT_SYSTEM_PROMPT + langNote },
         {
           role: 'user',
           content: `Current probe:\n`
@@ -258,15 +257,16 @@ Return STRICT JSON only (no prose, no markdown fences) with EXACTLY:
   "uncertainty": "string|null"
 }`;
 
-async function extractDifferentialEvidence({ probe, priorEvidence, transcript, userAnswer }, signal) {
+async function extractDifferentialEvidence({ probe, priorEvidence, transcript, userAnswer, lang }, signal) {
   if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in the environment.');
+  const langNote = lang === 'fa' ? LANG_INSTRUCTION_FA : LANG_INSTRUCTION_EN;
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: GROQ_MODEL,
       messages: [
-        { role: 'system', content: DIFFERENTIAL_SYSTEM_PROMPT },
+        { role: 'system', content: DIFFERENTIAL_SYSTEM_PROMPT + langNote },
         {
           role: 'user',
           content: `Current factor probe:\n`
@@ -302,13 +302,13 @@ async function extractDifferentialEvidence({ probe, priorEvidence, transcript, u
   };
 }
 
-async function extractCriterionEvidence({ criterion, priorEvidence, transcript, userAnswer }, signal) {
+async function extractCriterionEvidence({ criterion, priorEvidence, transcript, userAnswer, lang }, signal) {
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: GROQ_MODEL,
-      messages: buildMessages({ criterion, priorEvidence, transcript, userAnswer }),
+      messages: buildMessages({ criterion, priorEvidence, transcript, userAnswer, lang }),
       temperature: 0.2,
       response_format: { type: 'json_object' },
       max_tokens: 768,

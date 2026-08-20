@@ -8,6 +8,7 @@
 
 const { CRITERIA, INATTENTIVE, HYPERACTIVE, SYMPTOM_THRESHOLD, ONSET_AGE } = require('./criteria');
 const { EVIDENCE_STATUSES, ONSET_RATINGS, blankEvidenceRecord } = require('./schema');
+const locales = require('./locales');
 
 const MAX_FOLLOWUPS = 3;           // §3: max 3 follow-up questions per criterion after the core question
 const MAX_TURNS_PER_CRITERION = 5; // hard safety cap (core + up to 3 follow-ups + 1 buffer): guarantees the
@@ -303,7 +304,7 @@ function evaluate(state) {
     duration_persistence: { rating: duration, requirement: '>=6 months (DSM-5)' },
     settings: { count: settings, multiple_settings, requirement: '>=2 (DSM-5)' },
     impairment: { domains: domains_impaired, count: domains_impaired },
-    differentials: { flagged: differentials, list: state.differentials_flagged || [] },
+    differentials: { flagged: differentials, list: state.differentials_flagged || [], considerations: diffEvidence.considerations },
     contradictions: { count: contradictions, list: contradictions_list },
     // §9f product-readable notes (evidence-summary; NOT clinical inference).
     differential_note,
@@ -318,30 +319,45 @@ function evaluate(state) {
 
 // Determine the next follow-up question *kind* to ask, cycling deterministically.
 // Capped by MAX_FOLLOWUPS (engineMove enforces the cap).
-function pickFollowupKind(followupsAsked) {
+function pickFollowupKind(recordOrCount) {
+  // Prefer the smallest missing evidence slot. This avoids asking for context or
+  // consequence again when the user's previous answer already supplied it.
+  if (recordOrCount && typeof recordOrCount === 'object') {
+    const record = recordOrCount;
+    if (!hasExample(record)) return 'example';
+    if (!hasContexts(record)) return 'context';
+    if (!hasConsequence(record)) return 'consequence';
+    return 'clarify';
+  }
+  // Backward-compatible deterministic fallback for callers/tests that pass a count.
+  const followupsAsked = Number(recordOrCount) || 0;
   const order = ['example', 'context', 'consequence'];
   return order[(followupsAsked % order.length)] || 'example';
 }
 
 // Deterministic core question text (no LLM — the engine asks the core question).
-function formatCoreQuestion(criterion) {
-  return `${criterion.question}\n\nOver the past 6 months, how often does this happen?\n` +
-    'Never — Rarely — Sometimes — Often — Very Often';
+// Localized per state.lang; clinical content is identical across languages
+// (the same 18 DSM-5 behaviors), only the wording is rendered in the selected language.
+function formatCoreQuestion(criterion, lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  const q = language === 'fa' ? (locales.criterionQuestion(criterion.id, lang) || criterion.question) : criterion.question;
+  const pre = language === 'fa' ? locales.freqPromptText(lang) : 'Over the past 6 months, how often does this happen?';
+  const opts = language === 'fa' ? locales.frequency(lang) : ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'];
+  return `${q}\n\n${pre}\n${opts.join(' — ')}`;
 }
 
 // Deterministic follow-up prompts (no LLM — the engine asks follow-ups).
-function followupPrompt(criterion, kind) {
+// Warm, conversation-aware phrasing; selection (example/context/consequence) stays
+// the deterministic cycle from pickFollowupKind(). Language rendered per state.lang.
+function followupPrompt(criterion, kind, lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  if (language === 'fa') return locales.followupText(kind, lang) || locales.followupText(kind, 'en') || `Can you say a bit more about ${criterion.id}?`;
   switch (kind) {
-    case 'example':
-      return `You indicated this happens with some frequency. Can you describe one concrete recent situation where this happened — what was going on, what did you do, and what happened as a result?`;
-    case 'context':
-      return `Where does this tend to happen — at work, at home, in social situations, or elsewhere?`;
-    case 'consequence':
-      return `What does this cost you or get in the way of when it happens?`;
-    case 'clarify':
-      return `To be sure I'm tracking: is this different from just feeling bored or tired, or from something that happens to everyone occasionally?`;
-    default:
-      return `Can you say a bit more about that for this item?`;
+    case 'example': return `You indicated this happens with some frequency. Can you describe one concrete recent situation where this happened — what was going on, what did you do, and what happened as a result?`;
+    case 'context': return `Where does this tend to happen — at work, at home, in social situations, or elsewhere?`;
+    case 'consequence': return `What does this cost you or get in the way of when it happens?`;
+    case 'clarify': return `To be sure I'm tracking: is this different from just feeling bored or tired, or from something that happens to everyone occasionally?`;
+    default: return `Can you say a bit more about that for this item?`;
   }
 }
 
@@ -389,13 +405,16 @@ const CHILDHOOD_PROBES = [
   { id: 'parent_obs', prompt: 'Do you recall any parent/guardian observations from before age 12 about your attention, energy, or self-control — as they were described then?' },
 ];
 
-// Deterministic, engine-asked childhood prompt text (no LLM).
-function formatChildhoodQuestion(probe) {
-  return `${probe.prompt}\n\nIf you recall anything, describe it as specifically as you can (what you remember, roughly what age, and where it came from — e.g., a report card, a teacher, a parent, or your own memory).`;
+// Deterministic, engine-asked childhood prompt text (no LLM). Localized per state.lang.
+function formatChildhoodQuestion(probe, lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  const p = language === 'fa' ? (locales.childhoodQuestionText(probe.id, lang) || probe.prompt) : probe.prompt;
+  const s = language === 'fa' ? locales.childhoodSuffixText(lang) : 'If you recall anything, describe it as specifically as you can (what you remember, roughly what age, and where it came from — e.g., a report card, a teacher, a parent, or your own memory).';
+  return `${p}\n\n${s}`;
 }
 
-function childhoodQuestion(probe) {
-  return formatChildhoodQuestion(probe);
+function childhoodQuestion(probe, lang) {
+  return formatChildhoodQuestion(probe, lang);
 }
 
 // Rate childhood-onset evidence quality per CLINICAL_ADHD_PROTOCOL.md §5.
@@ -450,14 +469,20 @@ const IMPAIRMENT_DOMAINS = [
   'Daily routines', 'Emotional consequences',
 ];
 
-// Deterministic prompts the engine asks (no LLM question-writing). Per §6 these collect
-// CONCRETE examples + concrete grounding for settings — not bare assertions.
-function formatImpairmentQuestion() {
+// Deterministic prompts the engine asks (no LLM question-writing). Localized per state.lang. Per §6.
+function formatImpairmentQuestion(lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  if (language === 'fa') return locales.impairmentQuestionText('domains', lang) ||
+    'Think back over the past 6 months. In which areas of life are attention, focus, organization, or energy difficulties costly if someone were watching closely? For each area you mention, give ONE specific recent example and name the area (e.g., work, relationships, finances, daily routines, organization, driving, school, household, time management, emotional impact).';
   return 'Think back over the past 6 months. In which areas of life are attention, focus, organization, or energy difficulties costly if someone were watching closely? For each area you mention, give ONE specific recent example and name the area (e.g., work, relationships, finances, daily routines, organization, driving, school, household, time management, emotional impact).';
 }
-function formatSettingsQuestion() {
+function formatSettingsQuestion(lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  if (language === 'fa') return locales.impairmentQuestionText('settings', lang) ||
+    'Where do you regularly experience these difficulties? Name AT LEAST TWO specific settings (e.g., work, home, social, school) and give one brief, concrete example of how it shows up in each.';
   return 'Where do you regularly experience these difficulties? Name AT LEAST TWO specific settings (e.g., work, home, social, school) and give one brief, concrete example of how it shows up in each.';
 }
+
 
 // Dedup by normalized key, keeping first occurrence.
 function dedupByKey(items, keyFn) {
@@ -514,9 +539,12 @@ const DIFFERENTIAL_FACTORS = [
   { id: 'medical', label: 'Medical / physical', probe: 'Do you have or suspect any medical/physical condition (e.g., thyroid issues, sleep apnea, chronic pain) or take medications that affect attention? If so, does it relate to your focus/energy?' },
 ];
 
-// Deterministic, engine-asked differential prompt (no LLM question-writing).
-function formatDifferentialQuestion(factor) {
-  return `${factor.probe}\n\nAnswer yes/no and, if applicable, briefly note how (if at all) it may relate to the attention/energy/focus difficulties described earlier. This is a flagging screen only — it is not a diagnosis.`;
+// Deterministic, engine-asked differential prompt (no LLM question-writing). Localized per state.lang.
+function formatDifferentialQuestion(factor, lang) {
+  const language = lang === 'fa' ? 'fa' : 'en';
+  const p = language === 'fa' ? (locales.differentialQuestion(factor.id, lang) || factor.probe) : factor.probe;
+  const s = language === 'fa' ? locales.differentialSuffixText(lang) : 'Answer yes/no and, if applicable, briefly note how (if at all) it may relate to the attention/energy/focus difficulties described earlier. This is a flagging screen only — it is not a diagnosis.';
+  return `${p}\n\n${s}`;
 }
 
 // Flag differentials deterministically per §7: a factor is flagged when the user REPORTED it

@@ -8,16 +8,21 @@
 const { CRITERIA } = require('./criteria');
 const { newAssessment, blankEvidenceRecord } = require('./schema');
 const engine = require('./engine');
+const locales = require('./locales');
+const { classifyFrequency, classifyYesNo, detectUncertainty } = locales;
 const { extractEvidence } = require('../interviewer/interviewer');
+
+const fs = require('fs');
+const path = require('path');
+const STORAGE_DIR = path.join(__dirname, '..', 'data');
 
 const MAX_TRANSCRIPT = 20;
 
-function createStage2Assessment(id) {
+function createStage2Assessment(id, lang) {
   const state = newAssessment(id);
+  if (lang === 'fa' || lang === 'en') state.lang = lang;
   state.stage = 'ADULT_SYMPTOMS';
   state.criterion_index = 0;
-    state.duration = null;      // derived from Stage 2 core answers at completion (§9a-B), not hardcoded
-    state.transcript = [];
   state.transcript = [];
   state.pending = { cid: null, kind: 'core', followups: 0 };
   return state;
@@ -33,34 +38,105 @@ function appendTranscript(state, role, text) {
   if (state.transcript.length > MAX_TRANSCRIPT) state.transcript = state.transcript.slice(-MAX_TRANSCRIPT);
 }
 
-// Begin Stage 2: present the first criterion's deterministic core question.
+// --- Canonical persistence (single source: the server, via data/<id>.json) ---
+// The in-memory session map lives in server.js; these helpers back it with disk so a
+// resume survives a server restart. Nothing here is clinical logic.
+function snapshot(state) {
+  try {
+    if (!fs.existsSync(STORAGE_DIR)) fs.mkdirSync(STORAGE_DIR, { recursive: true });
+    fs.writeFileSync(path.join(STORAGE_DIR, state.id + '.json'), JSON.stringify(state, null, 2));
+  } catch (e) {
+    console.error('snapshot failed:', e.message);
+  }
+}
+function loadSnapshot(id) {
+  try {
+    const p = path.join(STORAGE_DIR, id + '.json');
+    if (!fs.existsSync(p)) return null;
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) {
+    return null;
+  }
+}
+function clearSnapshot(id) {
+  try {
+    const p = path.join(STORAGE_DIR, id + '.json');
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  } catch (e) {
+    console.error('clearSnapshot failed:', e.message);
+  }
+}
+function snapshotExists(id) {
+  try { return fs.existsSync(path.join(STORAGE_DIR, id + '.json')); } catch (e) { return false; }
+}
+
+// Reconstruct the question the engine is currently waiting on from the persisted state.
+// Used to restore the in-flight prompt after a reload/resume (deterministic — no LLM).
+function currentQuestion(state, lang) {
+  const l = state.lang || lang || 'en';
+  if (!state.pending) return null;
+  const stage = state.stage;
+  if (stage === 'ADULT_SYMPTOMS') {
+    const { cid, kind } = state.pending || {};
+    if (!cid) return null;
+    const criterion = CRITERIA.find(c => c.id === cid);
+    if (!criterion) return null;
+    if (kind === 'core' || !kind) return engine.formatCoreQuestion(criterion, l);
+    return engine.followupPrompt(criterion, kind, l);
+  }
+  if (stage === 'CHILDHOOD') {
+    const idx = (state.pending && state.pending.probe) || 0;
+    const probe = engine.CHILDHOOD_PROBES[idx];
+    if (!probe) return null;
+    return engine.childhoodQuestion(probe, l);
+  }
+  if (stage === 'IMPAIRMENT') {
+    const idx = (state.pending && state.pending.probe) || 0;
+    const probe = IMPAIRMENT_PROBES[idx];
+    if (!probe) return null;
+    return probe.id === 'settings' ? engine.formatSettingsQuestion(l) : engine.formatImpairmentQuestion(l);
+  }
+  if (stage === 'DIFFERENTIAL') {
+    const idx = (state.pending && state.pending.probe) || 0;
+    const factor = engine.DIFFERENTIAL_FACTORS[idx];
+    if (!factor) return null;
+    return engine.formatDifferentialQuestion(factor, l);
+  }
+  return null;
+}
+
+// Begin Stage 2: present the first criterion's deterministic core question (localized).
 function begin(state) {
+  const lang = state.lang || 'en';
   const criterion = engine.currentCriterion(state);
   if (!criterion) {
     state.stage = 'REPORT';
     state.duration = engine.deriveDuration(state);
     state.report = engine.evaluate(state);
-    return { completed: true, report: state.report };
+    return { completed: true, report: localizeReport(state, state.report), progress: getProgress(state) };
   }
   state.pending = { cid: criterion.id, kind: 'core', followups: 0 };
   return {
-    question: engine.formatCoreQuestion(criterion),
+    question: engine.formatCoreQuestion(criterion, lang),
     criterionId: criterion.id,
     kind: 'core',
     first: true,
+    progress: getProgress(state),
   };
 }
 
 // Advance after a criterion is completed (or marked uncertain). Returns the next question or the report.
 function nextOrDone(state, opts = {}) {
+  const lang = state.lang || 'en';
   if (engine.hasMoreCriteria(state)) {
     const next = engine.currentCriterion(state);
     state.pending = { cid: next.id, kind: 'core', followups: 0 };
     return {
-      question: engine.formatCoreQuestion(next),
+      question: engine.formatCoreQuestion(next, lang),
       criterionId: next.id,
       kind: 'core',
       advanced: true,
+      progress: getProgress(state),
       ...opts,
     };
   }
@@ -80,6 +156,7 @@ async function _processStage2Turn(state, userAnswer) {
   const idx = CRITERIA.findIndex(c => c.id === cid);
   const criterion = CRITERIA[idx];
   const record = getRecord(state, cid);
+  const lang = state.lang || 'en';
   record.tries = (record.tries || 0) + 1;            // every user-turn counts toward the safety cap
 
   // Count a follow-up turn BEFORE extraction: a follow-up was asked last turn and
@@ -93,10 +170,26 @@ async function _processStage2Turn(state, userAnswer) {
       priorEvidence: engine.stripEvidence(record),
       transcript: state.transcript,
       userAnswer,
+      lang: state.lang || 'en',
     });
   } catch (e) {
     extractionError = e.message;
   }
+
+   // §3: Pre-classify simple frequency/yes-no answers deterministically (Issue #3).
+   // The LLM is unreliable for short Persian/English words like "گاهی", "هرگز", "خیر".
+   // If the raw answer directly maps to a canonical frequency, use it as ground truth;
+   // the LLM's core_answer is only a fallback.
+   var canonicalFreq = classifyFrequency(userAnswer);
+   if (canonicalFreq) {
+     extracted.core_answer = canonicalFreq;
+   } else if (classifyYesNo(userAnswer) === false) {
+     extracted.core_answer = 'Never';
+   }
+   var unc = detectUncertainty(userAnswer, lang);
+   if (unc && !extracted.uncertainty) {
+     extracted.uncertainty = unc;
+   }
 
   if (kindPrev !== 'core') record.followups = (record.followups || 0) + 1;
   appendTranscript(state, 'user', userAnswer || '(no answer)');
@@ -105,6 +198,16 @@ async function _processStage2Turn(state, userAnswer) {
   // 2. Engine merges extracted fields deterministically (on extraction error, no-op).
   if (extracted) engine.mergeEvidence(record, extracted);
   state.criteria[cid] = record;
+
+  // An explicit inability to answer is a bounded, clinically honest outcome.
+  // Do not re-ask the same fact or start a generic follow-up chain after
+  // "I don't know"; keep the criterion visible as uncertain and advance.
+  if (unc) {
+    engine.markUncertain(record);
+    state.criteria[cid] = record;
+    appendTranscript(state, 'engine', `${cid} -> uncertain (user unable to provide evidence)`);
+    return nextOrDone(state, { criterionId: cid, uncertain: true, completed: false, criterion_done: true });
+  }
 
   // 3. Engine adjudicates (authoritative — LLM never decides this).
   const recheck = engine.engineMove(record);
@@ -125,35 +228,41 @@ async function _processStage2Turn(state, userAnswer) {
     return nextOrDone(state, { criterionId: cid, uncertain: true, completed: false, criterion_done: true });
   }
 
-  // recheck.move === 'ask_core': core answer not yet collected (e.g. extraction failed).
-  // Re-ask the core question; the turn cap is enforced by engineMove (tries >= MAX_TURNS).
-  if (recheck.move === 'ask_core') {
-    state.pending = { cid, kind: 'core', followups: record.followups || 0 };
-    return {
-      question: engine.formatCoreQuestion(criterion),
-      criterionId: cid,
-      kind: 'core',
-      completed: false,
-      ...(extractionError ? { error: extractionError } : {}),
-    };
-  }
+   // recheck.move === 'ask_core': core answer not yet collected (e.g. extraction failed or
+   // the user couldn't state a frequency). Re-ask the core question; the turn cap is enforced
+   // by engineMove (tries >= MAX_TURNS). A gentle recast preamble softens the re-ask when the
+   // record already carries an uncertainty note — same clinical question, warmer framing.
+   if (recheck.move === 'ask_core') {
+     state.pending = { cid, kind: 'core', followups: record.followups || 0 };
+     let q = engine.formatCoreQuestion(criterion, lang);
+     if (record.uncertainty) q = locales.recastText(lang) + q;
+     return {
+       question: q,
+       criterionId: cid,
+       kind: 'core',
+       completed: false,
+       progress: getProgress(state),
+       ...(extractionError ? { error: extractionError } : {}),
+     };
+   }
 
-  // recheck.move === 'followup'
-  const kindNext = engine.pickFollowupKind(record.followups || 0);
-  const followupQ = engine.followupPrompt(criterion, kindNext);
+   // recheck.move === 'followup'
+   const kindNext = engine.pickFollowupKind(record);
+   const followupQ = engine.followupPrompt(criterion, kindNext, lang);
 
-  const pending = { cid, kind: kindNext, followups: record.followups || 0 };
-  if (extractionError) pending.retry = true;
-  state.pending = pending;
-  return {
-    question: followupQ,
-    criterionId: cid,
-    kind: kindNext,
-    followup: true,
-    completed: false,
-    evidence: engine.stripEvidence(record),
-    ...(extractionError ? { error: extractionError } : {}),
-  };
+   const pending = { cid, kind: kindNext, followups: record.followups || 0 };
+   if (extractionError) pending.retry = true;
+   state.pending = pending;
+   return {
+     question: followupQ,
+     criterionId: cid,
+     kind: kindNext,
+     followup: true,
+     completed: false,
+     progress: getProgress(state),
+     evidence: engine.stripEvidence(record),
+     ...(extractionError ? { error: extractionError } : {}),
+   };
 }
 
 // Unified public stage-flow dispatcher.
@@ -189,12 +298,12 @@ async function processTurn(state, userAnswer) {
       state.stage = 'REPORT';
       state.report = engine.evaluate(state);
       state.pending = null;
-      return { stage: 'REPORT', completed: true, report: state.report, transitioned: true };
+      return { stage: 'REPORT', completed: true, report: localizeReport(state, state.report), transitioned: true, progress: getProgress(state) };
     }
     return ret;
   }
   if (state.stage === 'REPORT') {
-    return { stage: 'REPORT', completed: true, report: getReport(state) };
+    return { stage: 'REPORT', completed: true, report: getReport(state), progress: getProgress(state) };
   }
   return begin(state);
 }
@@ -203,15 +312,116 @@ async function processTurn(state, userAnswer) {
 function getReport(state) {
   if (state.stage !== 'REPORT') return null;
   if (!state.report) state.report = engine.evaluate(state);
-  return state.report;
+  // Localize visible report strings (recommendation, disclaimer, labels) per §10C.
+  return localizeReport(state, state.report);
 }
 
+// Issue #10C: localize the English report text produced by the engine when lang === 'fa'.
+// Returns a shallow copy with localized top-level strings and differential labels.
+// The original stored report is not mutated.
+function localizeReport(state, report) {
+  if (state.lang !== 'fa' || !report) return report;
+  var r = Object.assign({}, report);
+  var L = 'fa';
+  r.recommendation = locales.tierRecommendationText(r.tier, L) || r.recommendation;
+  r.disclaimer = locales.resultUILabel('limitationsText', L) || r.disclaimer;
+  if (r.childhood_onset) {
+    r.childhood_onset = Object.assign({}, r.childhood_onset, { source: locales.resultUILabel('onsetSource', L) || r.childhood_onset.source });
+  }
+  if (r.duration_persistence) {
+    r.duration_persistence = Object.assign({}, r.duration_persistence, { requirement: locales.resultUILabel('durationReq', L) || r.duration_persistence.requirement });
+  }
+  if (r.settings) {
+    r.settings = Object.assign({}, r.settings, { requirement: locales.resultUILabel('settingsReq', L) || r.settings.requirement });
+  }
+  if (r.differentials && Array.isArray(r.differentials.list)) {
+    r.differentials = Object.assign({}, r.differentials, {
+      list: r.differentials.list.map(function (label) { return locales.localizeDifferentialLabel(label, L) || label; }),
+    });
+  }
+  // Rebuild differential_note from structured considerations with localized labels
+  if (r.differentials && Array.isArray(r.differentials.considerations)) {
+    var cons = r.differentials.considerations;
+    if (cons.length) {
+      var tiedSuffix = locales.resultUILabel('tiedToSymptoms', L) || '';
+      var prefix = locales.resultUILabel('alternativeExplanations', L) || 'عوامل جایگزین یادآوری شده';
+      r.differential_note = prefix + ': ' + cons.map(function (c) {
+        var locLabel = locales.localizeDifferentialLabel(c.factor, L) || c.factor;
+        return c.could_explain_for_symptoms ? (locLabel + tiedSuffix) : locLabel;
+      }).join(', ') + '.';
+    } else {
+      r.differential_note = null;
+    }
+  }
+  // Localize the prefix of contradiction_note (list items are engine-built English strings)
+  if (r.contradiction_note && r.contradictions && Array.isArray(r.contradictions.list) && r.contradictions.list.length) {
+    var cPrefix = locales.resultUILabel('contradictions', L) || 'شواهدی که الگوی ADHD را به‌خوبی تبیین نمی‌کند';
+    r.contradiction_note = cPrefix + ': ' + r.contradictions.list.join(' | ') + '.';
+   }
+  // Localize stage2_only message
+  if (r.stage2_only) {
+    r.stage2_only = locales.resultUILabel('stage2OnlyText', L) || r.stage2_only;
+  }
+   // Sanitize per-criterion evidence: replace English text with Persian fallback
+   // so no raw English appears in a Persian report (Issue #10C).
+   if (Array.isArray(r.per_criterion)) {
+     r.per_criterion = r.per_criterion.map(function (c) {
+       return Object.assign({}, c, {
+         example: locales.sanitizeEvidence(c.example, L),
+         contexts: locales.sanitizeEvidenceList(c.contexts, L),
+         counter_evidence: locales.sanitizeEvidenceList(c.counter_evidence, L),
+         evidence: locales.sanitizeEvidenceList(c.evidence, L),
+       });
+     });
+   }
+   // Rebuild summary from localized components (engine built summary from English text)
+  var sumDisclaimer = locales.resultUILabel('summaryDisclaimer', L) || r.disclaimer;
+  r.summary = [
+    r.recommendation || '',
+    r.differential_note || '',
+    r.contradiction_note || '',
+    sumDisclaimer
+  ].filter(function (s) { return s && s.length > 0; }).join(' ').replace(/\s+/g, ' ').trim();
+  return r;
+}
+
+// Stage-aware progress (§: progress reflects the CURRENT stage only, so a prior stage's
+// 100% never lingers into the next stage). Numbers derive from the real assessment state —
+// no fake/hardcoded progress: Stage 2 = criteria with a terminal status; Stage 3 = probes
+// answered; Stage 4 = impairment probes answered; Stage 5 = differential factors answered.
 function getProgress(state) {
-  const done = CRITERIA.filter(c => {
-    const r = state.criteria[c.id];
-    return r && r.status !== null && !r.uncertainty;
-  }).length;
-  return { total: CRITERIA.length, completed: done, stage: state.stage, current: state.pending?.cid || null };
+  const stage = state.stage;
+  const lang = state.lang || 'en';
+  if (stage === 'ADULT_SYMPTOMS' || stage === 'SCREENING' || stage == null) {
+    const total = CRITERIA.length;
+    const completed = CRITERIA.filter(c => {
+      const r = state.criteria[c.id];
+      return r && r.status !== null; // terminal (incl. uncertain) => processed
+    }).length;
+    return { stage, label: 'ADULT_SYMPTOMS', completed, total, pct: total ? Math.round(completed / total * 100) : 0, current: state.pending && state.pending.cid, lang };
+  }
+  if (stage === 'CHILDHOOD') {
+    const total = engine.CHILDHOOD_PROBES.length;
+    const asked = (state.childhood && state.childhood.probesAsked) || 0;
+    const completed = Math.min(asked, total);
+    return { stage, label: 'CHILDHOOD', completed, total, pct: total ? Math.round(completed / total * 100) : 0, current: null, lang };
+  }
+  if (stage === 'IMPAIRMENT') {
+    const total = IMPAIRMENT_PROBES.length;
+    const asked = (state.impairment && state.impairment.probesAsked) || 0;
+    const completed = Math.min(asked, total);
+    return { stage, label: 'IMPAIRMENT', completed, total, pct: total ? Math.round(completed / total * 100) : 0, current: null, lang };
+  }
+  if (stage === 'DIFFERENTIAL') {
+    const total = engine.DIFFERENTIAL_FACTORS.length;
+    const asked = (state.differential && state.differential.probesAsked) || 0;
+    const completed = Math.min(asked, total);
+    return { stage, label: 'DIFFERENTIAL', completed, total, pct: total ? Math.round(completed / total * 100) : 0, current: null, lang };
+  }
+  if (stage === 'REPORT') {
+    return { stage, label: 'REPORT', completed: 5, total: 5, pct: 100, current: null, lang };
+  }
+  return { stage, label: stage, completed: 0, total: 0, pct: 0, current: (state.pending && state.pending.cid) || null, lang };
 }
 
 // --- §5: Stage 3 — Childhood-onset evidence (additive; does not alter Stage 2 flow) ---
@@ -226,12 +436,14 @@ function beginStage3(state) {
   }
   state.pending = { stage: 'CHILDHOOD', probe: 0, kind: 'childhood' };
   const probe = engine.CHILDHOOD_PROBES[0];
+  const lang = state.lang || 'en';
   return {
-    question: engine.childhoodQuestion(probe),
+    question: engine.childhoodQuestion(probe, lang),
     probeId: probe.id,
     kind: 'childhood',
     first: true,
     completed: false,
+    progress: getProgress(state),
   };
 }
 
@@ -252,6 +464,7 @@ function mergeChildhoodEvidence(state, extracted) {
 
 // Process a user answer to a childhood probe. Deterministic prompt; LLM only extracts.
 async function processStage3Turn(state, userAnswer) {
+  const lang = state.lang || 'en';
   const pending = state.pending || { stage: 'CHILDHOOD', probe: 0, kind: 'childhood' };
   if (pending.stage !== 'CHILDHOOD') return beginStage3(state);
 
@@ -262,7 +475,7 @@ async function processStage3Turn(state, userAnswer) {
     state.onset = engine.rateOnset(state.childhood.evidence);
     state.childhood.done = true;
     state.pending = null;
-    return { completed: true, stage: 'CHILDHOOD', onset: state.onset, evidence: state.childhood.evidence.slice() };
+    return { completed: true, stage: 'CHILDHOOD', onset: state.onset, evidence: state.childhood.evidence.slice(), progress: getProgress(state) };
   }
 
   let extracted = CHILDHOOD_EXTRACT_DEFAULT;
@@ -274,6 +487,7 @@ async function processStage3Turn(state, userAnswer) {
       priorEvidence: { memories: state.childhood.evidence },
       transcript: state.transcript,
       userAnswer,
+      lang,
     });
   } catch (e) {
     extractionError = e.message;
@@ -289,10 +503,11 @@ async function processStage3Turn(state, userAnswer) {
     const nextProbe = engine.CHILDHOOD_PROBES[nextIdx];
     state.pending = { stage: 'CHILDHOOD', probe: nextIdx, kind: 'childhood' };
     return {
-      question: engine.childhoodQuestion(nextProbe),
+      question: engine.childhoodQuestion(nextProbe, lang),
       probeId: nextProbe.id,
       kind: 'childhood',
       completed: false,
+      progress: getProgress(state),
     };
   }
 
@@ -305,6 +520,7 @@ async function processStage3Turn(state, userAnswer) {
     stage: 'CHILDHOOD',
     onset: state.onset,
     evidence: state.childhood.evidence.slice(),
+    progress: getProgress(state),
   };
 }
 
@@ -318,19 +534,25 @@ function beginStage4(state) {
     state.impairment = { examples: [], settings: [], probesAsked: 0, done: false, probe: 0 };
   }
   state.pending = { stage: 'IMPAIRMENT', probe: 0, kind: 'impairment' };
+  const lang = state.lang || 'en';
   return {
-    question: engine.formatImpairmentQuestion(),
+    question: engine.formatImpairmentQuestion(lang),
     probeId: 'domains',
     kind: 'impairment',
     first: true,
     completed: false,
+    progress: getProgress(state),
   };
 }
 
 const IMPAIRMENT_PROBES = [
-  { id: 'domains', question: () => engine.formatImpairmentQuestion() },
-  { id: 'settings', question: () => engine.formatSettingsQuestion() },
+  { id: 'domains' },
+  { id: 'settings' },
 ];
+// Localized display prompt; the extractor always receives the canonical EN prompt.
+function impairmentProbePrompt(id, lang) {
+  return id === 'settings' ? engine.formatSettingsQuestion(lang) : engine.formatImpairmentQuestion(lang);
+}
 const IMPAIRMENT_EXTRACT_DEFAULT = { domains_impaired: [], settings: [], uncertainty: null };
 
 function mergeImpairmentEvidence(state, extracted) {
@@ -352,6 +574,7 @@ function mergeImpairmentEvidence(state, extracted) {
 }
 
 async function processStage4Turn(state, userAnswer) {
+  const lang = state.lang || 'en';
   const pending = state.pending || { stage: 'IMPAIRMENT', probe: 0, kind: 'impairment' };
   if (pending.stage !== 'IMPAIRMENT') return beginStage4(state);
 
@@ -364,7 +587,7 @@ async function processStage4Turn(state, userAnswer) {
     state.settings = a.settings;
     state.impairment.done = true;
     state.pending = null;
-    return { completed: true, stage: 'IMPAIRMENT', ...a };
+    return { completed: true, stage: 'IMPAIRMENT', ...a, progress: getProgress(state) };
   }
 
   let extracted = IMPAIRMENT_EXTRACT_DEFAULT;
@@ -372,10 +595,11 @@ async function processStage4Turn(state, userAnswer) {
   try {
     extracted = await extractEvidence({
       stage: 'impairment',
-      probe: { id: probe.id, prompt: probe.question() },
+      probe: { id: probe.id, prompt: impairmentProbePrompt(probe.id, 'en') },
       priorEvidence: { examples: state.impairment.examples, settings: state.impairment.settings },
       transcript: state.transcript,
       userAnswer,
+      lang,
     });
   } catch (e) {
     extractionError = e.message;
@@ -391,16 +615,16 @@ async function processStage4Turn(state, userAnswer) {
   if (nextIdx < IMPAIRMENT_PROBES.length) {
     const nextProbe = IMPAIRMENT_PROBES[nextIdx];
     state.pending = { stage: 'IMPAIRMENT', probe: nextIdx, kind: 'impairment' };
-    return { question: nextProbe.question(), probeId: nextProbe.id, kind: 'impairment', completed: false };
+    return { question: impairmentProbePrompt(nextProbe.id, lang), probeId: nextProbe.id, kind: 'impairment', completed: false, progress: getProgress(state) };
   }
 
-  // Last probe answered — finalize.
+   // Last probe answered — finalize.
   const a = engine.assessImpairment(state.impairment);
   state.domains_impaired = a.domains;
   state.settings = a.settings;
   state.impairment.done = true;
   state.pending = null;
-  return { completed: true, stage: 'IMPAIRMENT', ...a };
+  return { completed: true, stage: 'IMPAIRMENT', ...a, progress: getProgress(state) };
 }
 
 // --- §7: Stage 5 — Focused differential check (additive; M1–M4 untouched) ---
@@ -414,13 +638,15 @@ function beginStage5(state) {
     state.differential = { factors: [], probesAsked: 0, done: false, probe: 0 };
   }
   state.pending = { stage: 'DIFFERENTIAL', probe: 0, kind: 'differential' };
+  const lang = state.lang || 'en';
   const factor = engine.DIFFERENTIAL_FACTORS[0];
   return {
-    question: engine.formatDifferentialQuestion(factor),
+    question: engine.formatDifferentialQuestion(factor, lang),
     probeId: factor.id,
     kind: 'differential',
     first: true,
     completed: false,
+    progress: getProgress(state),
   };
 }
 
@@ -439,14 +665,15 @@ function mergeDifferentialEvidence(state, extracted) {
 }
 
 async function processStage5Turn(state, userAnswer) {
+  const lang = state.lang || 'en';
   const pending = state.pending || { stage: 'DIFFERENTIAL', probe: 0, kind: 'differential' };
   if (pending.stage !== 'DIFFERENTIAL') return beginStage5(state);
 
   const idx = pending.probe == null ? 0 : pending.probe;
   const factor = DIFFERENTIAL_PROBES[idx];
-  if (!factor) {
+   if (!factor) {
     finalizeDifferential(state);
-    return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged };
+    return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged, progress: getProgress(state) };
   }
 
   let extracted = DIFFERENTIAL_EXTRACT_DEFAULT;
@@ -458,12 +685,23 @@ async function processStage5Turn(state, userAnswer) {
       priorEvidence: { factors: state.differential.factors },
       transcript: state.transcript,
       userAnswer,
+      lang,
     });
     extracted.factor = factor.id;
-  } catch (e) {
-    extractionError = e.message;
-  }
-  if (extracted) mergeDifferentialEvidence(state, extracted);
+   } catch (e) {
+     extractionError = e.message;
+   }
+   // §3: Pre-classify yes/no answers deterministically (Issue #3).
+   var yn = classifyYesNo(userAnswer);
+   if (yn !== null) {
+     extracted.reported = yn;
+   }
+   if (detectUncertainty(userAnswer, lang) && !extracted.uncertainty) {
+     extracted.uncertainty = lang === 'fa'
+       ? 'کاربر گفته است «' + userAnswer.trim() + '» — عدم قطعیت.'
+       : 'User indicated "' + userAnswer.trim() + '" — uncertainty.';
+   }
+   if (extracted) mergeDifferentialEvidence(state, extracted);
 
   state.differential.probesAsked = (state.differential.probesAsked || 0) + 1;
   state.differential.probe = idx;
@@ -473,11 +711,11 @@ async function processStage5Turn(state, userAnswer) {
   const nextIdx = idx + 1;
   if (nextIdx < DIFFERENTIAL_PROBES.length) {
     state.pending = { stage: 'DIFFERENTIAL', probe: nextIdx, kind: 'differential' };
-    return { question: engine.formatDifferentialQuestion(DIFFERENTIAL_PROBES[nextIdx]), probeId: DIFFERENTIAL_PROBES[nextIdx].id, kind: 'differential', completed: false };
+    return { question: engine.formatDifferentialQuestion(DIFFERENTIAL_PROBES[nextIdx], lang), probeId: DIFFERENTIAL_PROBES[nextIdx].id, kind: 'differential', completed: false, progress: getProgress(state) };
   }
 
   finalizeDifferential(state);
-  return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged };
+  return { completed: true, stage: 'DIFFERENTIAL', flagged: state.differentials_flagged, progress: getProgress(state) };
 }
 
 function finalizeDifferential(state) {
@@ -489,8 +727,10 @@ function finalizeDifferential(state) {
 
 module.exports = {
   createStage2Assessment, begin, processTurn, nextOrDone, getReport, getProgress,
+  localizeReport,
   beginStage3, processStage3Turn,
   beginStage4, processStage4Turn,
   beginStage5, processStage5Turn,
-  CRITERIA,
+  currentQuestion, snapshot, loadSnapshot, clearSnapshot, snapshotExists,
+  CRITERIA, IMPAIRMENT_PROBES,
 };
