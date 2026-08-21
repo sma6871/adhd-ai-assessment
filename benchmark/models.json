@@ -19,7 +19,12 @@
       "id": "qwen/qwen3.6-27b",
       "label": "Qwen 3.6 27B",
       "pricing": { "input": 0.60, "output": 3.00 },
-      "compatible_with_json_object": false
+      "compatible_with_json_object": true
+    },
+    {
+      "id": "openai/gpt-oss-20b",
+      "label": "GPT-OSS 20B",
+      "pricing": { "input": 0.075, "output": 0.30 }
     }
   ]
 }

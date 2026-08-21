@@ -21,6 +21,8 @@ const CASES_PATH = path.join(ROOT, 'cases.json');
 
 const SMOKE_IDS = ['C01', 'C14', 'CH01', 'CH04', 'I01', 'I02', 'D01', 'D06'];
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function arg(flag) {
   const i = process.argv.indexOf(flag);
   return i >= 0 ? process.argv[i + 1] : null;
@@ -108,6 +110,12 @@ async function main() {
     fs.writeFileSync(path.join(outDir, `model-${modelId.replace(/[/]/g, '__')}.json`), JSON.stringify(modelRec, null, 2));
 
     console.log(`  done in ${elapsed}s  overall=${pct(agg.overall)}%  schema=${pct(agg.schema_valid_rate)}%  prod_ok=${pct(agg.production_ok_rate)}%  errs=${agg.errors}  mean_flips/case=${(scored.reduce((s, x) => s + x.impact.flips, 0) / mathMax(1, scored.length)).toFixed(2)}`);
+
+    // Cooldown between model runs to avoid cross-model rate limiting
+    if (perModel.length < wanted.length) {
+      console.log(`  Cooling down 30s to avoid cross-model rate limiting...`);
+      await sleep(30000);
+    }
   }
 
   const summary = { runId, generated_at: new Date().toISOString(), case_count: cases.length, availability, models: perModel };
