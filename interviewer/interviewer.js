@@ -16,7 +16,8 @@
 // If a follow-up is needed, the engine supplies and asks it; this module only extracts.
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+// Production default. Benchmark runs may override this per model via GROQ_MODEL.
+const GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const ONSET_AGE = require('../model/criteria').ONSET_AGE;
 
