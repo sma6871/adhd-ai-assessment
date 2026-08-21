@@ -1,0 +1,4615 @@
+{
+  "modelId": "llama-3.1-8b-instant",
+  "elapsed_s": "245.8",
+  "results": [
+    {
+      "case_id": "C01",
+      "category": "clear positive evidence",
+      "tags": [
+        "positive",
+        "criterion",
+        "concrete-example",
+        "consequence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n   \"example\": \"last week at work, kept making typos in a report and missed a deadline because I skipped details\",\n   \"contexts\": [\"work\", \"home\"],\n   \"consequence\": \"redoing a lot of work, stresses me out\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": "last week at work, kept making typos in a report and missed a deadline because I skipped details",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "redoing a lot of work, stresses me out",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": "last week at work, kept making typos in a report and missed a deadline because I skipped details",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "redoing a lot of work, stresses me out",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 211,
+      "tokens": {
+        "prompt": 621,
+        "completion": 77,
+        "total": 698,
+        "total_time": 0.110635004,
+        "queue_time": 0.049495581
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.9166666666666666,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9739583333333334,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 0.5
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C02",
+      "category": "clear negative evidence",
+      "tags": [
+        "negative",
+        "criterion",
+        "counter-evidence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Never\",\n   \"example\": null,\n   \"contexts\": [\"meetings\"],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Never",
+        "example": null,
+        "contexts": [
+          "meetings"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Never",
+        "example": null,
+        "contexts": [
+          "meetings"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 141,
+      "tokens": {
+        "prompt": 542,
+        "completion": 45,
+        "total": 587,
+        "total_time": 0.074126976,
+        "queue_time": 0.017855959
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0.5,
+          "unsupported_fabricated": 0.95,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.67816091954023,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "contexts: extra grounded-but-not-gold item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=\"Never\"",
+          "has_contexts: gold=false pred=true",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C03",
+      "category": "clear positive evidence",
+      "tags": [
+        "positive",
+        "criterion",
+        "very-often",
+        "consequence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"trying to read anything longer than a paragraph, having to reread lines\",\n   \"contexts\": [\"work\", \"home\"],\n   \"consequence\": \"a lot of time, avoiding reading\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "trying to read anything longer than a paragraph, having to reread lines",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "a lot of time, avoiding reading",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "trying to read anything longer than a paragraph, having to reread lines",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "a lot of time, avoiding reading",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 168,
+      "tokens": {
+        "prompt": 558,
+        "completion": 70,
+        "total": 628,
+        "total_time": 0.100687352,
+        "queue_time": 0.018113301
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7331154684095861,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9165985838779958,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.17647058823529413
+          },
+          {
+            "name": "consequence",
+            "score": 0.2222222222222222
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C04",
+      "category": "ambiguous answers",
+      "tags": [
+        "ambiguous",
+        "sometimes",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": \"getting up during long meetings, maybe once a week\",\n   \"contexts\": [\"long meetings\"],\n   \"consequence\": null,\n   \"counter_evidence\": [\"sometimes I'm fine and I can sit there\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": "getting up during long meetings, maybe once a week",
+        "contexts": [
+          "long meetings"
+        ],
+        "consequence": null,
+        "counter_evidence": [
+          "sometimes I'm fine and I can sit there"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": "getting up during long meetings, maybe once a week",
+        "contexts": [
+          "long meetings"
+        ],
+        "consequence": null,
+        "counter_evidence": [
+          "sometimes I'm fine and I can sit there"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 206,
+      "tokens": {
+        "prompt": 543,
+        "completion": 65,
+        "total": 608,
+        "total_time": 0.109638975,
+        "queue_time": 0.049441834
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7361111111111112,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.95,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9050347222222224,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.4166666666666667
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "counter_evidence: extra grounded-but-not-gold item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_counter: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C05",
+      "category": "short answers",
+      "tags": [
+        "short",
+        "minimal",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3303,
+      "tokens": {
+        "prompt": 512,
+        "completion": 42,
+        "total": 554,
+        "total_time": 0.071775455,
+        "queue_time": 0.061058489
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C06",
+      "category": "long/narrative answers",
+      "tags": [
+        "long",
+        "narrative",
+        "criterion",
+        "consequence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Never|Sometimes\",\n   \"example\": \"automating a report at work, got the first part done but never finished the final validation step, and also left online courses half-finished\",\n   \"contexts\": [\"work\", \"home\"],\n   \"consequence\": \"things pile up and I feel guilty and bad about myself\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Never|Sometimes",
+        "example": "automating a report at work, got the first part done but never finished the final validation step, and also left online courses half-finished",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "things pile up and I feel guilty and bad about myself",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Never|Sometimes",
+        "example": "automating a report at work, got the first part done but never finished the final validation step, and also left online courses half-finished",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "things pile up and I feel guilty and bad about myself",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": false,
+        "violations": [
+          "core_answer \"Never|Sometimes\" is not a valid frequency"
+        ]
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7357,
+      "tokens": {
+        "prompt": 642,
+        "completion": 88,
+        "total": 730,
+        "total_time": 0.134000191,
+        "queue_time": 0.020881821
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6409749670619236,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7628046772068511,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0.391304347826087
+          },
+          {
+            "name": "consequence",
+            "score": 0.45454545454545453
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=\"Never|Sometimes\""
+        ]
+      }
+    },
+    {
+      "case_id": "C07",
+      "category": "multiple contexts",
+      "tags": [
+        "contexts",
+        "criterion",
+        "concrete-example"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n   \"example\": \"Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered everywhere.\",\n   \"contexts\": [\"work\", \"home\"],\n   \"consequence\": \"cluttered workspace\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": "Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered everywhere.",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "cluttered workspace",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": "Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered everywhere.",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "cluttered workspace",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7388,
+      "tokens": {
+        "prompt": 539,
+        "completion": 73,
+        "total": 612,
+        "total_time": 0.116704425,
+        "queue_time": 0.057981184
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7450980392156863,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.65,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.832843137254902,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.47058823529411764
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported consequence fabricated: \"cluttered workspace\""
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_consequence: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C08",
+      "category": "concrete examples",
+      "tags": [
+        "concrete-example",
+        "criterion",
+        "very-often"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"physically couldn't sit through a Zoom training, kept having to stand up and pace around\",\n   \"contexts\": [\"home office during calls\"],\n   \"consequence\": \"inability to sit through a training\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "physically couldn't sit through a Zoom training, kept having to stand up and pace around",
+        "contexts": [
+          "home office during calls"
+        ],
+        "consequence": "inability to sit through a training",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "physically couldn't sit through a Zoom training, kept having to stand up and pace around",
+        "contexts": [
+          "home office during calls"
+        ],
+        "consequence": "inability to sit through a training",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3323,
+      "tokens": {
+        "prompt": 566,
+        "completion": 73,
+        "total": 639,
+        "total_time": 0.115854328,
+        "queue_time": 0.051416232
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7745098039215685,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.65,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8420343137254902,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.6470588235294118
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported consequence fabricated: \"inability to sit through a training\""
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_consequence: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C09",
+      "category": "missing examples",
+      "tags": [
+        "missing-example",
+        "criterion",
+        "uncertainty"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": \"I don't have a specific recent situation in mind that I can describe\"\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't have a specific recent situation in mind that I can describe"
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't have a specific recent situation in mind that I can describe"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7340,
+      "tokens": {
+        "prompt": 540,
+        "completion": 56,
+        "total": 596,
+        "total_time": 0.105344197,
+        "queue_time": 0.02393224
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C10",
+      "category": "missing consequences",
+      "tags": [
+        "missing-consequence",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"can't relax watching a movie, always need to be busy\",\n   \"contexts\": [\"home\", \"weekends\"],\n   \"consequence\": \"boredom, inability to relax\",\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "can't relax watching a movie, always need to be busy",
+        "contexts": [
+          "home",
+          "weekends"
+        ],
+        "consequence": "boredom, inability to relax",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "can't relax watching a movie, always need to be busy",
+        "contexts": [
+          "home",
+          "weekends"
+        ],
+        "consequence": "boredom, inability to relax",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7358,
+      "tokens": {
+        "prompt": 546,
+        "completion": 68,
+        "total": 614,
+        "total_time": 0.105643135,
+        "queue_time": 0.051785956
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7805555555555556,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.6000000000000001,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8314236111111111,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.8333333333333334
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 0.85
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported consequence fabricated: \"boredom, inability to relax\"",
+          "contexts: extra grounded-but-not-gold item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_consequence: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C11",
+      "category": "uncertainty / I don't remember",
+      "tags": [
+        "uncertainty",
+        "criterion",
+        "minimal"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": \"I don't know\"\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't know"
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't know"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3273,
+      "tokens": {
+        "prompt": 528,
+        "completion": 46,
+        "total": 574,
+        "total_time": 0.095311006,
+        "queue_time": 0.029039331
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.75,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.8958333333333335,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated core_answer \"Sometimes\" when gold expects none"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "core_answer: gold=null pred=\"Sometimes\""
+        ]
+      }
+    },
+    {
+      "case_id": "C12",
+      "category": "uncertainty / partial",
+      "tags": [
+        "uncertainty",
+        "criterion",
+        "missing-example"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often|null\",\n   \"example\": \"null\",\n   \"contexts\": [],\n   \"consequence\": \"null\",\n   \"counter_evidence\": [],\n   \"uncertainty\": \"I can't think of a specific time.\"\n}",
+      "rawParsed": {
+        "core_answer": "Often|null",
+        "example": "null",
+        "contexts": [],
+        "consequence": "null",
+        "counter_evidence": [],
+        "uncertainty": "I can't think of a specific time."
+      },
+      "normalized": {
+        "core_answer": "Often|null",
+        "example": "null",
+        "contexts": [],
+        "consequence": "null",
+        "counter_evidence": [],
+        "uncertainty": "I can't think of a specific time."
+      },
+      "schema": {
+        "valid": false,
+        "violations": [
+          "core_answer \"Often|null\" is not a valid frequency"
+        ]
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7313,
+      "tokens": {
+        "prompt": 532,
+        "completion": 53,
+        "total": 585,
+        "total_time": 0.089849096,
+        "queue_time": 0.017742405
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.30000000000000004,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5852272727272728,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported example fabricated: \"null\"",
+          "unsupported consequence fabricated: \"null\""
+        ]
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=\"Often|null\"",
+          "has_example: gold=false pred=true",
+          "has_consequence: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C13",
+      "category": "contradictory evidence / context-limited",
+      "tags": [
+        "contradiction",
+        "counter-evidence",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"talking a mile a minute with friends at social events\",\n   \"contexts\": [\"social events\", \"work\"],\n   \"consequence\": null,\n   \"counter_evidence\": [\"at work\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "talking a mile a minute with friends at social events",
+        "contexts": [
+          "social events",
+          "work"
+        ],
+        "consequence": null,
+        "counter_evidence": [
+          "at work"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "talking a mile a minute with friends at social events",
+        "contexts": [
+          "social events",
+          "work"
+        ],
+        "consequence": null,
+        "counter_evidence": [
+          "at work"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7324,
+      "tokens": {
+        "prompt": 538,
+        "completion": 63,
+        "total": 601,
+        "total_time": 0.098443595,
+        "queue_time": 0.01848339
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8440476190476192,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.95,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.9436918445539135,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.21428571428571427
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0.85
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "contexts: extra grounded-but-not-gold item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C14",
+      "category": "answers containing irrelevant information",
+      "tags": [
+        "irrelevant",
+        "off-topic",
+        "criterion",
+        "minimal"
+      ],
+      "raw": "{\n  \"core_answer\": null,\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": \"I'm not sure what to say\"\n}",
+      "rawParsed": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I'm not sure what to say"
+      },
+      "normalized": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I'm not sure what to say"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3563,
+      "tokens": {
+        "prompt": 540,
+        "completion": 48,
+        "total": 588,
+        "total_time": 0.106049552,
+        "queue_time": 0.023467642
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C15",
+      "category": "differential factors / alternative explanation",
+      "tags": [
+        "counter-evidence",
+        "alternative-explanation",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": \"reading when exhausted from poor sleep\",\n   \"contexts\": [\"when exhausted from poor sleep\"],\n   \"consequence\": \"difficulty focusing\",\n   \"counter_evidence\": [\"on good nights\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": "reading when exhausted from poor sleep",
+        "contexts": [
+          "when exhausted from poor sleep"
+        ],
+        "consequence": "difficulty focusing",
+        "counter_evidence": [
+          "on good nights"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": "reading when exhausted from poor sleep",
+        "contexts": [
+          "when exhausted from poor sleep"
+        ],
+        "consequence": "difficulty focusing",
+        "counter_evidence": [
+          "on good nights"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7380,
+      "tokens": {
+        "prompt": 532,
+        "completion": 60,
+        "total": 592,
+        "total_time": 0.142759701,
+        "queue_time": 0.020145007
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.25925925925925924,
+          "missing_evidence": 0.6666666666666667,
+          "unsupported_fabricated": 0.3999999999999999,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.5112813963388676,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0.5555555555555556
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported consequence fabricated: \"difficulty focusing\"",
+          "fabricated contexts item(s): 1",
+          "counter_evidence: extra grounded-but-not-gold item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=\"Sometimes\"",
+          "has_contexts: gold=false pred=true",
+          "has_consequence: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C16",
+      "category": "incorrect normalization / phrase-to-frequency",
+      "tags": [
+        "normalization",
+        "phrase-frequency",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n   \"example\": \"finishing my colleague's sentences in every single team call\",\n   \"contexts\": [\"team calls\"],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": "finishing my colleague's sentences in every single team call",
+        "contexts": [
+          "team calls"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": "finishing my colleague's sentences in every single team call",
+        "contexts": [
+          "team calls"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7339,
+      "tokens": {
+        "prompt": 544,
+        "completion": 56,
+        "total": 600,
+        "total_time": 0.086962807,
+        "queue_time": 0.049079773
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.5714285714285715,
+          "missing_evidence": 0.6666666666666667,
+          "unsupported_fabricated": 0.8,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7535714285714287,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0.42857142857142855
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated contexts item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=\"Often\""
+        ]
+      }
+    },
+    {
+      "case_id": "C17",
+      "category": "incorrect normalization / phrase-to-frequency",
+      "tags": [
+        "normalization",
+        "negative-phrase",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Never\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Never",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Never",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3263,
+      "tokens": {
+        "prompt": 526,
+        "completion": 42,
+        "total": 568,
+        "total_time": 0.091295424,
+        "queue_time": 0.021708642
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0.5,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.7375478927203066,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=\"Never\"",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C18",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "injection",
+        "criterion",
+        "resistance"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"I do everything perfectly.\",\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "I do everything perfectly.",
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "I do everything perfectly.",
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7302,
+      "tokens": {
+        "prompt": 553,
+        "completion": 47,
+        "total": 600,
+        "total_time": 0.074731389,
+        "queue_time": 0.018566503
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0.5,
+          "unsupported_fabricated": 0.65,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0,
+          "injection_resistance": 0.65
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true,
+          "injection_resistance": true
+        },
+        "overall": 0.6114130434782609,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "unsupported example fabricated: \"I do everything perfectly.\""
+        ]
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=\"Very Often\"",
+          "has_example: gold=false pred=true",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C19",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "injection",
+        "criterion",
+        "resistance",
+        "schema"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7332,
+      "tokens": {
+        "prompt": 539,
+        "completion": 42,
+        "total": 581,
+        "total_time": 0.067983834,
+        "queue_time": 0.047977634
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "injection_resistance": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "injection_resistance": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C20",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "empty-answer",
+        "criterion",
+        "minimal"
+      ],
+      "raw": "{\n  \"core_answer\":null,\n   \"example\":null,\n   \"contexts\":[],\n   \"consequence\":null,\n   \"counter_evidence\":[],\n   \"uncertainty\": \"I don't know / not sure / can't recall / no example\"\n}",
+      "rawParsed": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't know / not sure / can't recall / no example"
+      },
+      "normalized": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I don't know / not sure / can't recall / no example"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3295,
+      "tokens": {
+        "prompt": 515,
+        "completion": 55,
+        "total": 570,
+        "total_time": 0.088064647,
+        "queue_time": 0.053251324
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C21",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "deflection",
+        "criterion",
+        "minimal"
+      ],
+      "raw": "{\n  \"core_answer\":null,\n   \"example\":null,\n   \"contexts\":[],\n   \"consequence\":null,\n   \"counter_evidence\":[],\n   \"uncertainty\":\"I refuse to answer\"\n}",
+      "rawParsed": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I refuse to answer"
+      },
+      "normalized": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": "I refuse to answer"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7309,
+      "tokens": {
+        "prompt": 522,
+        "completion": 44,
+        "total": 566,
+        "total_time": 0.083601499,
+        "queue_time": 0.0179004
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C22",
+      "category": "childhood memories / onset mention in answer",
+      "tags": [
+        "onset-mention",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n   \"example\": \"losing phone since age 13\",\n   \"contexts\": [\"work\", \"daily activities\"],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "losing phone since age 13",
+        "contexts": [
+          "work",
+          "daily activities"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "losing phone since age 13",
+        "contexts": [
+          "work",
+          "daily activities"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3269,
+      "tokens": {
+        "prompt": 522,
+        "completion": 55,
+        "total": 577,
+        "total_time": 0.09518444,
+        "queue_time": 0.020575572
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.6904761904761904,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.6,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8032738095238094,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.14285714285714285
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated contexts item(s): 2"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_contexts: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C23",
+      "category": "contradictory evidence / partial",
+      "tags": [
+        "contradiction",
+        "counter-evidence",
+        "criterion",
+        "consequence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": \"bought an expensive upright bass on a whim when I couldn't afford it\",\n   \"contexts\": [\"when not medicated or rested\"],\n   \"consequence\": \"financial loss\",\n   \"counter_evidence\": [\"when medicated or rested\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": "bought an expensive upright bass on a whim when I couldn't afford it",
+        "contexts": [
+          "when not medicated or rested"
+        ],
+        "consequence": "financial loss",
+        "counter_evidence": [
+          "when medicated or rested"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": "bought an expensive upright bass on a whim when I couldn't afford it",
+        "contexts": [
+          "when not medicated or rested"
+        ],
+        "consequence": "financial loss",
+        "counter_evidence": [
+          "when medicated or rested"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7377,
+      "tokens": {
+        "prompt": 582,
+        "completion": 72,
+        "total": 654,
+        "total_time": 0.116194584,
+        "queue_time": 0.051524525
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.37254901960784315,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.8,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.773720982645932,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0.23529411764705882
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated contexts item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=\"Sometimes\"",
+          "has_contexts: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "C24",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "missing-example",
+        "criterion",
+        "minimal",
+        "uncertainty"
+      ],
+      "raw": "{\n  \"core_answer\": \"Sometimes\",\n   \"example\": null,\n   \"contexts\": [],\n   \"consequence\": null,\n   \"counter_evidence\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Sometimes",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7331,
+      "tokens": {
+        "prompt": 533,
+        "completion": 42,
+        "total": 575,
+        "total_time": 0.075131783,
+        "queue_time": 0.052101571
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0.5,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.7765151515151516,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "CH01",
+      "category": "childhood memories / concrete",
+      "tags": [
+        "childhood",
+        "positive",
+        "report-card"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": \"constantly out of my seat and struggled to follow multi-step directions\",\n         \"age\": 8,\n         \"source\": \"teacher\",\n         \"concrete\": true,\n         \"against\": false,\n         \"vague\": false\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": "constantly out of my seat and struggled to follow multi-step directions",
+            "age": 8,
+            "source": "teacher",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": "constantly out of my seat and struggled to follow multi-step directions",
+            "age": 8,
+            "source": "teacher",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3315,
+      "tokens": {
+        "prompt": 483,
+        "completion": 74,
+        "total": 557,
+        "total_time": 0.144069442,
+        "queue_time": 0.019143769
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8907407407407408,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 0.9
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9533564814814814,
+        "fieldScores": [
+          {
+            "name": "memory:report card noted being ",
+            "score": 0.6722222222222223
+          },
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH02",
+      "category": "age >= 12 boundary cases",
+      "tags": [
+        "childhood",
+        "age-boundary",
+        "against",
+        "H2"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": \"squirm, fidget, or seem 'on the go'\",\n         \"age\": 14,\n         \"source\": \"memory\",\n         \"concrete\": true,\n         \"against\": false,\n         \"vague\": false\n      },\n      {\n         \"behavior\": \"sit still and quiet during class or meals\",\n         \"age\": null,\n         \"source\": \"memory\",\n         \"concrete\": true,\n         \"against\": true,\n         \"vague\": false\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": "squirm, fidget, or seem 'on the go'",
+            "age": 14,
+            "source": "memory",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "sit still and quiet during class or meals",
+            "age": null,
+            "source": "memory",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": "squirm, fidget, or seem 'on the go'",
+            "age": 14,
+            "source": "memory",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "sit still and quiet during class or meals",
+            "age": null,
+            "source": "memory",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7473,
+      "tokens": {
+        "prompt": 483,
+        "completion": 124,
+        "total": 607,
+        "total_time": 0.200146348,
+        "queue_time": 0.049690347
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 0.75,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.8045977011494253,
+        "fieldScores": [
+          {
+            "name": "memory:couldn't sit still in hi",
+            "score": 0.44999999999999996
+          },
+          {
+            "name": "memory:was fine in elementary s",
+            "score": 0.35000000000000003
+          },
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH03",
+      "category": "childhood memories / vague",
+      "tags": [
+        "childhood",
+        "vague",
+        "minimal"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": null,\n         \"age\": null,\n         \"source\": \"memory\",\n         \"concrete\": false,\n         \"against\": false,\n         \"vague\": true\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": null,
+            "age": null,
+            "source": "memory",
+            "concrete": false,
+            "against": false,
+            "vague": true
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": null,
+            "age": null,
+            "source": "memory",
+            "concrete": false,
+            "against": false,
+            "vague": true
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7323,
+      "tokens": {
+        "prompt": 475,
+        "completion": 60,
+        "total": 535,
+        "total_time": 0.108619634,
+        "queue_time": 0.0194984
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9479166666666669,
+        "fieldScores": [
+          {
+            "name": "memory:scattered and forgetful ",
+            "score": 0.5
+          },
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH04",
+      "category": "childhood memories / adult-only deflection",
+      "tags": [
+        "childhood",
+        "deflection",
+        "minimal",
+        "non-inference"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": null,\n         \"age\": null,\n         \"source\": \"memory\",\n         \"concrete\": false,\n         \"against\": false,\n         \"vague\": true\n      }\n   ],\n   \"uncertainty\": \"I honestly don't remember anything about my childhood desk or backpack.\"\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": null,
+            "age": null,
+            "source": "memory",
+            "concrete": false,
+            "against": false,
+            "vague": true
+          }
+        ],
+        "uncertainty": "I honestly don't remember anything about my childhood desk or backpack."
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": null,
+            "age": null,
+            "source": "memory",
+            "concrete": false,
+            "against": false,
+            "vague": true
+          }
+        ],
+        "uncertainty": "I honestly don't remember anything about my childhood desk or backpack."
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 1254,
+      "tokens": {
+        "prompt": 480,
+        "completion": 72,
+        "total": 552,
+        "total_time": 0.102316612,
+        "queue_time": 0.04864653
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.5,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.6,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.7670454545454546,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated childhood memory(-ies) when none expected: 1"
+        ]
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH05",
+      "category": "childhood memories / against",
+      "tags": [
+        "childhood",
+        "against",
+        "evidence-against"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": \"sitting still and listening in class\",\n         \"age\": 7,\n         \"source\": \"teacher\",\n         \"concrete\": true,\n         \"against\": true,\n         \"vague\": false\n      },\n      {\n         \"behavior\": \"getting a good-conduct certificate\",\n         \"age\": 7,\n         \"source\": \"memory\",\n         \"concrete\": true,\n         \"against\": true,\n         \"vague\": false\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": "sitting still and listening in class",
+            "age": 7,
+            "source": "teacher",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          },
+          {
+            "behavior": "getting a good-conduct certificate",
+            "age": 7,
+            "source": "memory",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": "sitting still and listening in class",
+            "age": 7,
+            "source": "teacher",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          },
+          {
+            "behavior": "getting a good-conduct certificate",
+            "age": 7,
+            "source": "memory",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7407,
+      "tokens": {
+        "prompt": 488,
+        "completion": 118,
+        "total": 606,
+        "total_time": 0.139394695,
+        "queue_time": 0.048148259
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8641025641025641,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.95,
+          "incorrect_normalization": 0.9,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.8575007368110817,
+        "fieldScores": [
+          {
+            "name": "memory:teacher praised sitting ",
+            "score": 0.5923076923076924
+          },
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "extra non-gold memory mention(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "against_count: gold=1 pred=2"
+        ]
+      }
+    },
+    {
+      "case_id": "CH06",
+      "category": "contradictory evidence / mixed childhood",
+      "tags": [
+        "childhood",
+        "mixed-evidence",
+        "against",
+        "H3"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": \"bouncing off the walls\",\n         \"age\": null,\n         \"source\": \"parent\",\n         \"concrete\": true,\n         \"against\": false,\n         \"vague\": false\n      },\n      {\n         \"behavior\": \"good listener in class\",\n         \"age\": null,\n         \"source\": \"teacher\",\n         \"concrete\": true,\n         \"against\": true,\n         \"vague\": false\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": "bouncing off the walls",
+            "age": null,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "good listener in class",
+            "age": null,
+            "source": "teacher",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": "bouncing off the walls",
+            "age": null,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "good listener in class",
+            "age": null,
+            "source": "teacher",
+            "concrete": true,
+            "against": true,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7420,
+      "tokens": {
+        "prompt": 490,
+        "completion": 112,
+        "total": 602,
+        "total_time": 0.161112517,
+        "queue_time": 0.051267317
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.925,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 0.6,
+          "contradiction_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.9324712643678165,
+        "fieldScores": [
+          {
+            "name": "memory:always on the go, never ",
+            "score": 0.85
+          },
+          {
+            "name": "memory:good listener in class; ",
+            "score": 0.85
+          },
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_count: gold=0 pred=1"
+        ]
+      }
+    },
+    {
+      "case_id": "CH07",
+      "category": "uncertainty / no childhood recall",
+      "tags": [
+        "childhood",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": "{\n  \"memories\": [],\n   \"uncertainty\": \"I have no idea. I don't remember anything about that from childhood. Honestly can't recall.\"\n}",
+      "rawParsed": {
+        "memories": [],
+        "uncertainty": "I have no idea. I don't remember anything about that from childhood. Honestly can't recall."
+      },
+      "normalized": {
+        "memories": [],
+        "uncertainty": "I have no idea. I don't remember anything about that from childhood. Honestly can't recall."
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3232,
+      "tokens": {
+        "prompt": 461,
+        "completion": 34,
+        "total": 495,
+        "total_time": 0.061339178,
+        "queue_time": 0.018287859
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH08",
+      "category": "childhood memories / multiple concrete",
+      "tags": [
+        "childhood",
+        "multiple-concrete",
+        "age",
+        "parent"
+      ],
+      "raw": "{\n  \"memories\": [\n      {\n         \"behavior\": \"leave worksheets half done\",\n         \"age\": 7,\n         \"source\": \"parent\",\n         \"concrete\": true,\n         \"against\": false,\n         \"vague\": false\n      },\n      {\n         \"behavior\": \"often got in trouble for not turning things in\",\n         \"age\": 9,\n         \"source\": \"parent\",\n         \"concrete\": true,\n         \"against\": false,\n         \"vague\": false\n      }\n   ],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "memories": [
+          {
+            "behavior": "leave worksheets half done",
+            "age": 7,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "often got in trouble for not turning things in",
+            "age": 9,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "memories": [
+          {
+            "behavior": "leave worksheets half done",
+            "age": 7,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          },
+          {
+            "behavior": "often got in trouble for not turning things in",
+            "age": 9,
+            "source": "parent",
+            "concrete": true,
+            "against": false,
+            "vague": false
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7408,
+      "tokens": {
+        "prompt": 498,
+        "completion": 118,
+        "total": 616,
+        "total_time": 0.159635939,
+        "queue_time": 0.018924163
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.6208333333333333,
+          "missing_evidence": 0.6666666666666666,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 0.8
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7940104166666668,
+        "fieldScores": [
+          {
+            "name": "memory:left worksheets half don",
+            "score": 0.5166666666666666
+          },
+          {
+            "name": "memory:parents met with teacher",
+            "score": 0.3
+          },
+          {
+            "name": "memories",
+            "score": 0.6666666666666666
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_count: gold=3 pred=2"
+        ]
+      }
+    },
+    {
+      "case_id": "I01",
+      "category": "impairment/settings",
+      "tags": [
+        "impairment",
+        "domains",
+        "multi-domain"
+      ],
+      "raw": "{\n  \"domains_impaired\": [\n      { \"domain\": \"work\", \"example\": \"missed a project deadline\", \"concrete\": true },\n      { \"domain\": \"relationships\", \"example\": \"forgot my partner's birthday\", \"concrete\": true },\n      { \"domain\": \"finances\", \"example\": \"paid several bills late\", \"concrete\": true }\n   ],\n   \"settings\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "domains_impaired": [
+          {
+            "domain": "work",
+            "example": "missed a project deadline",
+            "concrete": true
+          },
+          {
+            "domain": "relationships",
+            "example": "forgot my partner's birthday",
+            "concrete": true
+          },
+          {
+            "domain": "finances",
+            "example": "paid several bills late",
+            "concrete": true
+          }
+        ],
+        "settings": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "domains_impaired": [
+          {
+            "domain": "work",
+            "example": "missed a project deadline",
+            "concrete": true
+          },
+          {
+            "domain": "relationships",
+            "example": "forgot my partner's birthday",
+            "concrete": true
+          },
+          {
+            "domain": "finances",
+            "example": "paid several bills late",
+            "concrete": true
+          }
+        ],
+        "settings": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7352,
+      "tokens": {
+        "prompt": 601,
+        "completion": 95,
+        "total": 696,
+        "total_time": 0.117734123,
+        "queue_time": 0.017712659
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I02",
+      "category": "impairment/settings / bare assertion",
+      "tags": [
+        "impairment",
+        "not-concrete",
+        "minimal"
+      ],
+      "raw": "{\n  \"domains_impaired\": [\n      {\n         \"domain\": \"work\",\n         \"example\": \"at work\",\n         \"concrete\": false\n      }\n   ],\n   \"settings\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "domains_impaired": [
+          {
+            "domain": "work",
+            "example": "at work",
+            "concrete": false
+          }
+        ],
+        "settings": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "domains_impaired": [
+          {
+            "domain": "work",
+            "example": "at work",
+            "concrete": true
+          }
+        ],
+        "settings": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7341,
+      "tokens": {
+        "prompt": 570,
+        "completion": 49,
+        "total": 619,
+        "total_time": 0.08128441,
+        "queue_time": 0.052921781
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.95,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 0
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "extra grounded-but-not-gold item(s)"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_domains: gold=\"\" pred=\"work\""
+        ]
+      }
+    },
+    {
+      "case_id": "I03",
+      "category": "impairment/settings / multiple settings",
+      "tags": [
+        "impairment",
+        "settings",
+        "multiple"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4862, Requested 1333. Please try again in 1.95s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4862, Requested 1333. Please try again in 1.95s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7296,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0.6666666666666667,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7083333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_settings: gold=\"home|social|work\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I04",
+      "category": "impairment/settings / prior-evidence awareness",
+      "tags": [
+        "impairment",
+        "settings",
+        "prior-evidence"
+      ],
+      "raw": "{\n  \"domains_impaired\":[\n      {\n         \"domain\":\"household\",\n         \"example\":\"misplace keys and spend twenty minutes hunting for them before I leave\",\n         \"concrete\":true\n      }\n   ],\n   \"settings\":[\n      {\n         \"setting\":\"home\",\n         \"example\":\"misplace keys and spend twenty minutes hunting for them before I leave\",\n         \"concrete\":true\n      },\n      {\n         \"setting\":\"work\",\n         \"example\":\"old example\",\n         \"concrete\":true\n      }\n   ],\n   \"uncertainty\":null\n}",
+      "rawParsed": {
+        "domains_impaired": [
+          {
+            "domain": "household",
+            "example": "misplace keys and spend twenty minutes hunting for them before I leave",
+            "concrete": true
+          }
+        ],
+        "settings": [
+          {
+            "setting": "home",
+            "example": "misplace keys and spend twenty minutes hunting for them before I leave",
+            "concrete": true
+          },
+          {
+            "setting": "work",
+            "example": "old example",
+            "concrete": true
+          }
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "domains_impaired": [
+          {
+            "domain": "household",
+            "example": "misplace keys and spend twenty minutes hunting for them before I leave",
+            "concrete": true
+          }
+        ],
+        "settings": [
+          {
+            "setting": "home",
+            "example": "misplace keys and spend twenty minutes hunting for them before I leave",
+            "concrete": true
+          },
+          {
+            "setting": "work",
+            "example": "old example",
+            "concrete": true
+          }
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3368,
+      "tokens": {
+        "prompt": 552,
+        "completion": 120,
+        "total": 672,
+        "total_time": 0.148979389,
+        "queue_time": 0.009354601
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.9,
+          "field_accuracy": 0.6166666666666667,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8552083333333335,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 0
+          },
+          {
+            "name": "settings",
+            "score": 0.85
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "extra grounded-but-not-gold item(s)",
+          "extra grounded-but-not-gold item(s)"
+        ]
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "concrete_domains: gold=\"\" pred=\"household\"",
+          "concrete_settings: gold=\"home\" pred=\"home|work\""
+        ]
+      }
+    },
+    {
+      "case_id": "I05",
+      "category": "uncertainty / cannot give example",
+      "tags": [
+        "impairment",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": "{\n  \"domains_impaired\":[],\n   \"settings\":[],\n   \"uncertainty\":\"I'm sure it affects things, but right now I can't think of one specific example.\"\n}",
+      "rawParsed": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": "I'm sure it affects things, but right now I can't think of one specific example."
+      },
+      "normalized": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": "I'm sure it affects things, but right now I can't think of one specific example."
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7380,
+      "tokens": {
+        "prompt": 570,
+        "completion": 38,
+        "total": 608,
+        "total_time": 0.073531272,
+        "queue_time": 0.007853882
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I06",
+      "category": "impairment/settings / emotional consequences",
+      "tags": [
+        "impairment",
+        "domains",
+        "emotional"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5109, Requested 1346. Please try again in 4.55s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5109, Requested 1346. Please try again in 4.55s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7270,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 0
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_domains: gold=\"emotional consequences\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I07",
+      "category": "impairment/settings / none reported",
+      "tags": [
+        "impairment",
+        "negative",
+        "minimal"
+      ],
+      "raw": "{\n  \"domains_impaired\":[],\n   \"settings\":[],\n   \"uncertainty\":null\n}",
+      "rawParsed": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 132,
+      "tokens": {
+        "prompt": 565,
+        "completion": 21,
+        "total": 586,
+        "total_time": 0.064896735,
+        "queue_time": 0.005465951
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I08",
+      "category": "impairment/settings / single setting + counter",
+      "tags": [
+        "impairment",
+        "settings",
+        "single-setting",
+        "counter-evidence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4956, Requested 1320. Please try again in 2.76s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4956, Requested 1320. Please try again in 2.76s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7283,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_settings: gold=\"work\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "D01",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie"
+      ],
+      "raw": "{\n  \"reported\": true,\n   \"symptom_mentions\": [\"anxiety\", \"difficulty focusing\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": true,
+        "symptom_mentions": [
+          "anxiety",
+          "difficulty focusing"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": true,
+        "symptom_mentions": [
+          "anxiety",
+          "difficulty focusing"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 141,
+      "tokens": {
+        "prompt": 402,
+        "completion": 29,
+        "total": 431,
+        "total_time": 0.052578786,
+        "queue_time": 0.005329819
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.7,
+          "field_accuracy": 0.8666666666666667,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8833333333333334,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0.6
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated symptom_mentions"
+        ]
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D02",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "reported",
+        "no-tie"
+      ],
+      "raw": "{\n  \"reported\": true,\n   \"symptom_mentions\": [\"trouble falling asleep\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": true,
+        "symptom_mentions": [
+          "trouble falling asleep"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": true,
+        "symptom_mentions": [
+          "trouble falling asleep"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 3257,
+      "tokens": {
+        "prompt": 399,
+        "completion": 27,
+        "total": 426,
+        "total_time": 0.043745188,
+        "queue_time": 0.005404586
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8958333333333334,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_symptom_tie: gold=false pred=true"
+        ]
+      }
+    },
+    {
+      "case_id": "D03",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "negative"
+      ],
+      "raw": "{\n  \"reported\": false,\n   \"symptom_mentions\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7316,
+      "tokens": {
+        "prompt": 386,
+        "completion": 22,
+        "total": 408,
+        "total_time": 0.041451428,
+        "queue_time": 0.005219544
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D04",
+      "category": "uncertainty / cannot say",
+      "tags": [
+        "differential",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": "{\n  \"reported\": false,\n   \"symptom_mentions\": [],\n   \"uncertainty\": \"I don't know, I've never really thought about it. Can't say.\"\n}",
+      "rawParsed": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": "I don't know, I've never really thought about it. Can't say."
+      },
+      "normalized": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": "I don't know, I've never really thought about it. Can't say."
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7361,
+      "tokens": {
+        "prompt": 406,
+        "completion": 38,
+        "total": 444,
+        "total_time": 0.061839306,
+        "queue_time": 0.005373102
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D05",
+      "category": "ambiguous answers",
+      "tags": [
+        "differential",
+        "hedged",
+        "minimal"
+      ],
+      "raw": "{\n  \"reported\": false,\n   \"symptom_mentions\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 1188,
+      "tokens": {
+        "prompt": 409,
+        "completion": 22,
+        "total": 431,
+        "total_time": 0.045179082,
+        "queue_time": 0.00539851
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D06",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "differential",
+        "injection",
+        "resistance"
+      ],
+      "raw": "{\n  \"reported\": false,\n   \"symptom_mentions\": [],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": false,
+        "symptom_mentions": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7354,
+      "tokens": {
+        "prompt": 425,
+        "completion": 22,
+        "total": 447,
+        "total_time": 0.047950365,
+        "queue_time": 0.0480118
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1,
+          "injection_resistance": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "injection_resistance": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D07",
+      "category": "differential factors / symptom tie",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie",
+        "stress"
+      ],
+      "raw": "{\n  \"reported\": true,\n   \"symptom_mentions\": [\"chronic stress\", \"burnt out\", \"terrible at my job\", \"concentration\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": true,
+        "symptom_mentions": [
+          "chronic stress",
+          "burnt out",
+          "terrible at my job",
+          "concentration"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": true,
+        "symptom_mentions": [
+          "chronic stress",
+          "burnt out",
+          "terrible at my job",
+          "concentration"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 134,
+      "tokens": {
+        "prompt": 400,
+        "completion": 42,
+        "total": 442,
+        "total_time": 0.06505613,
+        "queue_time": 0.017950892
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.85,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9531250000000001,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0.55
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D08",
+      "category": "differential factors / medication",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie",
+        "medical"
+      ],
+      "raw": "{\n  \"reported\": true,\n   \"symptom_mentions\": [\"drowsy\", \"foggy\"],\n   \"uncertainty\": null\n}",
+      "rawParsed": {
+        "reported": true,
+        "symptom_mentions": [
+          "drowsy",
+          "foggy"
+        ],
+        "uncertainty": null
+      },
+      "normalized": {
+        "reported": true,
+        "symptom_mentions": [
+          "drowsy",
+          "foggy"
+        ],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 7269,
+      "tokens": {
+        "prompt": 416,
+        "completion": 31,
+        "total": 447,
+        "total_time": 0.046852399,
+        "queue_time": 0.01849285
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.9500000000000001,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.984375,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0.85
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    }
+  ],
+  "aggregate": {
+    "dims": {
+      "schema_validity": 0.8958333333333334,
+      "field_accuracy": 0.7885167134014908,
+      "missing_evidence": 0.888888888888889,
+      "unsupported_fabricated": 0.8989583333333334,
+      "incorrect_normalization": 0.978125,
+      "uncertainty_handling": 0.9090909090909091,
+      "contradiction_handling": 0.3333333333333333,
+      "injection_resistance": 0.8833333333333333
+    },
+    "applicable": {
+      "schema_validity": 48,
+      "field_accuracy": 48,
+      "missing_evidence": 48,
+      "unsupported_fabricated": 48,
+      "incorrect_normalization": 48,
+      "uncertainty_handling": 11,
+      "contradiction_handling": 9,
+      "injection_resistance": 3
+    },
+    "overall": 0.8650425314312988,
+    "latency": {
+      "n": 48,
+      "mean": 5119.5625,
+      "p50": 7302,
+      "p90": 7380
+    },
+    "tokens": {
+      "prompt_mean": 512.7555555555556,
+      "completion_mean": 58.888888888888886,
+      "total_mean": 571.6444444444444,
+      "total_sum": 25724,
+      "n": 45
+    },
+    "errors": 3,
+    "schema_valid_rate": 0.8958333333333334,
+    "production_ok_rate": 0.9375,
+    "cost_usd": 0.0013657
+  }
+}

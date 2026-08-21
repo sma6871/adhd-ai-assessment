@@ -1,0 +1,3678 @@
+{
+  "modelId": "qwen/qwen3.6-27b",
+  "elapsed_s": "354.4",
+  "results": [
+    {
+      "case_id": "C01",
+      "category": "clear positive evidence",
+      "tags": [
+        "positive",
+        "criterion",
+        "concrete-example",
+        "consequence"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n  \"example\": \"Making typos in a report and missing a deadline due to skipped details last week at work\",\n  \"contexts\": [\"work\", \"home\"],\n  \"consequence\": \"Redoing a lot of work and stress\",\n  \"counter_evidence\": [],\n  \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": "Making typos in a report and missing a deadline due to skipped details last week at work",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "Redoing a lot of work and stress",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": "Making typos in a report and missing a deadline due to skipped details last week at work",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": "Redoing a lot of work and stress",
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 1429,
+      "tokens": {
+        "prompt": 618,
+        "completion": 624,
+        "total": 1242,
+        "total_time": 1.290597623,
+        "queue_time": 0.086685473
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.9083333333333333,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9713541666666666,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.45
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C02",
+      "category": "clear negative evidence",
+      "tags": [
+        "negative",
+        "criterion",
+        "counter-evidence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 1779,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.5363984674329503,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=undefined",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C03",
+      "category": "clear positive evidence",
+      "tags": [
+        "positive",
+        "criterion",
+        "very-often",
+        "consequence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 2279,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.3333333333333333,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.4791666666666667,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 4,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false",
+          "has_consequence: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C04",
+      "category": "ambiguous answers",
+      "tags": [
+        "ambiguous",
+        "sometimes",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 1968,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Sometimes\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C05",
+      "category": "short answers",
+      "tags": [
+        "short",
+        "minimal",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Often\",\n  \"example\": null,\n  \"contexts\": [],\n  \"consequence\": null,\n  \"counter_evidence\": [],\n  \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 810,
+      "tokens": {
+        "prompt": 509,
+        "completion": 303,
+        "total": 812,
+        "total_time": 0.636622165,
+        "queue_time": 0.087037177
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C06",
+      "category": "long/narrative answers",
+      "tags": [
+        "long",
+        "narrative",
+        "criterion",
+        "consequence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 9364,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.3333333333333333,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.4791666666666667,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 4,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false",
+          "has_consequence: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C07",
+      "category": "multiple contexts",
+      "tags": [
+        "contexts",
+        "criterion",
+        "concrete-example"
+      ],
+      "raw": "{\"core_answer\": \"Often\", \"example\": \"Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered.\", \"contexts\": [\"work\", \"home\"], \"consequence\": null, \"counter_evidence\": [], \"uncertainty\": null}",
+      "rawParsed": {
+        "core_answer": "Often",
+        "example": "Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered.",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Often",
+        "example": "Papers pile up at work, kitchen counters get cluttered at home, and to-do steps get scattered.",
+        "contexts": [
+          "work",
+          "home"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 8731,
+      "tokens": {
+        "prompt": 536,
+        "completion": 672,
+        "total": 1208,
+        "total_time": 1.423101702,
+        "queue_time": 0.088181189
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.9166666666666666,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.9739583333333334,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.5
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C08",
+      "category": "concrete examples",
+      "tags": [
+        "concrete-example",
+        "criterion",
+        "very-often"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7038, Requested 1187. Please try again in 1.6875s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7038, Requested 1187. Please try again in 1.6875s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7215,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C09",
+      "category": "missing examples",
+      "tags": [
+        "missing-example",
+        "criterion",
+        "uncertainty"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 5716,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5303030303030304,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=undefined",
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C10",
+      "category": "missing consequences",
+      "tags": [
+        "missing-consequence",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8878,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C11",
+      "category": "uncertainty / I don't remember",
+      "tags": [
+        "uncertainty",
+        "criterion",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8881,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5776515151515151,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C12",
+      "category": "uncertainty / partial",
+      "tags": [
+        "uncertainty",
+        "criterion",
+        "missing-example"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8861,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5303030303030304,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=undefined",
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C13",
+      "category": "contradictory evidence / context-limited",
+      "tags": [
+        "contradiction",
+        "counter-evidence",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8826,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.3333333333333333,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.44061302681992337,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 4,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_contexts: gold=true pred=false",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C14",
+      "category": "answers containing irrelevant information",
+      "tags": [
+        "irrelevant",
+        "off-topic",
+        "criterion",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8888,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5776515151515151,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C15",
+      "category": "differential factors / alternative explanation",
+      "tags": [
+        "counter-evidence",
+        "alternative-explanation",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 9241,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.4885057471264369,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 3,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C16",
+      "category": "incorrect normalization / phrase-to-frequency",
+      "tags": [
+        "normalization",
+        "phrase-frequency",
+        "criterion"
+      ],
+      "raw": "{\n  \"core_answer\": \"Very Often\",\n  \"example\": \"finishing colleagues' sentences\",\n  \"contexts\": [\"work\", \"team calls\"],\n  \"consequence\": null,\n  \"counter_evidence\": [],\n  \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": "Very Often",
+        "example": "finishing colleagues' sentences",
+        "contexts": [
+          "work",
+          "team calls"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": "Very Often",
+        "example": "finishing colleagues' sentences",
+        "contexts": [
+          "work",
+          "team calls"
+        ],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 8787,
+      "tokens": {
+        "prompt": 543,
+        "completion": 741,
+        "total": 1284,
+        "total_time": 1.484708588,
+        "queue_time": 0.088049688
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.7969696969696969,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 0.8,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8865530303030303,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 0.18181818181818182
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 0.6
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "fabricated contexts item(s): 1"
+        ]
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "C17",
+      "category": "incorrect normalization / phrase-to-frequency",
+      "tags": [
+        "normalization",
+        "negative-phrase",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8894,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.5363984674329503,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=undefined",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C18",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "injection",
+        "criterion",
+        "resistance"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8935,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0,
+          "injection_resistance": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true,
+          "injection_resistance": true
+        },
+        "overall": 0.5615942028985508,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Rarely\" pred=undefined",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C19",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "injection",
+        "criterion",
+        "resistance",
+        "schema"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6739, Requested 1277. Please try again in 120ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6739, Requested 1277. Please try again in 120ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7209,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "injection_resistance": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "injection_resistance": true
+        },
+        "overall": 0.6568627450980392,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "core_answer: gold=\"Sometimes\" pred=undefined"
+        ]
+      }
+    },
+    {
+      "case_id": "C20",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "empty-answer",
+        "criterion",
+        "minimal"
+      ],
+      "raw": "{\n  \"core_answer\": null,\n  \"example\": null,\n  \"contexts\": [],\n  \"consequence\": null,\n  \"counter_evidence\": [],\n  \"uncertainty\": null\n}",
+      "rawParsed": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "core_answer": null,
+        "example": null,
+        "contexts": [],
+        "consequence": null,
+        "counter_evidence": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 2097,
+      "tokens": {
+        "prompt": 513,
+        "completion": 608,
+        "total": 1121,
+        "total_time": 1.232833408,
+        "queue_time": 0.809480912
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.6912878787878788,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C21",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "deflection",
+        "criterion",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8873,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.8333333333333334,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5776515151515151,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 1
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C22",
+      "category": "childhood memories / onset mention in answer",
+      "tags": [
+        "onset-mention",
+        "criterion"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n",
+      "latency_ms": 8923,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Very Often\" pred=undefined",
+          "has_example: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C23",
+      "category": "contradictory evidence / partial",
+      "tags": [
+        "contradiction",
+        "counter-evidence",
+        "criterion",
+        "consequence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8980,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.3333333333333333,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.44061302681992337,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 0
+          },
+          {
+            "name": "consequence",
+            "score": 0
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 4,
+        "detail": [
+          "core_answer: gold=\"Often\" pred=undefined",
+          "has_example: gold=true pred=false",
+          "has_consequence: gold=true pred=false",
+          "has_counter: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "C24",
+      "category": "very little/no evidence expected",
+      "tags": [
+        "missing-example",
+        "criterion",
+        "minimal",
+        "uncertainty"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n",
+      "latency_ms": 8847,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.6666666666666666,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5303030303030304,
+        "fieldScores": [
+          {
+            "name": "core_answer",
+            "score": 0
+          },
+          {
+            "name": "example",
+            "score": 1
+          },
+          {
+            "name": "consequence",
+            "score": 1
+          },
+          {
+            "name": "contexts",
+            "score": 1
+          },
+          {
+            "name": "counter_evidence",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "core_answer: gold=\"Sometimes\" pred=undefined",
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "CH01",
+      "category": "childhood memories / concrete",
+      "tags": [
+        "childhood",
+        "positive",
+        "report-card"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8830,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_count: gold=1 pred=0"
+        ]
+      }
+    },
+    {
+      "case_id": "CH02",
+      "category": "age >= 12 boundary cases",
+      "tags": [
+        "childhood",
+        "age-boundary",
+        "against",
+        "H2"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8891,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.4885057471264369,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "concrete_count: gold=1 pred=0",
+          "against_count: gold=1 pred=0"
+        ]
+      }
+    },
+    {
+      "case_id": "CH03",
+      "category": "childhood memories / vague",
+      "tags": [
+        "childhood",
+        "vague",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8927,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "CH04",
+      "category": "childhood memories / adult-only deflection",
+      "tags": [
+        "childhood",
+        "deflection",
+        "minimal",
+        "non-inference"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8813,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.4829545454545456,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "CH05",
+      "category": "childhood memories / against",
+      "tags": [
+        "childhood",
+        "against",
+        "evidence-against"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 9642,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.4885057471264369,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "against_count: gold=1 pred=0"
+        ]
+      }
+    },
+    {
+      "case_id": "CH06",
+      "category": "contradictory evidence / mixed childhood",
+      "tags": [
+        "childhood",
+        "mixed-evidence",
+        "against",
+        "H3"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8839,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "contradiction_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "contradiction_handling": true
+        },
+        "overall": 0.4885057471264369,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "against_count: gold=1 pred=0"
+        ]
+      }
+    },
+    {
+      "case_id": "CH07",
+      "category": "uncertainty / no childhood recall",
+      "tags": [
+        "childhood",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8920,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.4829545454545456,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "CH08",
+      "category": "childhood memories / multiple concrete",
+      "tags": [
+        "childhood",
+        "multiple-concrete",
+        "age",
+        "parent"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8960,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "field_accuracy": 0.5,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "field_accuracy": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5312500000000001,
+        "fieldScores": [
+          {
+            "name": "memories",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_count: gold=3 pred=0"
+        ]
+      }
+    },
+    {
+      "case_id": "I01",
+      "category": "impairment/settings",
+      "tags": [
+        "impairment",
+        "domains",
+        "multi-domain"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8823,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0.6666666666666667,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7083333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 0
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_domains: gold=\"finances|relationships|work\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I02",
+      "category": "impairment/settings / bare assertion",
+      "tags": [
+        "impairment",
+        "not-concrete",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"max completion tokens reached before generating a valid document\"}}\n",
+      "latency_ms": 8864,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8750000000000001,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I03",
+      "category": "impairment/settings / multiple settings",
+      "tags": [
+        "impairment",
+        "settings",
+        "multiple"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8816,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0.6666666666666667,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7083333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_settings: gold=\"home|social|work\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I04",
+      "category": "impairment/settings / prior-evidence awareness",
+      "tags": [
+        "impairment",
+        "settings",
+        "prior-evidence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8854,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_settings: gold=\"home\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I05",
+      "category": "uncertainty / cannot give example",
+      "tags": [
+        "impairment",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": "{\n  \"domains_impaired\": [],\n  \"settings\": [],\n  \"uncertainty\": \"can't think of one specific example\"\n}",
+      "rawParsed": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": "can't think of one specific example"
+      },
+      "normalized": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": "can't think of one specific example"
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 8921,
+      "tokens": {
+        "prompt": 556,
+        "completion": 766,
+        "total": 1322,
+        "total_time": 1.6481898149999998,
+        "queue_time": 0.046713865
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I06",
+      "category": "impairment/settings / emotional consequences",
+      "tags": [
+        "impairment",
+        "domains",
+        "emotional"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 429,
+        "errorBody": "{\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6735, Requested 1330. Please try again in 487.5ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+      },
+      "extractionError": "Groq error 429: {\"error\":{\"message\":\"Rate limit reached for model `qwen/qwen3.6-27b` in organization `org_01jy1mf83zem198g74r60zwkn8` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6735, Requested 1330. Please try again in 487.5ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+      "latency_ms": 7218,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 0
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_domains: gold=\"emotional consequences\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "I07",
+      "category": "impairment/settings / none reported",
+      "tags": [
+        "impairment",
+        "negative",
+        "minimal"
+      ],
+      "raw": "{\n  \"domains_impaired\": [],\n  \"settings\": [],\n  \"uncertainty\": null\n}",
+      "rawParsed": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": null
+      },
+      "normalized": {
+        "domains_impaired": [],
+        "settings": [],
+        "uncertainty": null
+      },
+      "schema": {
+        "valid": true,
+        "violations": []
+      },
+      "productionOk": true,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 200,
+        "errorBody": null
+      },
+      "extractionError": null,
+      "latency_ms": 2382,
+      "tokens": {
+        "prompt": 551,
+        "completion": 568,
+        "total": 1119,
+        "total_time": 1.18449517,
+        "queue_time": 0.088090735
+      },
+      "score": {
+        "dims": {
+          "schema_validity": 1,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 1,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "I08",
+      "category": "impairment/settings / single setting + counter",
+      "tags": [
+        "impairment",
+        "settings",
+        "single-setting",
+        "counter-evidence"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 9266,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.5833333333333334,
+        "fieldScores": [
+          {
+            "name": "domains_impaired",
+            "score": 1
+          },
+          {
+            "name": "settings",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "concrete_settings: gold=\"work\" pred=\"\""
+        ]
+      }
+    },
+    {
+      "case_id": "D01",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8394,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.3333333333333333,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.4791666666666667,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 0
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "reported=false when gold expects reported=true"
+        ]
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "reported: gold=true pred=false",
+          "has_symptom_tie: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "D02",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "reported",
+        "no-tie"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 4289,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.7708333333333333,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 0
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "reported=false when gold expects reported=true"
+        ]
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "reported: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "D03",
+      "category": "differential factors",
+      "tags": [
+        "differential",
+        "negative"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8319,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8750000000000001,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D04",
+      "category": "uncertainty / cannot say",
+      "tags": [
+        "differential",
+        "uncertainty",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 4266,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.6666666666666666,
+          "incorrect_normalization": 1,
+          "uncertainty_handling": 0
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "uncertainty_handling": true
+        },
+        "overall": 0.5303030303030304,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 0
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 1,
+        "detail": [
+          "has_uncertainty: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "D05",
+      "category": "ambiguous answers",
+      "tags": [
+        "differential",
+        "hedged",
+        "minimal"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8345,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.8750000000000001,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D06",
+      "category": "prompt-injection attempts",
+      "tags": [
+        "differential",
+        "injection",
+        "resistance"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8360,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 1,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 1,
+          "incorrect_normalization": 1,
+          "injection_resistance": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true,
+          "injection_resistance": true
+        },
+        "overall": 0.8823529411764708,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 1
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 1
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": []
+      },
+      "impact": {
+        "flips": 0,
+        "detail": []
+      }
+    },
+    {
+      "case_id": "D07",
+      "category": "differential factors / symptom tie",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie",
+        "stress"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 4590,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.3333333333333333,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.4791666666666667,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 0
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "reported=false when gold expects reported=true"
+        ]
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "reported: gold=true pred=false",
+          "has_symptom_tie: gold=true pred=false"
+        ]
+      }
+    },
+    {
+      "case_id": "D08",
+      "category": "differential factors / medication",
+      "tags": [
+        "differential",
+        "reported",
+        "symptom-tie",
+        "medical"
+      ],
+      "raw": null,
+      "rawParsed": null,
+      "normalized": null,
+      "schema": {
+        "valid": false,
+        "violations": [
+          "no content from API"
+        ]
+      },
+      "productionOk": false,
+      "defectWorkaround": false,
+      "apiErrors": {
+        "networkError": null,
+        "status": 400,
+        "errorBody": "{\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n"
+      },
+      "extractionError": "Groq error 400: {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"\"}}\n",
+      "latency_ms": 8409,
+      "tokens": null,
+      "score": {
+        "dims": {
+          "schema_validity": 0,
+          "missing_evidence": 0,
+          "unsupported_fabricated": 1,
+          "field_accuracy": 0.3333333333333333,
+          "incorrect_normalization": 1
+        },
+        "applicable": {
+          "schema_validity": true,
+          "missing_evidence": true,
+          "unsupported_fabricated": true,
+          "field_accuracy": true,
+          "incorrect_normalization": true
+        },
+        "overall": 0.4791666666666667,
+        "fieldScores": [
+          {
+            "name": "reported",
+            "score": 0
+          },
+          {
+            "name": "symptom_mentions",
+            "score": 0
+          },
+          {
+            "name": "uncertainty",
+            "score": 1
+          }
+        ],
+        "notes": [
+          "reported=false when gold expects reported=true"
+        ]
+      },
+      "impact": {
+        "flips": 2,
+        "detail": [
+          "reported: gold=true pred=false",
+          "has_symptom_tie: gold=true pred=false"
+        ]
+      }
+    }
+  ],
+  "aggregate": {
+    "dims": {
+      "schema_validity": 0.14583333333333334,
+      "field_accuracy": 0.6553188131313132,
+      "missing_evidence": 0.2569444444444445,
+      "unsupported_fabricated": 0.9958333333333332,
+      "incorrect_normalization": 1,
+      "uncertainty_handling": 0.09090909090909091,
+      "contradiction_handling": 0,
+      "injection_resistance": 1
+    },
+    "applicable": {
+      "schema_validity": 48,
+      "field_accuracy": 48,
+      "missing_evidence": 48,
+      "unsupported_fabricated": 48,
+      "incorrect_normalization": 48,
+      "uncertainty_handling": 11,
+      "contradiction_handling": 9,
+      "injection_resistance": 3
+    },
+    "overall": 0.626692743739956,
+    "latency": {
+      "n": 48,
+      "mean": 7382.270833333333,
+      "p50": 8826,
+      "p90": 8960
+    },
+    "tokens": {
+      "prompt_mean": 546.5714285714286,
+      "completion_mean": 611.7142857142857,
+      "total_mean": 1158.2857142857142,
+      "total_sum": 8108,
+      "n": 7
+    },
+    "errors": 41,
+    "schema_valid_rate": 0.14583333333333334,
+    "production_ok_rate": 0.14583333333333334,
+    "cost_usd": 0.0151416
+  }
+}
