@@ -204,7 +204,12 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-   // --- Static routes ---
+  // --- Health check (for Docker HEALTHCHECK / load balancer probes) ---
+  if (p === '/health') {
+    return sendJson(res, 200, { status: 'ok', uptime: process.uptime() });
+  }
+
+  // --- Static routes ---
   if (p === '/' || p === '/index.html') {
     return serveStatic(res, path.join(__dirname, 'index.html'));
   }
@@ -235,7 +240,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 const signal = process.listeners('SIGINT').length === 0 ? () => {} : null;
-process.on('SIGINT', () => { console.log('\nShutting down.'); process.exit(0); });
+process.on('SIGINT', () => { console.log('\nShutting down (SIGINT).'); server.close(() => process.exit(0)); });
+process.on('SIGTERM', () => { console.log('\nShutting down (SIGTERM).'); server.close(() => process.exit(0)); });
 
 if (require.main === module) {
   server.listen(PORT, () => {

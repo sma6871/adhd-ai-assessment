@@ -1,0 +1,14 @@
+services:
+  adhd-assessment:
+    build: .
+    container_name: adhd-assessment
+    ports:
+      - "3100:3000"
+    env_file:
+      - .env
+    volumes:
+      - adhd-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  adhd-data:

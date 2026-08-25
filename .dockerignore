@@ -1,0 +1,14 @@
+.git
+.gitignore
+.DS_Store
+data/
+test/
+benchmark/
+3-pages/
+*.png
+*.yml
+*.yaml
+*.zip
+asrs-welcome
+stage2_snapshot.yml
+report-snapshot.yml
