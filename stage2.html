@@ -563,12 +563,14 @@ function evCard(label, valueHtml) {
 function renderHeader() {
   const box = byId('header-slot'); if (!box) return;
   const gg = g();
-  box.innerHTML =
+     box.innerHTML =
     '<header class="hd-brand"><h1>' + esc(gg.brand || 'ADHD Self-Screening') + '</h1>' +
     '<div class="hd-actions">' +
       '<button type="button" id="header-overflow-btn" class="overflow" data-action="toggleHeaderMenu" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(gg.moreLabel) + '">' + ellipsisSvg + '</button>' +
       '<div id="header-menu" class="header-menu" hidden>' +
         '<button type="button" class="header-menu-item" data-action="startNew">' + esc(gg.startNewLabel) + '</button>' +
+        '<button type="button" class="header-menu-item" data-action="exportSession">' + esc(gg.saveLabel) + '</button>' +
+        '<button type="button" class="header-menu-item" data-action="importSession">' + esc(gg.importLabel) + '</button>' +
       '</div></div></header>';
   closeHeaderMenu();
 }
@@ -677,12 +679,13 @@ function resumeBannerHtml() {
         '<button type="button" class="primary danger" data-action="confirmReset">' + esc(gg.startOverBtn) + '</button>' +
       '</div></div>';
   }
-  return '<div class="resume-banner">' +
+   return '<div class="resume-banner">' +
     '<div class="resume-title">' + esc(gg.resumeConfirm) + '</div>' +
     '<div class="resume-body">' + esc(gg.resumeConfirmBody) + '</div>' +
     '<div class="resume-actions">' +
       '<button type="button" class="secondary soft" data-action="resumeStartOver">' + esc(gg.startOverBtn) + '</button>' +
       '<button type="button" class="primary" data-action="resumeContinue">' + esc(gg.continueBtn) + '</button>' +
+      '<button type="button" class="secondary soft" data-action="importSession">' + esc(gg.importLabel) + '</button>' +
     '</div></div>';
 }
 function renderMessages(atBottom) {
@@ -813,11 +816,14 @@ function renderInput() {
 }
 
 /* === Report result actions (print / share) === */
-function buildResultActions() {
+   function buildResultActions() {
   const t = t2().result || {};
   const shareSupported = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
   let html = '<div class="result-actions">';
-  html += '<button type="button" class="result-action" data-action="printReport"><span class="ra-icon">download</span> ' + esc(t.printBtn) + '</button>';
+  html += '<button type="button" class="result-action" data-action="exportHumanReadable"><span class="ra-icon">download</span> ' + esc(t.exportLabel) + '</button>';
+  html += '<button type="button" class="result-action" data-action="exportSession"><span class="ra-icon">download</span> ' + esc(t.saveLabel) + '</button>';
+  html += '<button type="button" class="result-action" data-action="importSession"><span class="ra-icon">upload</span> ' + esc(t.importLabel) + '</button>';
+  html += '<button type="button" class="result-action" data-action="printReport"><span class="ra-icon">print</span> ' + esc(t.printLabel) + '</button>';
   if (shareSupported) {
     html += '<button type="button" class="result-action" data-action="shareReport"><span class="ra-icon">share</span> ' + esc(t.shareBtn) + '</button>';
   }
@@ -872,6 +878,130 @@ function showShareCopied() {
   setTimeout(function () {
     if (el.parentNode) el.parentNode.removeChild(el);
   }, 2000);
+}
+
+/* === Session export/import (Save & continue later) === */
+// Downloads the session as a versioned JSON blob. On import, the server validates
+// the format + version + language and restores the state. No secrets are exported.
+async function exportSession() {
+  if (!STATE.id) return;
+  try {
+    const blob = await api('/api/export/' + STATE.id);
+    if (blob.error) { showToast(t2().result.importErrorBody); return; }
+    const json = JSON.stringify(blob);
+    const filename = 'adhd-assessment-' + STATE.id + '.json';
+    downloadFile(json, filename, 'application/json');
+    showToast(t2().result.exportSuccessBody);
+  } catch (e) {
+    showToast(t2().result.importErrorBody);
+  }
+}
+
+// Downloads a human-readable text assessment (questions, answers, evidence, report).
+// No session IDs, no server URLs, no secrets — safe to share with a clinician.
+async function exportHumanReadable() {
+  if (!STATE.id) return;
+  try {
+    const res = await fetch('/api/export-human/' + STATE.id);
+    if (!res.ok) { showToast(t2().result.importErrorBody); return; }
+    const text = await res.text();
+    const filename = 'adhd-assessment-' + STATE.id + '.txt';
+    downloadFile(text, filename, 'text/plain');
+  } catch (e) {
+    showToast(t2().result.importErrorBody);
+  }
+}
+
+function downloadFile(content, filename, contentType) {
+  const blob = new Blob([content], { type: contentType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = 'position:fixed;bottom:24px;left:50%;translate:-50% 0;background:rgba(0,0,0,0.8);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;z-index:9999;max-width:280px;text-align:center;';
+  document.body.appendChild(el);
+  setTimeout(function () {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 3000);
+}
+
+  // Import a previously saved assessment JSON file.
+  // First attempt WITHOUT force — if the server returns 409 (session already exists),
+  // prompt the user for confirmation before overwriting. Cancel leaves the existing
+  // session completely untouched.
+  async function importSession() {
+  const t = t2().result || {};
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = async function (e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 2000000) { showToast(t.fileTooLargeError); return; }
+    const text = await file.text();
+    let blob;
+    try { blob = JSON.parse(text); } catch (e2) {
+      showToast(t.importErrorBody);
+      return;
+    }
+    try {
+      // First attempt: no force flag. Server returns 409 if the session id already exists.
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(blob),
+      });
+      if (res.status === 409) {
+        // An active session exists with the same id. Confirm before overwriting.
+        if (!confirm(t.importConfirmOverwrite)) {
+          showToast(t.cancelBtn);
+          return;
+        }
+        const retry = await fetch('/api/import?force=1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(blob),
+        });
+        if (retry.ok) {
+          const data = await retry.json();
+          await handleImportSuccess(data, t);
+          return;
+        }
+        showToast(t.importErrorBody);
+        return;
+      }
+      if (!res.ok) { showToast(t.importErrorBody); return; }
+      const data = await res.json();
+      await handleImportSuccess(data, t);
+    } catch (e3) {
+      showToast(t.importErrorBody);
+    }
+  };
+  input.click();
+}
+
+async function handleImportSuccess(data, t) {
+  // Replace current session with imported one.
+  STATE.id = data.id;
+  STATE.lang = data.lang;
+  applyLang();
+  clearAllStorage();
+  localStorage.setItem(STORAGE_SESSION, STATE.id);
+  if (data.imported) {
+    await start();
+    showToast(t.importSuccessBody);
+  } else {
+    showToast(t.importErrorBody);
+  }
 }
 
 /* === Report (result page) === */
@@ -1260,6 +1390,9 @@ function onDocClick(e) {
     if (act === 'backToStart') { window.location.href = '/'; return; }
     if (act === 'printReport') { printReport(); return; }
     if (act === 'shareReport') { shareReport(); return; }
+    if (act === 'exportSession') { exportSession(); return; }
+    if (act === 'exportHumanReadable') { exportHumanReadable(); return; }
+    if (act === 'importSession') { importSession(); return; }
     if (act === 'toggleHeaderMenu') { toggleHeaderMenu(); return; }
     if (act === 'resumeContinue') { resumeContinue(); return; }
     if (act === 'resumeStartOver') { resumeStartOver(); return; }

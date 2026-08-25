@@ -196,6 +196,10 @@
   .secondary:hover { opacity: 0.8; }
   .disclaimer { font-size: 12px; font-weight: 500; color: var(--muted); }
    .source-note { padding: 0 32px 24px; font-size: 10px; line-height: 1.6; font-family: var(--ff-font-label); letter-spacing: 0.05em; color: var(--muted); text-align: center; }
+   .link-btn { background: none; border: none; color: var(--primary); font-size: 13px; text-decoration: underline; cursor: pointer; font-family: inherit; }
+   html[lang="fa"] .link-btn { font-family: var(--ff-font-persian, "Vazirmatn", "Hanken Grotesk", sans-serif); }
+   .link-btn:hover { opacity: 0.8; }
+   .import-hint { margin-top: 12px; }
 
    /* ---------- resume / destructive-confirmation banner ---------- */
    .resume-banner { margin: 12px 24px; padding: 16px 18px; border-radius: 12px; background: var(--white); border: 1px solid var(--border); }
@@ -259,18 +263,28 @@ var LANG = {
       body: 'Your answers did not fall within the screening range. This does not rule out ADHD and is not a diagnosis.',
       note: 'If attention, organisation, restlessness, or related difficulties significantly affect your life, speaking with a qualified professional may still be worthwhile.'
     },
-    finishLabel: 'Finish',
-     startAgainLabel: 'Start again',
-     interviewLabel: 'Continue to full interview',
-     viewResultsLabel: 'View your assessment',
-     resumeConfirm: 'You have an unfinished assessment. Continue where you left off?',
-     resumeConfirmBody: 'Your current progress will be kept.',
-     startOverConfirm: 'Start over?',
-     startOverBody: 'This will delete your current progress and answers. This cannot be undone.',
-     continueBtn: 'Continue',
-     startOverBtn: 'Start over',
-    continuePrompt: 'Would you like to continue with a fuller symptom interview for more detail?',
-    disclaimer: 'Screening, not a diagnosis',
+      finishLabel: 'Finish',
+      startAgainLabel: 'Start again',
+      interviewLabel: 'Continue to full interview',
+      viewResultsLabel: 'View your assessment',
+      saveLabel: 'Save & continue later',
+      importLabel: 'Import saved assessment',
+      importConfirmOverwrite: 'An assessment is already in progress. Importing this file will replace it. Continue?',
+      exportSuccessBody: 'Your assessment has been saved. Save this file to continue later.',
+      importSuccessBody: 'Your saved assessment has been restored. Continuing now.',
+      importErrorBody: 'Could not restore the assessment. The file may not be valid.',
+      importConfirmOverwrite: 'A saved assessment already exists. Replace it with the imported file?',
+      resumeConfirm: 'You have an unfinished assessment. Continue where you left off?',
+      resumeConfirmBody: 'Your current progress will be kept.',
+      startOverConfirm: 'Start over?',
+      startOverBody: 'This will delete your current progress and answers. This cannot be undone.',
+      fileTooLargeError: 'File is too large or unreadable.',
+      overwriteBtn: 'Replace',
+      cancelBtn: 'Cancel',
+      continueBtn: 'Continue',
+      startOverBtn: 'Start over',
+      continuePrompt: 'Would you like to continue with a fuller symptom interview for more detail?',
+      disclaimer: 'Screening, not a diagnosis',
     sourceNote: 'ASRS-v1.1 Screener © World Health Organization. Citation: Kessler RC, Adler L, Ames M, et al. Psychological Medicine. 2005;35:245–256.'
   },
 
@@ -320,15 +334,25 @@ var LANG = {
       body: 'پاسخ‌های شما در محدوده غربالگری قرار نگرفتند. این نتیجه ADHD را رد نمی‌کند و تشخیص پزشکی نیست.',
       note: 'اگر مشکلات تمرکز، نظم، بی‌قراری یا سایر مسائل مرتبط تأثیر قابل توجهی بر زندگی شما دارد، صحبت با متخصص همچنان ممکن است مفید باشد.'
     },
-     finishLabel: 'پایان',
-     startAgainLabel: 'شروع دوباره',
-     interviewLabel: 'ادامه به مصاحبه کامل',
-     viewResultsLabel: 'مشاهده ارزیابی شما',
-     resumeConfirm: 'یک ارزیابی ناتمام دارید. ادامه می‌دهید؟',
-     resumeConfirmBody: 'پیشرفت کنونی شما حفظ خواهد شد.',
-     startOverConfirm: 'شروع دوباره؟',
-     startOverBody: 'این کار پیشرفت و پاسخ‌های فعلی شما را حذف می‌کند. این کار قابل بازگشت نیست.',
-     continueBtn: 'ادامه',
+      finishLabel: 'پایان',
+      startAgainLabel: 'شروع دوباره',
+      interviewLabel: 'ادامه به مصاحبه کامل',
+      viewResultsLabel: 'مشاهده ارزیابی شما',
+      saveLabel: 'ذخیره و ادامه در آینده',
+      importLabel: 'وارگذاری ارزیابی ذخیره‌شده',
+      importConfirmOverwrite: 'یک ارزیابی در حال انجام است. وارد کردن این فایل جایگزین آن می‌شود. ادامه می‌دهید؟',
+      exportSuccessBody: 'ارزیابی شما ذخیره شد. این فایل را برای ادامه در آینده نگهداری کنید.',
+      importSuccessBody: 'ارزیابی ذخیره‌شده شما بازگردانده شد. در حال ادامه کار.',
+      importErrorBody: 'بازگردانی ارزیابی امکان‌پذیر نشد. فایل ممکن است معتبر نباشد.',
+      importConfirmOverwrite: 'یک ارزیابی ذخیره‌شده قبلاً وجود دارد. آن را با فایل وارگذاری جایگزین کنید؟',
+      resumeConfirm: 'یک ارزیابی ناتمام دارید. ادامه می‌دهید؟',
+      resumeConfirmBody: 'پیشرفت کنونی شما حفظ خواهد شد.',
+      startOverConfirm: 'شروع دوباره؟',
+      startOverBody: 'این کار پیشرفت و پاسخ‌های فعلی شما را حذف می‌کند. این کار قابل بازگشت نیست.',
+      overwriteBtn: 'جایگزین کن',
+      cancelBtn: 'لغو',
+      importConfirmOverwrite: 'یک ارزیابی در حال انجام است. وارد کردن این فایل جایگزین آن می‌شود. ادامه می‌دهید؟',
+      continueBtn: 'ادامه',
      startOverBtn: 'شروع دوباره',
     continuePrompt: 'آیا مایلید به مصاحبهٔ جامع‌تری ادامه دهید؟',
     disclaimer: 'غربالگری است، نه تشخیص',
@@ -463,6 +487,55 @@ async function resetStage2() {
   state.resetConfirm = false;
 }
 
+  // Import a saved assessment JSON file. The server validates format/version/lang
+  // and restores the session. First attempt WITHOUT force — if the server returns
+  // 409 (an active session with the same id already exists), prompt for confirmation.
+  // Cancel leaves the existing session untouched.
+  async function importSavedAssessment() {
+    var g = t();
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = async function (e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (file.size > 2000000) { alert(g.fileTooLargeError); return; }
+      var txt = await file.text();
+      var blob;
+      try { blob = JSON.parse(txt); } catch (e2) {
+        alert(g.importErrorBody);
+        return;
+      }
+      try {
+        // First attempt: no force. 409 means session already exists.
+        var res = await fetch('/api/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(blob),
+        });
+        if (res.status === 409) {
+          if (!confirm(g.importConfirmOverwrite)) {
+            alert(g.cancelBtn);
+            return;
+          }
+          res = await fetch('/api/import?force=1', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(blob),
+          });
+        }
+        if (!res.ok) { alert(g.importErrorBody); return; }
+        var data = await res.json();
+        localStorage.setItem(STORAGE_SESSION, data.id);
+        sessionStorage.setItem(RESUME_CONFIRMED, '1');
+        window.location.href = '/stage2?resume=1';
+      } catch (e3) {
+        alert(g.importErrorBody);
+      }
+    };
+    input.click();
+  }
+
 function applyLang() {
   document.documentElement.lang = state.lang;
   document.documentElement.dir = (state.lang === 'fa' ? 'rtl' : 'ltr');
@@ -532,7 +605,8 @@ function sWelcome() {
       '<div class="privacy"><span class="lock">' + S.lock + '</span><span class="privacy-label">' + esc(g.privacyLabel) + '</span></div>' +
        '<p class="crisis">' + esc(g.crisis) + '</p>' +
      '</div></main>' +
-     (state.session ? '' : '<footer><button class="primary" data-action="toHow">' + esc(g.startLabel) + '</button></footer>');
+       (state.session ? '' : '<footer><button class="primary" data-action="toHow">' + esc(g.startLabel) + '</button>' +
+        '<p class="import-hint"><button type="button" class="link-btn" data-action="importSaved">' + esc(g.importLabel) + '</button></p></footer>');
 }
 
 function sHow() {
@@ -729,6 +803,9 @@ app.addEventListener('click', async function (e) {
         return;
       case 'resumeContinue':
         goStage2();
+        return;
+      case 'importSaved':
+        importSavedAssessment();
         return;
     }
     render();

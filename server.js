@@ -154,6 +154,56 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { id, report: assessment.getReport(state) });
   }
 
+  // Export session as a portable, versioned JSON blob (Save & continue later).
+  const mExport = p.match(/^\/api\/export\/([A-Za-z0-9_-]+)$/);
+  if (mExport && req.method === 'GET') {
+    const id = mExport[1];
+    const state = getOrLoadSession(id);
+    if (!state) return sendJson(res, 200, { id, error: 'session not found' });
+    const blob = assessment.exportSession(state);
+    return sendJson(res, 200, blob);
+  }
+
+    // Import a previously exported session blob.
+  // If a session with the same id already exists, the caller must explicitly confirm
+  // overwrite via ?force=1 (the UI prompts before sending this).
+  const mImport = p.match(/^\/api\/import$/);
+  if (mImport && req.method === 'POST') {
+    const body = await readBody(req).catch(() => ({}));
+    const force = url.searchParams.get('force') === '1';
+    const result = assessment.importSession(body);
+    if (result.error) {
+      return sendJson(res, 400, { error: result.error });
+    }
+    const state = result.state;
+    const existing = sessions.get(state.id);
+    if (existing && !force) {
+      return sendJson(res, 409, { error: 'session_exists', id: state.id });
+    }
+    sessions.set(state.id, state);
+    persist(state);
+    return sendJson(res, 200, { id: state.id, lang: state.lang, stage: state.stage, imported: true });
+  }
+
+  // Human-readable assessment export (plain text, suitable for printing/sharing).
+  // Produces a Markdown-like text document from the full session state + report.
+  // Does NOT expose: session IDs, localhost URLs, API keys, internal prompts, debug info.
+  const mHumanExport = p.match(/^\/api\/export-human\/([A-Za-z0-9_-]+)$/);
+  if (mHumanExport && req.method === 'GET') {
+    const id = mHumanExport[1];
+    const state = getOrLoadSession(id);
+    if (!state) return sendJson(res, 200, { id, error: 'session not found' });
+    const report = assessment.getReport(state);
+    const text = assessment.exportHumanReadable(state, report);
+    res.writeHead(200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Disposition': 'attachment; filename="adhd-assessment-export.txt"',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end(text);
+    return;
+  }
+
    // --- Static routes ---
   if (p === '/' || p === '/index.html') {
     return serveStatic(res, path.join(__dirname, 'index.html'));

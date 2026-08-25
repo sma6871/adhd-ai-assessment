@@ -5,7 +5,7 @@
 // The engine ASKS all questions (deterministic) and ADJUDICATES completion/status.
 // The LLM (extractor) ONLY extracts structured evidence from the user's answers.
 
-const { CRITERIA } = require('./criteria');
+const { CRITERIA, INATTENTIVE, HYPERACTIVE } = require('./criteria');
 const { newAssessment, blankEvidenceRecord } = require('./schema');
 const engine = require('./engine');
 const locales = require('./locales');
@@ -725,6 +725,216 @@ function finalizeDifferential(state) {
   state.pending = null;
 }
 
+// --- §12: Session export/import (machine-readable backup) ---
+// EXPORT_FORMAT_VERSION — bump when the session-document shape changes.
+// Import validates this and rejects incompatible major versions.
+var EXPORT_FORMAT_VERSION = 1;
+
+// Build a portable, versioned session blob containing exactly what is needed
+// to resume. Excludes server-only/internal fields (no API keys, no server URLs,
+// no internal scoring/debug info).
+function exportSession(state) {
+  var snapshot = {
+    version: EXPORT_FORMAT_VERSION,
+    exported_at: new Date().toISOString(),
+    session: {
+      id: state.id,
+      lang: state.lang,
+      stage: state.stage,
+      screening: state.screening,
+      duration: state.duration,
+      onset: state.onset,
+      settings: state.settings || [],
+      domains_impaired: state.domains_impaired || [],
+      differentials_flagged: state.differentials_flagged || [],
+      criterion_index: state.criterion_index,
+      pending: state.pending,
+      criteria: state.criteria || {},
+      childhood: state.childhood || null,
+      impairment: state.impairment || null,
+      differential: state.differential || null,
+      transcript: state.transcript || [],
+      report: state.report || null,
+    },
+  };
+  return snapshot;
+}
+
+// Validate and import a session blob. Returns { state, error }.
+// - error is null on success.
+// - Rejects malformed JSON, wrong shape, incompatible major version, or
+//   language that is not en|fa.
+// - Does NOT overwrite an existing active session; the caller decides whether
+//   to overwrite (import must not destroy an existing session without
+//   explicit user confirmation — see server.js /api/import).
+function importSession(blob) {
+  if (!blob || typeof blob !== 'object') {
+    return { state: null, error: 'invalid_format' };
+  }
+  if (blob.version !== EXPORT_FORMAT_VERSION) {
+    return { state: null, error: 'version_mismatch' };
+  }
+  var s = blob.session;
+  if (!s || typeof s !== 'object') {
+    return { state: null, error: 'invalid_format' };
+  }
+  if (s.lang !== 'en' && s.lang !== 'fa') {
+    return { state: null, error: 'lang_not_supported' };
+  }
+  if (!s.id || typeof s.id !== 'string') {
+    return { state: null, error: 'invalid_format' };
+  }
+
+  var state = require('./schema').newAssessment(s.id);
+  state.lang = s.lang;
+  state.stage = s.stage || 'ADULT_SYMPTOMS';
+  state.screening = s.screening || null;
+  state.duration = s.duration || null;
+  state.onset = s.onset || null;
+  state.settings = Array.isArray(s.settings) ? s.settings : [];
+  state.domains_impaired = Array.isArray(s.domains_impaired) ? s.domains_impaired : [];
+  state.differentials_flagged = Array.isArray(s.differentials_flagged) ? s.differentials_flagged : [];
+  state.criterion_index = s.criterion_index != null ? s.criterion_index : null;
+  state.pending = s.pending || null;
+  state.criteria = s.criteria || {};
+  state.childhood = s.childhood || null;
+  state.impairment = s.impairment || null;
+  state.differential = s.differential || null;
+  state.transcript = Array.isArray(s.transcript) ? s.transcript : [];
+  state.report = s.report || null;
+
+  return { state, error: null };
+}
+
+// --- §13: Human-readable assessment export ---
+// Produces a plain-text document suitable for printing/sharing with a clinician.
+// Excludes: session IDs, server URLs, API keys, internal prompts, debug info.
+// Includes: language, date, questions + answers, structured evidence, report summary,
+// uncertainty/contradictions, and the non-diagnosis disclaimer.
+function exportHumanReadable(state, report) {
+  var lang = state.lang || 'en';
+  var r = report || (state.stage === 'REPORT' ? state.report : null);
+  var lines = [];
+  var blank = '\n';
+
+  function push(s) { lines.push(s || ''); }
+
+  push('ADHD Self-Screening — Assessment Summary');
+  push('Language: ' + (lang === 'fa' ? 'Persian (فارسی)' : 'English'));
+  push('Generated: ' + new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC');
+  push(blank);
+
+  // Stage 1 — ASRS Screener
+  push('Stage 1: ASRS Screener');
+  push('Result: ' + (state.screening === 'positive' ? 'Screen-positive' : state.screening === 'negative' ? 'Screen-negative' : 'Not completed'));
+  push(blank);
+
+  // Stage 2 — Adult ADHD Symptoms
+  push('Stage 2: Adult ADHD Symptoms (18 DSM-5 Items)');
+  push(blank);
+  var criterionLabels = INATTENTIVE.map(function (c) { return c.id; })
+    .concat(HYPERACTIVE.map(function (c) { return c.id; }));
+  var completed = 0;
+  var total = criterionLabels.length;
+  for (var i = 0; i < criterionLabels.length; i++) {
+    var cid = criterionLabels[i];
+    var rec = state.criteria[cid];
+    if (!rec || !rec.status) {
+      push(cid + ': Not yet assessed');
+      continue;
+    }
+    completed++;
+    push(cid + ': ' + (rec.status || 'uncertain') + ' (' + (rec.confidence || 'weak') + ' confidence)');
+    if (rec.core_answer) push('  Frequency: ' + rec.core_answer);
+    if (rec.example) push('  Example: ' + rec.example);
+    if (rec.contexts && rec.contexts.length) push('  Contexts: ' + rec.contexts.join(', '));
+    if (rec.consequence) push('  Consequence: ' + rec.consequence);
+    if (rec.counter_evidence && rec.counter_evidence.length) push('  Counter-evidence: ' + rec.counter_evidence.join('; '));
+    if (rec.uncertainty) push('  Uncertainty: ' + rec.uncertainty);
+    push('');
+  }
+  push('Criteria assessed: ' + completed + ' of ' + total);
+  push(blank);
+
+  // Stage 3 — Childhood History
+  push('Stage 3: Childhood History (Pre-Age-12)');
+  if (state.childhood && state.childhood.evidence && state.childhood.evidence.length) {
+    var mems = state.childhood.evidence;
+    for (var j = 0; j < mems.length; j++) {
+      var m = mems[j];
+      push('- ' + (m.behavior || '(no behavior described)') + ' (age: ' + (m.age != null ? m.age : 'unspecified') + ', source: ' + (m.source || 'memory') + ', concrete: ' + !!m.concrete + ', against: ' + !!m.against + ')');
+    }
+  } else {
+    push('No childhood memories collected.');
+  }
+  if (state.onset) push('Onset rating: ' + state.onset);
+  push(blank);
+
+  // Stage 4 — Functional Impairment + Multiple Settings
+  push('Stage 4: Functional Impairment & Multiple Settings');
+  push('Impaired domains: ' + (state.domains_impaired && state.domains_impaired.length ? state.domains_impaired.join(', ') : 'None reported'));
+  push('Settings: ' + (state.settings && state.settings.length ? state.settings.join(', ') : 'None reported'));
+  push(blank);
+
+  // Stage 5 — Focused Differential Check
+  push('Stage 5: Focused Differential Check');
+  if (state.differentials_flagged && state.differentials_flagged.length) {
+    push('Flagged factors: ' + state.differentials_flagged.join(', '));
+  } else {
+    push('No differential factors flagged.');
+  }
+  push(blank);
+
+  // Final report / recommendation
+  if (r) {
+    push('--- Final Assessment Summary ---');
+    push('');
+    push('Recommendation: ' + (r.tier || 'N/A'));
+    push('');
+    push(r.recommendation || '');
+    push('');
+    if (r.consistency) {
+      push('Evidence consistency:');
+      push('  Consistent: ' + r.consistency.consistent);
+      push('  Partially consistent: ' + r.consistency.partially_consistent);
+      push('  Insufficient: ' + r.consistency.insufficient);
+    }
+    if (r.adult_symptoms) {
+      push('');
+      push('Adult symptom pattern: ' + (r.adult_symptoms.pattern || 'unknown'));
+      push('  Inattentive: ' + (r.adult_symptoms.inattentive_supported || 0) + ' supported');
+      push('  Hyperactive: ' + (r.adult_symptoms.hyperactive_supported || 0) + ' supported');
+    }
+    push('');
+    push('DSM-5 Criteria:');
+    if (r.dsm5_criteria) {
+      var dsm = r.dsm5_criteria;
+      push('  A. Symptom count: ' + (dsm.A_symptom_count || 'not_supported'));
+      push('  B. Duration (>=6 months): ' + (dsm.B_duration || 'not_supported'));
+      push('  C. Childhood onset (<12): ' + (dsm.C_onset || 'not_supported'));
+      push('  D. Multiple settings (2+): ' + (dsm.D_settings || 'not_supported'));
+      push('  E. Functional impairment: ' + (dsm.E_impairment || 'not_supported'));
+      push('  F. Not better explained: ' + (dsm.F_not_better_explained || 'not_supported'));
+    }
+    push('');
+    if (r.contradictions && r.contradictions.list && r.contradictions.list.length) {
+      push('Contradictory evidence:');
+      for (var k = 0; k < r.contradictions.list.length; k++) push('  - ' + r.contradictions.list[k]);
+      push('');
+    }
+    if (r.differential_note) push('Note: ' + r.differential_note);
+    if (r.contradiction_note) push('Note: ' + r.contradiction_note);
+  }
+
+  push('');
+  push('---');
+  push('');
+  push(r && r.disclaimer ? r.disclaimer : 'This is not a medical diagnosis and does not replace an evaluation by a qualified clinician.');
+  push('Screening, not a diagnosis.');
+
+  return lines.join('\n');
+}
+
 module.exports = {
   createStage2Assessment, begin, processTurn, nextOrDone, getReport, getProgress,
   localizeReport,
@@ -733,4 +943,5 @@ module.exports = {
   beginStage5, processStage5Turn,
   currentQuestion, snapshot, loadSnapshot, clearSnapshot, snapshotExists,
   CRITERIA, IMPAIRMENT_PROBES,
+  EXPORT_FORMAT_VERSION, exportSession, importSession, exportHumanReadable,
 };
