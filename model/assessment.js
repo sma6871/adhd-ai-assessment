@@ -14,9 +14,30 @@ const { extractEvidence } = require('../interviewer/interviewer');
 
 const fs = require('fs');
 const path = require('path');
+
+// Canonical session-storage directory. Single source of truth — server.js imports
+// this instead of defining its own DATA_DIR to avoid a silent containment mismatch.
 const STORAGE_DIR = path.join(__dirname, '..', 'data');
 
 const MAX_TRANSCRIPT = 20;
+
+// Shared session-id validator. Accepts crypto.randomUUID() output (36 chars, hyphens).
+// Rejects: empty, null, undefined, non-string types, '../' traversal, absolute paths,
+// nested paths, backslashes, URL-encoded traversal, null bytes, strings over 64 chars,
+// and any characters outside [A-Za-z0-9_-].
+function isValidSessionId(id) {
+  return typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id);
+}
+
+// Resolve a session id to its canonical file path, refusing anything that escapes
+// STORAGE_DIR. Returns null if the id would write outside the data directory.
+function resolveSnapshotPath(id) {
+  if (!isValidSessionId(id)) return null;
+  const resolved = path.resolve(STORAGE_DIR, id + '.json');
+  const root = path.resolve(STORAGE_DIR) + path.sep;
+  if (!resolved.startsWith(root)) return null;
+  return resolved;
+}
 
 function createStage2Assessment(id, lang) {
   const state = newAssessment(id);
@@ -41,17 +62,25 @@ function appendTranscript(state, role, text) {
 // --- Canonical persistence (single source: the server, via data/<id>.json) ---
 // The in-memory session map lives in server.js; these helpers back it with disk so a
 // resume survives a server restart. Nothing here is clinical logic.
+// All four functions use resolveSnapshotPath() for defense-in-depth: even if a caller
+// bypasses isValidSessionId(), a path-escape attempt is refused at the filesystem layer.
 function snapshot(state) {
+  const p = resolveSnapshotPath(state.id);
+  if (!p) {
+    console.error('snapshot refused (invalid id):', state.id);
+    return;
+  }
   try {
     if (!fs.existsSync(STORAGE_DIR)) fs.mkdirSync(STORAGE_DIR, { recursive: true });
-    fs.writeFileSync(path.join(STORAGE_DIR, state.id + '.json'), JSON.stringify(state, null, 2));
+    fs.writeFileSync(p, JSON.stringify(state, null, 2));
   } catch (e) {
     console.error('snapshot failed:', e.message);
   }
 }
 function loadSnapshot(id) {
+  const p = resolveSnapshotPath(id);
+  if (!p) return null;
   try {
-    const p = path.join(STORAGE_DIR, id + '.json');
     if (!fs.existsSync(p)) return null;
     return JSON.parse(fs.readFileSync(p, 'utf8'));
   } catch (e) {
@@ -59,15 +88,21 @@ function loadSnapshot(id) {
   }
 }
 function clearSnapshot(id) {
+  const p = resolveSnapshotPath(id);
+  if (!p) {
+    console.error('clearSnapshot refused (invalid id):', id);
+    return;
+  }
   try {
-    const p = path.join(STORAGE_DIR, id + '.json');
     if (fs.existsSync(p)) fs.unlinkSync(p);
   } catch (e) {
     console.error('clearSnapshot failed:', e.message);
   }
 }
 function snapshotExists(id) {
-  try { return fs.existsSync(path.join(STORAGE_DIR, id + '.json')); } catch (e) { return false; }
+  const p = resolveSnapshotPath(id);
+  if (!p) return false;
+  try { return fs.existsSync(p); } catch (e) { return false; }
 }
 
 // Reconstruct the question the engine is currently waiting on from the persisted state.
@@ -781,7 +816,8 @@ function importSession(blob) {
   if (s.lang !== 'en' && s.lang !== 'fa') {
     return { state: null, error: 'lang_not_supported' };
   }
-  if (!s.id || typeof s.id !== 'string') {
+   // Reject IDs that fail path-traversal / format validation at the entry point.
+  if (!isValidSessionId(s.id)) {
     return { state: null, error: 'invalid_format' };
   }
 
@@ -936,6 +972,7 @@ function exportHumanReadable(state, report) {
 }
 
 module.exports = {
+  STORAGE_DIR, isValidSessionId,
   createStage2Assessment, begin, processTurn, nextOrDone, getReport, getProgress,
   localizeReport,
   beginStage3, processStage3Turn,

@@ -9,11 +9,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const assessment = require('./model/assessment');
-const { getProgress } = assessment;
+const { getProgress, STORAGE_DIR, isValidSessionId } = assessment;
 
 const PORT = process.env.PORT || 3000;
-const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(STORAGE_DIR)) fs.mkdirSync(STORAGE_DIR, { recursive: true });
 
 const sessions = new Map();
 
@@ -102,6 +101,7 @@ const server = http.createServer(async (req, res) => {
     const body = await readBody(req).catch(() => ({}));
     const id = body.id || url.searchParams.get('id');
     if (!id) return sendJson(res, 400, { error: 'missing id' });
+    if (!isValidSessionId(id)) return sendJson(res, 400, { error: 'invalid_id' });
     sessions.delete(id);
     assessment.clearSnapshot(id);
     return sendJson(res, 200, { reset: true, id });
